@@ -1,0 +1,6 @@
+#! /usr/bin/sh
+
+HOSTNAMEFILE=${HOME}/.planimeterCare2004-wetli-hostname.temp
+
+# run dtkeden in agent mode
+/dcs/emp/empublic/bin/dtkeden -a -c 1 -h `cat $HOSTNAMEFILE` inputTable.eden

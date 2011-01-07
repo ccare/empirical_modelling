@@ -1,0 +1,29 @@
+%eden
+include("d:/ccare/analog modelling/drawSlide-1.0.eden");
+%eden
+~DS_create_mouse_1 = [1,4,0,55, 13];
+~DS_create_mouse_1 = [1,5,256,55, 13];
+~DS_drawingboard_mouse_1 = [1,4,0,11, 27];
+~DS_drawingboard_mouse_1 = [1,5,256,349, 79];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [341, 53];
+~DS_win1_mousePos_1 = [341, 54];
+~DS_win1_mousePos_1 = [340, 54];
+~DS_win1_mousePos_1 = [338, 55];
+~DS_win1_mousePos_1 = [334, 56];
+~DS_drawingboard_mouse_1 = [1,4,0,11, 96];
+~DS_drawingboard_mouse_1 = [1,5,256,352, 155];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [342, 59];
+~DS_win2_mousePos_1 = [340, 59];
+~DS_win2_mousePos_1 = [338, 59];
+~DS_win2_mousePos_1 = [334, 59];
+~DS_win2_mousePos_1 = [327, 59];
+~DS_win2_mousePos_1 = [317, 59];
+~DS_win2_mousePos_1 = [298, 62];
+~DS_drawingboard_mouse_1 = [1,4,0,10, 178];
+~DS_drawingboard_mouse_1 = [1,5,256,358, 240];
+~DS_win3_mouseEnter_1 = 1;
+~DS_win3_mousePos_1 = [350, 61];
+~DS_win1_mouseEnter_1 = 1;
+

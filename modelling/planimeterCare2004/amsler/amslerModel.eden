@@ -1,0 +1,281 @@
+## ********************************************************
+##        DoNaLD Visualisation of an Amsler Planimeter
+## ********************************************************
+
+## ========================================================
+## |                  Useful Functions                    |
+## ========================================================
+
+%eden
+## Make nulls look like zero
+func filterNulls {
+  if ($1 == @) {return 0;}
+  else {return $1;}
+}
+
+## A function used to resolve the value of angle A.
+func getAngle {
+  angle= acos(float(int($1)) / _planimeter_armLength);
+  if ($2 >= 0) {
+    return angle;
+  } else {
+    return PI+(PI-angle);
+  }
+}
+
+## return smallest of two arguments
+func smallest {
+ if ($1 < $2) { return $1;}
+ else {return $2;}
+}
+
+## ========================================================
+## |                  Planimeter View                     |
+## ========================================================
+%donald
+viewport amsler
+ 
+openshape planimeter
+
+within planimeter {
+  ## The size of representation of joins and length of arms
+  int dotRadius, armLength
+  dotRadius=5
+  armLength=285 ## larger than diagonal of a 400x400 workspace
+  
+  ## Shapes used in representation
+  circle anchor,joint,pen
+  point anchorPt,jointPt,penPt,midPenAnchor
+  line arm1,arm2
+  
+  ## Illustrate the key joins as circles
+  anchor=circle(anchorPt,dotRadius) ## fixed anchor point
+  joint=circle(jointPt,dotRadius)   ## joint of the two arms
+  pen=circle(penPt,dotRadius)       ## the tracer 'pen'
+
+  ## Anchor Point is at centre of diagram
+  anchorPt={0,0}
+  
+  ## The mid-point between the anchor point
+  ##   and the tracer pen.
+  midPenAnchor=midpoint([anchorPt,penPt])
+  
+  ## The two arms are connected at togther at 'jointPt'
+  arm1=[anchorPt,jointPt]
+  arm2=[jointPt,penPt]
+
+  ## The distance of the tracer pen from the centre.
+  real penMag
+  penMag = sqrt(penPt.1*penPt.1+penPt.2*penPt.2) 
+  
+  ## Distance of the join from the [anchor,pen] line
+  real jointDistance
+  jointDistance = sqrt(armLength*armLength-(penMag div 2)*(penMag div 2))
+   
+  ## Use rotation to find the direction of the normal to the line
+  ##  between the anchor and the pen
+  point invPt
+  invPt=rot(penPt,{0,0},1.57)
+  ## find the distance of this point from the anchor
+  real invPtMag
+  invPtMag = sqrt(invPt.1*invPt.1+invPt.2*invPt.2)
+  ## Define the position of the joint as halfway along the line between
+  ##  the anchor and the pen. The distance from this line is defined so
+  ##  that the arms of the planimeter are not stretched.
+  jointPt = midPenAnchor+{jointDistance*(invPt.1 div (invPtMag+0.01)),jointDistance*(invPt.2 div (invPtMag+0.01))}
+}
+## Some eden code to set style to objects in the planimeter
+%eden
+A_planimeter_anchor="fill=solid";
+A_planimeter_joint="fill=solid";
+A_planimeter_pen="fill=solid";
+
+## Link the pen position to the mouse
+%eden
+mouse is ~PlanimeterDisplay_mousePos;
+_planimeter_penPt is ['C'] // [int(mouse[1]),int(mouse[2])];
+
+
+## Useful Angles
+## a is the angle of the arm between the anchor and the join
+## b is the angle of the arm between the join and the pen
+## (Angles in Rads)
+
+angleA is getAngle(_planimeter_jointPt[2],_planimeter_jointPt[3]);
+angleB is 2*acos(_planimeter_jointDistance / _planimeter_armLength);
+
+## This resolves the angle of the wheel into proportion of rotation
+##  that the wheel accumulates.
+wheelGearing is 2*angleB/PI-1;
+
+%eden
+wheelRotation=0;
+
+## ========================================================
+## |               'Clock' or accumulator                 |
+## ========================================================
+
+proc accumulate:angleA {
+  angleA;
+  movement =angleA-oldA;
+  if (movement > 6) {movement=movement-2*PI;} 
+  if (movement < -6) {movement=movement+2*PI;}
+  wheelRotation=wheelGearing*movement+filterNulls(wheelRotation);
+  oldA = angleA;
+}
+
+## ========================================================
+## |                   Reset Controls                     |
+## ========================================================
+proc resetKey:~ResetButton_key_1 {
+  wheelRotation=0;
+}
+proc resetMouse:~ResetButton_mouse_1 {
+  wheelRotation=0;
+}
+
+
+
+## ========================================================
+## |                     Area Counter                     |
+## ========================================================
+%eden
+
+%donald
+viewport Area
+label area
+
+%eden
+_area is label(wheelRotation, cart(0, 0));
+
+## ========================================================
+## |                     Wheel View                       |
+## ========================================================
+%donald
+viewport IntWheel
+
+openshape wheelEnd 
+within wheelEnd {
+  circle wheel
+  point centre
+  real radius,rotation
+  centre = {0,0}
+  wheel = circle(centre,radius)
+  radius = 4.0
+  
+  ## Dotted lines on the wheel
+  real halfpi
+  real angleA,angleB,angleC,angleD  
+  point A,B,C,D
+  line X,Y  
+  
+  angleA = halfpi
+  angleB = 2*halfpi
+  angleC = 3*halfpi
+  angleD = 4*halfpi
+  A = centre + {radius*sin(angleA+rotation),radius*cos(angleA+rotation)}
+  B = centre + {radius*sin(angleB+rotation),radius*cos(angleB+rotation)}
+  C = centre + {radius*sin(angleC+rotation),radius*cos(angleC+rotation)}
+  D = centre + {radius*sin(angleD+rotation),radius*cos(angleD+rotation)}
+  X = [A,C]
+  Y = [B,D]
+}
+## Eden Code to support the wheel definitions
+
+?_wheelEnd_rotation is filterNulls(wheelRotation);
+?_wheelEnd_halfpi = PI / 2;
+?A_wheelEnd_X = "linestyle=dotted";
+?A_wheelEnd_Y = "linestyle=dotted";
+?A_wheelEnd_wheel = "outlinecolor=red";
+
+## ========================================================
+## |                  Scout Windowing                     |
+## ========================================================
+
+
+## Set the background parameters of the 'screen' window etc.  The
+##  screen window must not have been opened first
+%eden
+DFwidth = 490;
+DFheight = 390;
+
+planimeterWin is smallest(screen_width-10-wheelWin,screen_height-10);
+wheelWin = 100;
+
+
+%scout
+integer planimeterWin,wheelWin;
+
+window PlanimeterDisplay = {
+  type: DONALD,
+  box: [{10,30},{planimeterWin,planimeterWin}],
+  sensitive: MOTION,
+  pict: "amsler",
+  border: 1,
+  xmin:-400,
+  xmax: 400,
+  ymin: -400,
+  ymax: 400,
+  border: 1
+  bgcolour: "gray70"
+};
+## Windows: Wheel Output ----------------------------------
+%scout
+window WheelTitle = {
+  type: TEXT,
+  frame: ([{planimeterWin,10},{planimeterWin+wheelWin+10,25}]),
+  sensitive: OFF,
+  string: "Wheel",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+window PlanTitle = {
+  type: TEXT,
+  frame: ([{0,10},{planimeterWin+10,25}]),
+  sensitive: OFF,
+  string: "Amsler Planimeter",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+window WheelDisplay = {
+  type: DONALD,
+  box: [{planimeterWin+10,30},{planimeterWin+wheelWin,wheelWin+25}],
+  sensitive: OFF,
+  pict: "IntWheel",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  border: 1
+  bgcolour: "gray70"
+};
+
+window AreaDisplay = {
+  type: DONALD,
+  box: [{planimeterWin+10,wheelWin+35},{planimeterWin+wheelWin,wheelWin+55}],
+  sensitive: OFF,
+  pict: "Area",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  border: 1
+  bgcolour: "gray70"
+};
+
+window ResetButton = {
+  type: TEXT,
+  string: "Reset",
+  frame: ([{planimeterWin+30,wheelWin+70},{planimeterWin+wheelWin-20,wheelWin+85}]),
+  sensitive: ON,
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+screen = <PlanimeterDisplay / PlanTitle / WheelTitle / WheelDisplay / AreaDisplay / ResetButton>;
+

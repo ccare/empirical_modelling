@@ -1,0 +1,74 @@
+\begin{thebibliography}{DMM86}
+
+\bibitem[Bal87]{ME_baldwin}
+Geoff Baldwin.
+\newblock Implementation of physical units.
+\newblock {\em SIGPLAN Not.}, 22(8), 1987.
+
+\bibitem[Bri91]{EM_vccs}
+Ian Bridge.
+\newblock {\em Vehicle Cruise Control Simulation}.
+\newblock Empricial Modelling, Dept. Computer Science, University of Warwick,
+  1991.
+\newblock Available at: \\
+  http://empublic.dcs.warwick.ac.uk/projects/cruisecontrolBridge1991/.
+
+\bibitem[Cle75]{ME_cleaveland}
+J.~C. Cleaveland.
+\newblock Meaning and syntactic redundancy.
+\newblock In Stephan~A. Schuman, editor, {\em New Directions in Algorithmic
+  Languages}, pages 115--124. Institut de Recherche D'Informatique et
+  D'Automatic, 1975.
+
+\bibitem[CRV03]{ME_grosu}
+Feng Chen, Gigore Rosu, and Ran~Prasad Venkatensan.
+\newblock Rule-based analysis of dimensional safety.
+\newblock In {\em Rewriting Techniques and Applications}, Valencia, Spain,
+  2003.
+\newblock http://fsl.cs.uiuc.edu/~grosu/.
+
+\bibitem[DMM86]{ME_physical}
+A~Dreiheller, B~Mohr, and M~Moerschbacher.
+\newblock Programming pascal with physical units.
+\newblock {\em SIGPLAN Not.}, 21(12):114--123, 1986.
+
+\bibitem[Geh77]{ME_gehani}
+Narain Gehani.
+\newblock Units of measure as a data attribute.
+\newblock {\em Computer Languages}, pages 93--111, 1977.
+
+\bibitem[Gre80]{ME_trg_progCog}
+T.~R. Green.
+\newblock Programming as a cognitve activity.
+\newblock In {\em Human Interaction With Computers}, pages 271--320. Academic
+  Press, London, 1980.
+
+\bibitem[Hal02]{ME_hall}
+B.D. Hall.
+\newblock Software support for physical quantities.
+\newblock Technical report, Measurement Standards Laboratory of New Zealand,
+  Industrial Research Ltd., 2002.
+
+\bibitem[Ham96]{ME_hamilton}
+Bruce Hamilton.
+\newblock A compact representation of units.
+\newblock Technical report, Measurement Systems Department, Hewlett-Packard
+  Laboratories, 1996.
+
+\bibitem[HM94]{ME_hayes}
+Ian~J. Hayes and Brendan~P. Mahony.
+\newblock Using units of measurement in formal specifications.
+\newblock Technical report, Software Verification Research Centre, University
+  of Queensland, Brisbane, Australia, 1994.
+
+\bibitem[KL78]{ME_karrLoveman}
+Michael Karr and David~B. Loveman.
+\newblock Incorporation of units into programming languages.
+\newblock {\em Communications of the ACM}, 21(5):385--391, 1978.
+
+\bibitem[M{\"{a}}n86]{ME_manner}
+R.~M{\"{a}}nner.
+\newblock Strong typing and physical units.
+\newblock {\em SIGPLAN Not.}, 21(3):11--20, 1986.
+
+\end{thebibliography}

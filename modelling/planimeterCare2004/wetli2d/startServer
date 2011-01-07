@@ -1,0 +1,9 @@
+#! /usr/bin/sh
+
+# Save the hostname of the server into a temp file
+HOSTNAMEFILE=${HOME}/.planimeterCare2004-wetli2d-hostname.temp
+
+hostname > $HOSTNAMEFILE
+
+/dcs/emp/empublic/bin/dtkeden -s -c 3 server.e
+rm $HOSTNAMEFILE

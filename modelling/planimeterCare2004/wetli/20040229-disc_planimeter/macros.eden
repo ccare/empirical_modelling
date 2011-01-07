@@ -1,0 +1,144 @@
+
+
+
+
+cuboidMacro="
+## =======================================================================
+## TkEden Macro String
+## - Sasami Cuboid Object
+## =======================================================================
+
+## -----------------------------------------------------------------------
+##  Name: ?1
+##  xSize: ?2
+##  ySize: ?3
+##  zSize: ?4
+##  material: ?5
+## -----------------------------------------------------------------------
+
+%sasami
+object ?1 
+
+vertex ?1_a1  0   0   0
+vertex ?1_b1  ?2 0   0
+vertex ?1_c1  ?2 ?3 0
+vertex ?1_d1  0   ?3 0
+ 
+vertex ?1_a2  0   0   ?4
+vertex ?1_b2  ?2 0   ?4
+vertex ?1_c2  ?2 ?3 ?4
+vertex ?1_d2  0   ?3 ?4
+
+polygon ?1_face1
+polygon ?1_face2
+polygon ?1_face3
+polygon ?1_face4
+polygon ?1_face5
+polygon ?1_face6
+
+poly_geom_vertex ?1_face1 ?1_d1 ?1_c1 ?1_b1 ?1_a1
+poly_geom_vertex ?1_face2 ?1_a1 ?1_b1 ?1_b2 ?1_a2
+poly_geom_vertex ?1_face3 ?1_b1 ?1_c1 ?1_c2 ?1_b2
+poly_geom_vertex ?1_face4 ?1_c1 ?1_d1 ?1_d2 ?1_c2 
+poly_geom_vertex ?1_face5 ?1_d1 ?1_a1 ?1_a2 ?1_d2
+poly_geom_vertex ?1_face6 ?1_a2 ?1_b2 ?1_c2 ?1_d2
+
+poly_material ?1_face1 ?5
+poly_material ?1_face2 ?5
+poly_material ?1_face3 ?5
+poly_material ?1_face4 ?5
+poly_material ?1_face5 ?5
+poly_material ?1_face6 ?5
+
+object_poly ?1 ?1_face1
+object_poly ?1 ?1_face2
+object_poly ?1 ?1_face3
+object_poly ?1 ?1_face4
+object_poly ?1 ?1_face5
+object_poly ?1 ?1_face6
+
+
+## -----------------------------------------------------------------------
+";
+
+
+shaftMacro="
+## =======================================================================
+## TkEden Macro File
+## - Sasami Shaft Object
+##   This differs from cuboid.macro because it is able to rotate about its
+##   centre
+## =======================================================================
+
+## -----------------------------------------------------------------------
+##  Name: ?1
+##  half xSize: ?2
+##  half ySize: ?3
+##  half zSize: ?4
+##  material: ?5
+## -----------------------------------------------------------------------
+
+
+
+%sasami
+object ?1 
+
+vertex ?1_a1  -?2 -?3 -?4
+vertex ?1_b1   ?2 -?3 -?4
+vertex ?1_c1   ?2  ?3 -?4
+vertex ?1_d1  -?2  ?3 -?4
+ 
+vertex ?1_a2  -?2 -?3 ?4
+vertex ?1_b2   ?2 -?3 ?4
+vertex ?1_c2   ?2  ?3 ?4
+vertex ?1_d2  -?2  ?3 ?4
+
+polygon ?1_face1
+polygon ?1_face2
+polygon ?1_face3
+polygon ?1_face4
+polygon ?1_face5
+polygon ?1_face6
+
+poly_geom_vertex ?1_face1 ?1_d1 ?1_c1 ?1_b1 ?1_a1
+poly_geom_vertex ?1_face2 ?1_a1 ?1_b1 ?1_b2 ?1_a2
+poly_geom_vertex ?1_face3 ?1_b1 ?1_c1 ?1_c2 ?1_b2
+poly_geom_vertex ?1_face4 ?1_c1 ?1_d1 ?1_d2 ?1_c2 
+poly_geom_vertex ?1_face5 ?1_d1 ?1_a1 ?1_a2 ?1_d2
+poly_geom_vertex ?1_face6 ?1_a2 ?1_b2 ?1_c2 ?1_d2
+
+poly_material ?1_face1 ?5
+poly_material ?1_face2 ?5
+poly_material ?1_face3 ?5
+poly_material ?1_face4 ?5
+poly_material ?1_face5 ?5
+poly_material ?1_face6 ?5
+
+object_poly ?1 ?1_face1
+object_poly ?1 ?1_face2
+object_poly ?1 ?1_face3
+object_poly ?1 ?1_face4
+object_poly ?1 ?1_face5
+object_poly ?1 ?1_face6
+
+
+## -----------------------------------------------------------------------
+";
+
+
+
+
+## Returns the code for a new cuboid
+##   str * str * str * str * str -> str 
+##   newCuboid(name,x,y,z,material) -> code
+func newCuboid {
+   return macro(cuboidMacro,$1,$2,$3,$4,$5);
+}
+
+
+## Returns the code for a new shaft
+##   str * str * str * str * str -> str 
+##   newShaft(name,x,y,z,material) -> code
+func newShaft {
+   return macro(shaftMacro,$1,$2,$3,$4,$5);
+}

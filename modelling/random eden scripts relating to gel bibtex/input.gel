@@ -1,0 +1,100 @@
+%eden
+mynotation = "%eden";
+gel_debug=FALSE;
+%angel
+
+
+notationprompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationLabel] };
+
+notationLabel = label {
+	text = "Enter " // mynotation // " statements";
+	side = "left" };
+
+edenradio = radiobutton {
+	text = "%eden";
+	variable = "mynotation";
+	value = "%eden";
+	side = "left" };
+
+donaldradio = radiobutton {
+	text = "%donald";
+	variable = "mynotation";
+	value = "%donald";
+	side = "left" };
+
+scoutradio = radiobutton {
+	text = "%scout";
+	variable = "mynotation";
+	value = "%scout";
+	side = "left" };
+
+accept = button {
+	text = "Accept";
+	side = "left" };
+	
+input = textbox {
+	expand="true";
+	side="bottom";
+	fill="both";
+	text="hello world" };
+	
+showhide = button {
+   side = "right" };
+ 
+
+  
+	
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio,showhide] };
+
+notationBar = frame {
+	fill = "x";
+	side = "top";
+	content = [notationButtons,notationprompt] };
+	
+
+mywin = window {
+	title = "tkeden gel";
+	width = 600;
+	height = 250;
+	content = [notationBar,input] };
+	
+	   
+   
+showhide.text = hidden ? "Show tkeden input" : "Hide tkeden input";
+win.title = hidden ? "Show" : "Hide";
+
+
+
+
+%eden
+
+showhide_mouseclick = 1;
+showhide_mouseclick = 0;
+
+
+
+hidden = 0;
+
+proc trigger_showhide : showhide_mouseclick {
+   if (showhide_mouseclick == 0) {
+      if (hidden) {
+         hidden = 0;
+	 tcl("wm deiconify .");
+      }
+      else {
+         hidden = 1;
+	 tcl("wm withdraw .");
+      }
+   }   
+}
+
+proc trigger_execute : accept_mouseclick {
+	execute(mynotation // "\n" // input_text);
+	input_text = "";
+}

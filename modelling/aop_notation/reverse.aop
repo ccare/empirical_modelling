@@ -1,0 +1,22 @@
+## -------------------------------------------------------------------
+## Notation to go the other way
+## -------------------------------------------------------------------
+%aop
+<aopRev> = <AOPrev> ";";
+<AOPrev> = <AOPrev_name> "is" <AOPrev_list> : do {writeln($p1 // $p2);} later;
+<AOPrev_name> = ([a-zA-Z]+[a-zA-Z0-9_]*) : do {$v = $j;} now;
+<AOPrev_list> = "[" <AOPrev_list2> : do {$v is $p1;} now;
+<AOPrev_list2> = <AOPrev_list3> "]" : do {$v is $p1;} now;
+<AOPrev_list3> = <AOPrev_string> "," <AOPrev_list3> : ignore [sqbras]
+			: do {$v is $p1 // $p2;} now | <AOPrev_string>;
+			
+<AOPrev_string> = "j" <AOPrev_string2> : do {$v is $p1;} now | <AOPrev_subList>;
+<AOPrev_string2> = <AOPrev_string3> "g" : do {$v is $p1;} now;
+<AOPrev_string3> = * : do {$v is $j;} now;
+
+<AOPrev_subList> = "[" <AOPrev_subList2> : do {$v is $p1;} now | <AOPrev_var>;
+<AOPrev_subList2> = <AOPrev_list3> "]" : do {$v is $p1;} now;
+
+<AOPrev_var> = * : do {$v is $j;} now;
+
+notation aopRev = split on ";" : ignore [string];

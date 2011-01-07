@@ -1,0 +1,128 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## integratorTables.eddi                                 Charlie Care - November 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Pre-Amble
+##------------------------------------------------------------------------------
+%eden
+installeddi();
+
+## New Garbage collector to ensure that EDDI works in tkeden 1.46
+%eden
+proc garbage_collect {
+	/* the revised eddi garbage collection procedure */
+        auto ix, j, dCAT;
+        for (ix=2; ix<=CATALOGUE#; ix++) {
+                dCAT = dependants(CATALOGUE[ix][1]);
+                /* writeln("ix = ", ix); writeln(dCAT); writeln((dCAT[2])#); */
+                for (j=1; j<=dCAT[2]#; j++) {
+                        /* writeln(dependants(dCAT[2][j])); */
+                        if ((dependants(dCAT[2][j])[1])==[]) {
+                                /* writeln(dCAT[2][j]); */
+                        	if(substr(dCAT[2][j],1,4)=="var_") self_asgn(dCAT[2][j]);
+                        }
+                }
+        }
+}
+
+##------------------------------------------------------------------------------
+## Define Eddi Tables
+##------------------------------------------------------------------------------
+
+%eddi
+## EDDI tables to store information about the integrators' initial conditions
+AN_tables_InitialConditions (variable CHAR,value CHAR);
+
+## EDDI tables to store information about each integrator' source variable
+AN_tables_Integrators (variable CHAR,integrate CHAR);
+
+##------------------------------------------------------------------------------
+## Proceedures for Database Access 
+##------------------------------------------------------------------------------
+
+## Add an entry (information about an integrator) cleanly to the database
+## 
+## ADD record to both tables for each integrator defined
+##  IF (exists entry for the integrator)
+##      THEN delete record before adding new record
+%eden
+proc AN_addIntegrator {
+    para var,accum,ic;
+    
+    AN_tmp_variable="\"" // str(var) // "\"";
+    AN_tmp_integrate="\"" // str(accum) // "\"";
+    AN_tmp_ic="\"" // str(ic) // "\"";    
+    
+    execute("%eddi
+    AN_tables_icDups is AN_tables_InitialConditions : variable == " // AN_tmp_variable // ";
+    AN_tables_acDups is AN_tables_Integrators : variable == " // AN_tmp_variable // ";
+     ");   
+    
+    if (AN_isEmpty(tail(AN_tables_icDups)) == 0) {
+        execute("%eddi
+	AN_tables_tmpic = AN_tables_InitialConditions-AN_tables_icDups;
+	~~AN_tables_icDups;
+	~~AN_tables_InitialConditions;
+	AN_tables_InitialConditions = AN_tables_tmpic;
+	~~AN_tables_tmpic;
+        ");  
+    }
+    else {
+        execute("%eddi
+	~~AN_tables_icDups;
+        "); 
+    }
+    
+    if (AN_isEmpty(tail(AN_tables_acDups)) == 0) {
+        execute("%eddi
+	AN_tables_tmpac = AN_tables_Integrators-AN_tables_acDups;
+	~~AN_tables_acDups;
+	~~AN_tables_Integrators;
+	AN_tables_Integrators = AN_tables_tmpac;
+	~~AN_tables_tmpac;
+        ");  
+    }
+    else {
+        execute("%eddi
+	~~AN_tables_acDups;
+        "); 
+    }
+    
+    execute("%eddi
+    AN_tables_InitialConditions << [" // AN_tmp_variable // "," // AN_tmp_ic // "];
+    AN_tables_Integrators << [" // AN_tmp_variable // "," // AN_tmp_integrate // "];
+    ");
+    
+}
+
+## Clean up the database (remove unwanted integrator deinfitions)
+## 
+## CALLED when components other than integrators are defined
+##   IF (component being defined was already known as an integrator) 
+##      THEN drop that record from the database
+proc AN_dbCleanUp {
+    para var;
+        execute("%eddi
+	AN_tables_tmp = AN_tables_InitialConditions : variable != \"AN_value_" // var // "\";
+	~~AN_tables_InitialConditions;
+	AN_tables_InitialConditions = AN_tables_tmp;
+	~~AN_tables_tmp;
+	AN_tables_tmp = AN_tables_Integrators : variable != \"AN_value_" // var // "\";
+	~~AN_tables_Integrators;
+	AN_tables_Integrators = AN_tables_tmp;
+	~~AN_tables_tmp;
+        "); 
+}
+##------------------------------------------------------------------------------
+## Proceedures for Database Access 
+##------------------------------------------------------------------------------
+
+## Utility function to determine whether a list is empty
+%eden
+func AN_isEmpty {
+    para list;
+    if (list# > 0) {return 0;} else {return 1;}
+}

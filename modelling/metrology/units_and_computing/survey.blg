@@ -1,0 +1,22 @@
+This is BibTeX, Version 0.99cThe top-level auxiliary file: survey.aux
+I couldn't open database file ../../sources/metrology/metrology.bib
+---line 37 of file survey.aux
+ : \bibdata{../../sources/metrology/metrology
+ :                                           }
+I'm skipping whatever remains of this command
+The style file: alpha.bst
+I found no database files---while reading file survey.aux
+Warning--I didn't find a database entry for "ME_manner"
+Warning--I didn't find a database entry for "ME_baldwin"
+Warning--I didn't find a database entry for "ME_physical"
+Warning--I didn't find a database entry for "ME_hamilton"
+Warning--I didn't find a database entry for "ME_karrLoveman"
+Warning--I didn't find a database entry for "ME_trg"
+Warning--I didn't find a database entry for "ME_grosu"
+Warning--I didn't find a database entry for "ME_hayes"
+Warning--I didn't find a database entry for "ME_gehani"
+Warning--I didn't find a database entry for "ME_kennedy"
+Warning--I didn't find a database entry for "ME_house"
+Warning--I didn't find a database entry for "ME_hall"
+Warning--I didn't find a database entry for "ME_cleaveland"
+(There were 2 error messages)

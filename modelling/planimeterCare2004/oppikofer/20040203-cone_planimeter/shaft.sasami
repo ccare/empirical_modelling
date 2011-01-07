@@ -1,0 +1,45 @@
+## Definitions of the Shaft
+
+%sasami
+object shaft
+
+## Vertices at front of the shaft
+vertex shaft_a1 -5 5 0
+vertex shaft_b1 5 5 0
+vertex shaft_c1 5 -5 0
+vertex shaft_d1 -5 -5 0
+## Vertices at rear of the shaft
+vertex shaft_a2 -5 5 0.2
+vertex shaft_b2 5 5 0.2
+vertex shaft_c2 5 -5 0.2
+vertex shaft_d2 -5 -5 0.2
+
+## Polygons for each side
+polygon shaft_end1 
+polygon shaft_end2 
+polygon shaft_sideA
+polygon shaft_sideB
+polygon shaft_sideC
+polygon shaft_sideD
+
+## declaring polygons in terms of vertices
+## (notice that the order of vertices define which side 
+##  of each polygon is solid)
+poly_geom_vertex shaft_end1 shaft_a1 shaft_b1 shaft_c1 shaft_d1
+poly_geom_vertex shaft_end2 shaft_d2 shaft_c2 shaft_b2 shaft_a2
+poly_geom_vertex shaft_sideA shaft_a2 shaft_b2 shaft_b1 shaft_a1
+poly_geom_vertex shaft_sideB shaft_b2 shaft_c2 shaft_c1 shaft_b1
+poly_geom_vertex shaft_sideC shaft_c2 shaft_d2 shaft_d1 shaft_c1
+poly_geom_vertex shaft_sideD shaft_d2 shaft_a2 shaft_a1 shaft_d1
+
+## Each polygon is given the same material
+poly_material shaft_end1 m_shaft
+poly_material shaft_end2 m_shaft
+poly_material shaft_sideA m_shaft
+poly_material shaft_sideB m_shaft
+poly_material shaft_sideC m_shaft
+poly_material shaft_sideD m_shaft
+
+## Attach the Polygons to the Shaft Object
+object_poly shaft shaft_end1 shaft_end2
+object_poly shaft shaft_sideA shaft_sideB shaft_sideC shaft_sideD

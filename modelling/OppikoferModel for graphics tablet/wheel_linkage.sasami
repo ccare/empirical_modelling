@@ -1,0 +1,28 @@
+%sasami
+object wheel_linkage
+
+vertex wheel_frontlinkageA wheel_pos_x-0.1 wheel_pos_y-0.1 wheel_shaft_pos_z+wheel_shaft_length
+vertex wheel_frontlinkageB wheel_pos_x-0.1 wheel_pos_y+0.1 wheel_shaft_pos_z+wheel_shaft_length
+vertex wheel_frontlinkageC wheel_pos_x+5 wheel_pos_y+0.1 wheel_shaft_pos_z+wheel_shaft_length
+vertex wheel_frontlinkageD wheel_pos_x+5 wheel_pos_y-0.1 wheel_shaft_pos_z+wheel_shaft_length
+vertex wheel_backlinkageA wheel_pos_x-0.1 wheel_pos_y-0.1 wheel_shaft_pos_z
+vertex wheel_backlinkageB wheel_pos_x-0.1 wheel_pos_y+0.1 wheel_shaft_pos_z
+vertex wheel_backlinkageC wheel_pos_x+5 wheel_pos_y+0.1 wheel_shaft_pos_z
+vertex wheel_backlinkageD wheel_pos_x+5 wheel_pos_y-0.1 wheel_shaft_pos_z
+
+polygon wheel_frontlinkage1
+polygon wheel_frontlinkage2
+polygon wheel_backlinkage1
+polygon wheel_backlinkage2
+
+poly_geom_vertex wheel_frontlinkage1 wheel_frontlinkageA wheel_frontlinkageB wheel_frontlinkageC wheel_frontlinkageD
+poly_geom_vertex wheel_frontlinkage2 wheel_frontlinkageD wheel_frontlinkageC wheel_frontlinkageB wheel_frontlinkageA
+poly_geom_vertex wheel_backlinkage1 wheel_backlinkageA wheel_backlinkageB wheel_backlinkageC wheel_backlinkageD
+poly_geom_vertex wheel_backlinkage2 wheel_backlinkageD wheel_backlinkageC wheel_backlinkageB wheel_backlinkageA
+
+poly_material wheel_frontlinkage1 m_linkage
+poly_material wheel_frontlinkage2 m_linkage
+poly_material wheel_backlinkage1 m_linkage
+poly_material wheel_backlinkage2 m_linkage
+
+object_poly wheel_linkage wheel_frontlinkage1 wheel_frontlinkage2 wheel_backlinkage1 wheel_backlinkage2 

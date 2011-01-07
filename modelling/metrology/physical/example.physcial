@@ -1,0 +1,65 @@
+%physical
+a = 12 m;
+b = 12 kg; 
+
+c = 13 kgs;
+
+d =a*b;
+
+d = 144 mkg;
+
+
+12 [1,-1,0,0,0,0,0]
+
+%eden
+b = PHYSICAL_VAL("b");
+
+%physical
+?a;
+## a is 12;
+## current value of a is 12 m (dimension vector: [1,0,0,0,0,0,0])
+
+%physical
+?b;
+
+## b is 12;
+## current value of b is 12 kg (dimension vector: [0,1,0,0,0,0,0])
+
+%eden
+?b;
+## b=[12,"kg"];
+## b ~> []; /* b last changed by input */
+
+%physical
+c = a*b;
+
+%eden
+c = PHYSICAL_VAL("c");
+?c;
+## c=[144,"mkg"];
+## c ~> []; /* c last changed by input */
+
+%physical
+square = function (a) -> b {
+	b_val=a_val*a_val;
+	b_dim=multDim(a_dim,a_dim);
+	b =a;
+};
+
+d = square(c);
+
+%eden
+PHYSICAL("e=d/a;");
+ 
+%physical
+square = macro(a,b) {
+	a = b*b;
+};
+
+z = square("zz","zzz"); -> z = zz*zzz;
+
+
+
+
+a = eden{asdasd};
+eden{myObs} = b : m->miles,s->hour;

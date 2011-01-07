@@ -1,0 +1,20 @@
+## ********************************************************
+##                       Planimeter 1
+## ********************************************************
+
+## Inputs -------------------------------------------------
+planimeter1_xy=[0,0];
+inputRange_x=[-1,1];
+inputRange_y=[-1,1];
+## planimeter code is expecting a generic position variable
+planimeter_xy is planimeter1_xy;
+## --------------------------------------------------------
+
+## Planimeter Code ----------------------------------------
+cd("20040203-cone_planimeter");
+useSasami=TRUE;
+include("planimeter.eden");
+## --------------------------------------------------------
+
+%sasami
+bgcolour 0.60 0.60 0.90

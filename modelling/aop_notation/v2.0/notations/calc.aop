@@ -1,0 +1,37 @@
+%aop
+<calc> = "" <calc_expr> 
+	   : do {writeln('=',$p1);} later
+	   | <calc_err>;
+
+<calc_expr> = <calc_expr> "+" <calc_expr>
+	: ignore [bras] : do {$v is $p1 + $p2;} now
+	| <calc_expr2>;
+	
+<calc_expr2> = <calc_expr> "-" <calc_expr>
+	: ignore [bras] : do {$v is $p1 - $p2;} now
+	| <calc_expr3>;
+
+<calc_expr3> = <calc_expr> "*" <calc_expr>
+	: ignore [bras] : do {$v is $p1 * $p2;} now
+	| <calc_expr4>;
+
+<calc_expr4> = <calc_expr> "/" <calc_expr>
+	: ignore [bras] : do {$v is $p1 / $p2;} now
+	| <calc_expr5>;
+
+<calc_expr5> = "(" <calc_expr6>
+			 : do {$v is $p1;} now
+			 | <calc_term>;
+
+<calc_expr6> = <calc_expr> ")"
+			 : do {$v is $p1;} now 
+			 | <calc_err>;
+
+<calc_term> = ([0-9]+) 
+			: do {$v = $t;} now 
+			| <calc_err>;
+
+<calc_err> = * 
+		   : do {writeln("calc: syntax error");} now;
+
+notation %calc = <calc> split on "\n";

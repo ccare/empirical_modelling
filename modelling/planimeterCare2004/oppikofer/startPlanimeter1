@@ -1,0 +1,10 @@
+#! /usr/bin/sh
+
+HOSTNAMEFILE=${HOME}/.planimeterCare2004-oppikofer-hostname.temp
+
+# run dtkeden in agent mode
+if [ -r "$HOSTNAMEFILE" ]; then
+/dcs/emp/empublic/bin/dtkeden -a -c 0 -h `cat $HOSTNAMEFILE` planimeter1.eden
+else
+/dcs/emp/empublic/bin/dtkeden -a -c 0 planimeter1.eden
+fi

@@ -1,0 +1,56 @@
+## =======================================================================
+## TkEden Macro File
+## - Sasami Cuboid Object
+## =======================================================================
+
+## -----------------------------------------------------------------------
+##  Name: $name$
+##  xSize: $x$
+##  ySize: $y$
+##  zSize: $z$
+##  material: $material$
+## -----------------------------------------------------------------------
+
+%sasami
+object $name$ 
+
+vertex $name$_a1  0   0   0
+vertex $name$_b1  $x$ 0   0
+vertex $name$_c1  $x$ $y$ 0
+vertex $name$_d1  0   $y$ 0
+ 
+vertex $name$_a2  0   0   $z$
+vertex $name$_b2  $x$ 0   $z$
+vertex $name$_c2  $x$ $y$ $z$
+vertex $name$_d2  0   $y$ $z$
+
+polygon $name$_face1
+polygon $name$_face2
+polygon $name$_face3
+polygon $name$_face4
+polygon $name$_face5
+polygon $name$_face6
+
+poly_geom_vertex $name$_face1 $name$_d1 $name$_c1 $name$_b1 $name$_a1
+poly_geom_vertex $name$_face2 $name$_a1 $name$_b1 $name$_b2 $name$_a2
+poly_geom_vertex $name$_face3 $name$_b1 $name$_c1 $name$_c2 $name$_b2
+poly_geom_vertex $name$_face4 $name$_c1 $name$_d1 $name$_d2 $name$_c2 
+poly_geom_vertex $name$_face5 $name$_d1 $name$_a1 $name$_a2 $name$_d2
+poly_geom_vertex $name$_face6 $name$_a2 $name$_b2 $name$_c2 $name$_d2
+
+poly_material $name$_face1 $material$
+poly_material $name$_face2 $material$
+poly_material $name$_face3 $material$
+poly_material $name$_face4 $material$
+poly_material $name$_face5 $material$
+poly_material $name$_face6 $material$
+
+object_poly $name$ $name$_face1
+object_poly $name$ $name$_face2
+object_poly $name$ $name$_face3
+object_poly $name$ $name$_face4
+object_poly $name$ $name$_face5
+object_poly $name$ $name$_face6
+
+
+## -----------------------------------------------------------------------

@@ -1,0 +1,5 @@
+#! /usr/bin/sh
+
+HOSTNAMEFILE=${HOME}/.planimeterCare2004-wetli2d-hostname.temp
+
+/dcs/emp/empublic/bin/dtkeden -a -c 3 -h `cat $HOSTNAMEFILE` planimeter2.e

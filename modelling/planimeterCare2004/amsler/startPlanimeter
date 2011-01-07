@@ -1,0 +1,3 @@
+#! /usr/bin/sh
+
+/dcs/emp/empublic/bin/tkeden amslerModel.eden

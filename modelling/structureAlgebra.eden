@@ -1,0 +1,93 @@
+## Below is the basic parser for %structure built in 30 mins
+
+%aop
+<structure> = <structure_stm> ";";
+
+<structure_stm> = "structure" <structure_def> | <structure_stm2>;
+
+<structure_stm2> = "instance" <structure_instance>;
+
+<structure_def> = <structure_name> "=" <structure_expr>;
+
+<structure_instance> = <structure_name> "=" <structure_name>;
+
+<structure_expr> = <structure_expr> "+" <structure_expr>
+                 | <structure_expr2>;
+		 
+<structure_expr2> = <structure_expr> "-" <structure_expr>
+                  | <structure_expr3>;
+		  
+<structure_expr3> = "{" <structure_expr4> | <structure_name>;
+
+<structure_expr4> = <structure_expr5> "}";
+
+<structure_expr5> = <structure_vars> ";";
+
+<structure_vars> = <structure_variable> ";" <structure_vars>
+                 | <structure_variable>;
+		 
+<structure_variable> = <structure_name> "=" <structure_val>
+                     | <structure_name>;
+
+<structure_val> = *;
+
+<structure_name> = ([a-zA-Z]+[0-9a-zA-Z_]*);
+
+notation structure = split on ";" : ignore [cbras];
+
+## below is the above parser with eden code attached to use the parsed data
+
+%aop
+<structure> = <structure_stm> ";" : do {writeln($p1);} later;
+
+<structure_stm> = "structure" <structure_def> 
+                : do {$v is ["structure",$p1];} now
+                | <structure_stm2>;
+
+<structure_stm2> = "instance" <structure_instance> 
+                 : do {$v is ["instance",$p1];} now;
+
+<structure_def> = <structure_name> "=" <structure_expr>
+                : do {$v is [$p1,$p2];} now;
+
+<structure_instance> = <structure_name> "=" <structure_name>
+                     : do {$v is [$p1,$p2];} now;
+
+<structure_expr> = <structure_name> "+" <structure_expr>
+                 : do {$v is ["union",$p1,$p2];} now
+                 | <structure_expr2>;
+		 
+<structure_expr2> = <structure_name> "-" <structure_expr>
+                  : do {$v is ["difference",$p1,$p2];} now
+                  | <structure_expr3>;
+		  
+<structure_expr3> = <structure_name> "." <structure_expr>
+                  : do {$v is ["intersection",$p1,$p2];} now
+                  | <structure_exprBlock>;
+		  
+<structure_exprBlock> = "{" <structure_exprBlock2>
+                  : do {$v is ["block",$p1];} now;
+
+<structure_exprBlock2> = <structure_exprBlock3> "}"
+                  : do {$v is $p1;} now;
+
+<structure_exprBlock3> = <structure_vars> ";"
+                  : do {$v is $p1;} now;
+
+<structure_vars> = <structure_variable> ";" <structure_vars>
+                 : do {$v is $p1 // $p2;} now
+                 | <structure_variable>;
+		 
+<structure_variable> = <structure_name> "=" <structure_val>
+                     : do {$v is [[$p1,$p2]];} now
+                     | <structure_variable2>;
+		     
+<structure_variable2> = "" <structure_name>
+                      : do {$v is [[$p1,@]];} now;
+
+<structure_val> = * : do {$v is $j;} now;
+
+<structure_exisitingName> = ([a-zA-Z]+[0-9a-zA-Z_]*) : do {$v is $j;} now;
+<structure_name> = ([a-zA-Z]+[0-9a-zA-Z_]*) : do {$v is $j;} now;
+
+notation structure = split on ";" : ignore [cbras];

@@ -1,0 +1,13 @@
+%aop
+<palindrome> = "" <pal_1> : do {if ($p1) writeln(":-)"); else writeln(":-(");} later;
+
+<pal_1> = ([a-zA-z]?) : do {$v = 1;} now | <pal_2>;
+
+<pal_2> = ([a-zA-z]) <pal_3> : do {pal_str = "$t"; $v is $p1;} now | <pal_err>;
+
+<pal_3> =  <pal_1> `pal_str`: do {$v is $p1;} now |  <pal_err>;
+
+<pal_err> = * : do {$v = 0;} now;
+
+notation palindrome = split on "\n";
+%aop

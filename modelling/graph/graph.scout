@@ -1,0 +1,19 @@
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;

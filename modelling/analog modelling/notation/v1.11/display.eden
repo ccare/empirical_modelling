@@ -1,0 +1,347 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## display.e                                          Charlie Care - November 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Add new window
+##------------------------------------------------------------------------------
+%scout
+integer ANdisp_winWidth=390;
+integer ANdisp_winHeight=400;
+
+%eden
+OpenDisplay("observables", ANdisp_winWidth, ANdisp_winHeight);
+proc observables_display_screen : observables { DisplayScreen(&observables, "observables"); }
+
+%scout
+display ANdisplay;
+
+##------------------------------------------------------------------------------
+## Have a reference point at corner of display
+##  - this will help if interfaces are to be mixed in a drawslide presentation
+##------------------------------------------------------------------------------
+%scout
+
+integer ANdisp_refPoint_x = 0;
+integer ANdisp_refPoint_y = 0;
+
+##------------------------------------------------------------------------------
+## General Scout variables for sizes of components and gaps between them
+##------------------------------------------------------------------------------
+
+%scout
+integer ANdisp_windowHeight = 20;
+integer ANdisp_windowWidth_a = 110;
+integer ANdisp_windowWidth_b = 150;
+integer ANdisp_windowWidth_c = 80;
+integer ANdisp_windowGap_x = 5;
+integer ANdisp_windowGap_y = 5;
+
+## position of 1st line of windows
+integer ANdisp_win_a_x = 5;
+integer ANdisp_win_b_x = ANdisp_win_a_x+ANdisp_windowWidth_a+ANdisp_windowGap_x;
+integer ANdisp_win_c_x = ANdisp_win_b_x+ANdisp_windowWidth_b+ANdisp_windowGap_x;
+
+## dummy window is the window that doesn't exist
+##  but if it did exist, would be placed above the 1st window.
+##  This is used to place all the other windows (and manipulated to simulate
+## scrolling.
+
+integer ANdisp_dummyWindow_y;
+
+%eden
+ANdisp_dummyWindow_y = int(ANdisp_windowGap_y);
+
+##------------------------------------------------------------------------------
+## Scout variables for other general properties
+##------------------------------------------------------------------------------
+
+%scout
+string ANdisp_w_colour = "grey";
+
+##------------------------------------------------------------------------------
+## Scroll Bars
+##------------------------------------------------------------------------------
+
+%scout
+## dimensions of each scroll button
+integer ANdisp_scrollSize_x=15;
+integer ANdisp_scrollSize_y=15;
+image ANdisp_up = ImageFile("gif", "up.gif");
+image ANdisp_down = ImageFile("gif", "down.gif");
+image ANdisp_upSunk = ImageFile("gif", "upSunk.gif");
+image ANdisp_downSunk = ImageFile("gif", "downSunk.gif");
+string ANdisp_upImg = "ANdisp_up";
+string ANdisp_downImg = "ANdisp_down";
+string ANdisp_scrollReset_relief = "raised";
+
+## down button
+window ANdisp_scrollDown = {
+  type: IMAGE
+  box: [{ANdisp_refPoint_x+ANdisp_winWidth-1-ANdisp_scrollSize_x,ANdisp_refPoint_y+ANdisp_winHeight-1-ANdisp_scrollSize_y},{ANdisp_refPoint_x+ANdisp_winWidth-1,ANdisp_refPoint_y+ANdisp_winHeight-1}]
+  sensitive: ON
+  border: 0
+  pict: ANdisp_downImg
+  relief: "flat"
+  bdcolour: ANdisp_w_colour
+};
+
+## up button
+window ANdisp_scrollUp = {
+  type: IMAGE
+  box: [{ANdisp_refPoint_x+ANdisp_winWidth-1-ANdisp_scrollSize_x,ANdisp_refPoint_y+2},{ANdisp_refPoint_x+ANdisp_winWidth-1,ANdisp_refPoint_y+1+ANdisp_scrollSize_y}]
+  sensitive: ON
+  border: 0
+  pict: ANdisp_upImg
+  relief: "flat"
+  bdcolour: ANdisp_w_colour
+};
+
+## the bar itself
+window ANdisp_scrollBar = {
+  type: TEXT
+  string: ""
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_winWidth-ANdisp_scrollSize_x,ANdisp_refPoint_y+1+ANdisp_scrollSize_y},{ANdisp_refPoint_x+ANdisp_winWidth-3,ANdisp_refPoint_y+ANdisp_winHeight-1-ANdisp_scrollSize_y}])
+  sensitive: OFF
+  border: 0
+  relief: "flat"
+  bgcolour: ANdisp_w_colour
+};
+
+## A reset button to reset state of scrolling
+window ANdisp_scrollReset = {
+  type: TEXT
+  string: "Reset Scrolling"
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+0.5*ANdisp_winWidth-70,ANdisp_refPoint_y+ANdisp_winHeight-25},{ANdisp_refPoint_x+0.5*ANdisp_winWidth+70,ANdisp_refPoint_y+ANdisp_winHeight-5}])
+  sensitive: ON
+  border: 1
+  relief: ANdisp_scrollReset_relief
+  bgcolour: ANdisp_w_colour
+  font: "{helvetica 12 bold}"
+};
+
+## A window to mask the variables under the above button
+window ANdisp_scrollResetMask = {
+  type: TEXT
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+0,ANdisp_refPoint_y+ANdisp_winHeight-25},{ANdisp_refPoint_x+ANdisp_winWidth-ANdisp_scrollSize_x-5,ANdisp_refPoint_y+ANdisp_winHeight}])
+  sensitive: OFF
+  border: 0
+  font: "{helvetica 12 bold}"
+};
+
+## eden code to make the above buttons work
+
+%eden
+proc ANdisp_clickResetScroll : ~ANdisp_scrollReset_mouse_1 {
+	if (~ANdisp_scrollReset_mouse_1[2] == 4) {
+		ANdisp_dummyWindow_y = int(ANdisp_windowGap_y);
+		ANdisp_scrollReset_relief is "sunken";
+	}
+	else {
+		ANdisp_scrollReset_relief is "raised";
+	}
+}
+proc ANdisp_clickScrollUp : ~ANdisp_scrollUp_mouse {
+	if (~ANdisp_scrollUp_mouse[2] == 4) {
+		ANdisp_scrollup=1;
+		ANdisp_upImg is "ANdisp_upSunk";
+	}
+	else {
+		ANdisp_scrollup=0;
+		ANdisp_upImg is "ANdisp_up";
+	}
+}
+proc ANdisp_clickScrollDown : ~ANdisp_scrollDown_mouse {
+	if (~ANdisp_scrollDown_mouse[2] == 4) {
+		ANdisp_scrolldown=1;
+		ANdisp_downImg is "ANdisp_downSunk";
+	}
+	else {
+		ANdisp_scrolldown=0;
+		ANdisp_downImg is "ANdisp_down";
+	}
+}
+proc ANdisp_doScrollUp : ANdisp_scrollup {
+	if (ANdisp_scrollup==1) {
+		ANdisp_dummyWindow_y++;
+		todo("ANdisp_doScrollUp();");
+	}
+}
+proc ANdisp_doScrollDown : ANdisp_scrolldown {
+	if (ANdisp_scrolldown==1) {
+		ANdisp_dummyWindow_y--;
+		todo("ANdisp_doScrollDown();");
+	}
+}
+
+##------------------------------------------------------------------------------
+## Column Titles
+##------------------------------------------------------------------------------
+
+%scout
+
+## Heading: Observable (column 1)
+integer ANdisp_title_a_x = ANdisp_windowGap_x;
+window ANdisp_title_a = {
+  type: TEXT
+  string: "Observable"
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_windowGap_x, ANdisp_refPoint_y+ANdisp_windowGap_y}, {ANdisp_refPoint_x+ANdisp_windowGap_x+ANdisp_windowWidth_a, ANdisp_refPoint_y+ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  relief: "flat"
+  font: "{helvetica 12 bold}"
+};
+
+## Heading: Definition (column 2)
+integer ANdisp_title_b_x = ANdisp_title_a_x+ANdisp_windowWidth_a+ANdisp_windowGap_x;
+window ANdisp_title_b = {
+  type: TEXT
+  string: "Definition"
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_title_b_x, ANdisp_refPoint_y+ANdisp_windowGap_y}, {ANdisp_refPoint_x+ANdisp_title_b_x+ANdisp_windowWidth_b, ANdisp_refPoint_y+ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  relief: "flat"
+  font: "{helvetica 12 bold}"
+};
+
+## Heading: Value (column 3)
+integer ANdisp_title_c_x = ANdisp_title_b_x+ANdisp_windowWidth_b+ANdisp_windowGap_x;
+window ANdisp_title_c = {
+  type: TEXT
+  string: "Value"
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_title_c_x, ANdisp_refPoint_y+ANdisp_windowGap_y}, {ANdisp_refPoint_x+ANdisp_title_c_x+ANdisp_windowWidth_c, ANdisp_refPoint_y+ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  relief: "flat"
+  font: "{helvetica 12 bold}"
+};
+
+## window to mask the title fields from variables underneath
+window ANdisp_titleMask = {
+  type: TEXT
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+0,ANdisp_refPoint_y+0},{ANdisp_refPoint_x+ANdisp_winWidth-ANdisp_scrollSize_x-5,ANdisp_refPoint_y+ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  };
+
+
+
+##------------------------------------------------------------------------------
+## Recipe for each row of variable table
+##------------------------------------------------------------------------------
+
+%eden
+ANdisp_window = "
+
+%scout
+string ANdisp_w?1a_string;
+integer ANdisp_w?1a_y;
+integer ANdisp_w?1a_x;
+window ANdisp_w?1a = {
+  type: TEXT
+  string: ANdisp_w?1a_string
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_win_a_x, ANdisp_refPoint_y+ANdisp_w?1a_y}, {ANdisp_refPoint_x+ANdisp_win_a_x+ANdisp_windowWidth_a, ANdisp_refPoint_y+ANdisp_w?1a_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  relief: \"flat\"
+  bgcolour: ANdisp_w_colour
+  font: \"{helvetica 12}\"
+};
+
+string ANdisp_w?1b_string;
+integer ANdisp_w?1b_y;
+integer ANdisp_w?1b_x;
+
+window ANdisp_w?1b = {
+  type: TEXT
+  string: ANdisp_w?1b_string
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_win_b_x, ANdisp_refPoint_y+ANdisp_w?1b_y}, {ANdisp_refPoint_x+ANdisp_win_b_x+ANdisp_windowWidth_b, ANdisp_refPoint_y+ANdisp_w?1b_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  relief: \"flat\"
+  bgcolour: ANdisp_w_colour
+  font: \"{helvetica 12}\"
+};
+
+string ANdisp_w?1c_string;
+integer ANdisp_w?1c_y;
+integer ANdisp_w?1c_x;
+
+window ANdisp_w?1c = {
+  type: TEXT
+  string: ANdisp_w?1c_string
+  alignment: CENTRE
+  frame: ([{ANdisp_refPoint_x+ANdisp_win_c_x, ANdisp_refPoint_y+ANdisp_w?1c_y}, {ANdisp_refPoint_x+ANdisp_win_c_x+ANdisp_windowWidth_c, ANdisp_refPoint_y+ANdisp_w?1c_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  relief: \"flat\"
+  bgcolour: ANdisp_w_colour
+  font: \"{helvetica 12}\"
+};
+%eden
+ANdisp_w?1a_string is str(\"?2\");
+ANdisp_w?1b_string is \"?3\";
+ANdisp_tmp=?2;
+ANdisp_w?1c_string is str(?2);
+%eden
+";
+
+##------------------------------------------------------------------------------
+## Proc to generate table
+##------------------------------------------------------------------------------
+
+## number of variables in %analog system
+ANdisp_numWindows is AN_tables_VariablesSorted#;
+
+## watch for changes and call makeWindows as appropriate
+proc ANdisp_change : AN_tables_VariablesSorted {
+	todo("ANdisp_makeWindows();");
+}
+
+## make the windows for the variable table
+proc ANdisp_makeWindows {
+	auto i,screen;
+	screen="ANdisp_scrollReset /ANdisp_scrollResetMask/ ANdisp_scrollBar /
+		ANdisp_scrollUp / ANdisp_scrollDown / ANdisp_title_a / ANdisp_title_b /
+		ANdisp_title_c / ANdisp_titleMask";
+		
+	ANdisp_oldWindow_a="ANdisp_dummyWindow";
+	ANdisp_oldWindow_b="ANdisp_dummyWindow";
+	ANdisp_oldWindow_c="ANdisp_dummyWindow";
+	for (i=1;i<=ANdisp_numWindows;i++) {
+		ANdisp_newWindow_a = "ANdisp_w" // str(i) // "a";
+		ANdisp_newWindow_b = "ANdisp_w" // str(i) // "b";
+		ANdisp_newWindow_c = "ANdisp_w" // str(i) // "c";
+
+		execute(macro(ANdisp_window,str(i),AN_tables_VariablesSorted[i][1],AN_tables_VariablesSorted[i][2]));		
+		
+		screen = screen // "/" // 
+			 ANdisp_newWindow_a // "/" // 
+			 ANdisp_newWindow_b
+			 // "/" // 
+			 ANdisp_newWindow_c;
+			 
+		execute("%eden\n" // ANdisp_newWindow_a // "_y is "//
+		ANdisp_oldWindow_a // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;"
+		// ANdisp_newWindow_b // "_y is "//
+		ANdisp_oldWindow_b // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;"
+		// ANdisp_newWindow_c // "_y is "//
+		ANdisp_oldWindow_c // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;");
+		
+		ANdisp_oldWindow_a=ANdisp_newWindow_a;
+		ANdisp_oldWindow_b=ANdisp_newWindow_b;
+		ANdisp_oldWindow_c=ANdisp_newWindow_c;
+	}
+	execute("%scout\nobservables=\<" // screen // "\>;\n%eden\n");
+}

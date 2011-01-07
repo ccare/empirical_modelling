@@ -1,0 +1,3 @@
+include("Run.e");
+tcl("wm withdraw .");
+openTk=0;

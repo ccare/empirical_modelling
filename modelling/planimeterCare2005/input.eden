@@ -1,0 +1,258 @@
+%scout
+
+integer InputTitle_x1,InputTitle_y1,InputTitle_x2,InputTitle_y2;
+integer drawPanel_x1,drawPanel_y1,drawPanel_x2,drawPanel_y2;
+integer WheelDisplay_x1,WheelDisplay_y1,WheelDisplay_x2,WheelDisplay_y2;
+
+
+
+InputTitle_x1=10;
+InputTitle_y1=10;
+InputTitle_x2=drawPanel_x2;
+InputTitle_y2=InputTitle_y1+20;
+
+window InputTitle = {
+  type: TEXT,
+  frame: ([{InputTitle_x1,InputTitle_y1},{InputTitle_x2,InputTitle_y2}]),
+  sensitive: OFF,
+  string: "Input",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+
+
+
+image bg = ImageFile("gif","trace.gif");
+
+drawPanel_x1=InputTitle_x1;
+drawPanel_y1=InputTitle_y2+10;
+drawPanel_x2=drawPanel_x1+319;
+drawPanel_y2=drawPanel_y1+199;
+
+window drawPanel = {
+	box:	[{drawPanel_x1,drawPanel_y1}, {drawPanel_x2,drawPanel_y2}],
+	type:	IMAGE,
+	pict: "bg",
+	xmin:	0,
+	ymin:	0,
+	xmax:	1,
+	ymax:	1,
+	border:	0,
+	sensitive: MOTION
+};
+
+%eden
+wheelPos is drawPanel_mousePos[2];
+carriagePos is 8-16*drawPanel_mousePos[1];
+
+
+
+
+%scout
+integer WheelTitle_x1,WheelTitle_y1,WheelTitle_x2,WheelTitle_y2;
+
+WheelTitle_x1=drawPanel_x1+30;
+WheelTitle_y1=drawPanel_y2+10;
+WheelTitle_x2=WheelDisplay_x2;
+WheelTitle_y2=WheelTitle_y1+20;
+
+
+window WheelTitle = {
+  type: TEXT,
+  frame: ([{WheelTitle_x1,WheelTitle_y1},{WheelTitle_x2,WheelTitle_y2}]),
+  sensitive: OFF,
+  string: "Wheel",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+
+
+WheelDisplay_x1=WheelTitle_x1;
+WheelDisplay_y1=WheelTitle_y2+10;
+WheelDisplay_x2=WheelDisplay_x1+100;
+WheelDisplay_y2=WheelDisplay_y1+100;
+
+window WheelDisplay = {
+ type: DONALD,
+   box: [{WheelDisplay_x1,WheelDisplay_y1},{WheelDisplay_x2,WheelDisplay_y2}],
+  sensitive: OFF,
+  pict: "IntWheel",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  bgcolor: "Grey60"
+  border: 1
+};
+
+integer AreaTitle_x1=WheelDisplay_x2+10;
+integer AreaTitle_y1=drawPanel_y2+10;
+integer AreaTitle_x2=drawPanel_x2;
+integer AreaTitle_y2=AreaTitle_y1+20;
+
+
+window AreaTitle = {
+  type: TEXT,
+  frame: ([{AreaTitle_x1,AreaTitle_y1},{AreaTitle_x2,AreaTitle_y2}]),
+  sensitive: OFF,
+  string: "Area",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+integer Area_x1=AreaTitle_x1+30;
+integer Area_y1=AreaTitle_y2+10;
+integer Area_x2=AreaTitle_x2-30;
+integer Area_y2=Area_y1+30;
+
+window Area = {
+  type: DONALD,
+  box: [{Area_x1,Area_y1},{Area_x2,Area_y2}],
+  sensitive: OFF,
+  pict: "AreaLabel",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  bgcolor: "Grey60"
+  border: 1
+};
+
+integer Reset_x1=Area_x1;
+integer Reset_y1=Area_y2+20;
+integer Reset_x2=Area_x2;
+integer Reset_y2=Reset_y1+20;
+
+window Reset = {
+  type: TEXT,
+  frame: ([{Reset_x1,Reset_y1},{Reset_x2,Reset_y2}]),
+  sensitive: ON
+  string: "Reset",
+  font: "{Helvetica 10 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+
+integer Tkeden_x1=Reset_x1;
+integer Tkeden_y1=Reset_y2+10;
+integer Tkeden_x2=Reset_x2;
+integer Tkeden_y2=Tkeden_y1+20;
+
+window Tkeden = {
+  type: TEXT,
+  frame: ([{Tkeden_x1,Tkeden_y1},{Tkeden_x2,Tkeden_y2}]),
+  sensitive: ON
+  string: "tkeden",
+  font: "{Helvetica 10 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+
+
+screen= <Tkeden/Reset/Area/InputTitle/drawPanel/WheelTitle/WheelDisplay/AreaTitle>;
+
+
+
+
+
+
+
+
+
+## Window Content: Area Counter ---------------------------
+%eden
+
+## scale by variable calibrate
+## calibrate is the number of revolutions per unit area
+calibrate = 0.005;
+wheelZero = 0;
+
+wheelRevs is wheelRotation/360;
+areaTraced is (wheelRevs-wheelZero)/calibrate;
+
+%donald
+viewport AreaLabel
+label area
+
+%eden
+_area is label(areaTraced, cart(0, 0));
+## --------------------------------------------------------
+
+proc reset: ~Reset_mouse_1 {
+  ## Set rev and area counter zero points to current values
+  wheelZero=wheelRevs;
+};
+
+openTk=1;
+proc openTkeden: ~Tkeden_mouse_1 {
+	if (~Tkeden_mouse_1[2] == 4) {
+	if (openTk == 1) {
+		tcl("wm withdraw .");
+		openTk=0;
+	} else {
+		tcl("wm iconify .");
+		tcl("wm deiconify .");
+		openTk=1;
+	}
+	}
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%donald
+viewport IntWheel
+
+openshape wheelEnd 
+within wheelEnd {
+  circle wheel
+  point centre
+  real radius,rotation
+  centre = {0,0}
+  wheel = circle(centre,radius)
+  radius = 4.0
+  
+  ## Dotted lines on the wheel
+  real halfpi
+  real angleA,angleB,angleC,angleD  
+  point A,B,C,D
+  line X,Y  
+  
+  angleA = halfpi
+  angleB = 2*halfpi
+  angleC = 3*halfpi
+  angleD = 4*halfpi
+  A = centre + {radius*sin(angleA+rotation),radius*cos(angleA+rotation)}
+  B = centre + {radius*sin(angleB+rotation),radius*cos(angleB+rotation)}
+  C = centre + {radius*sin(angleC+rotation),radius*cos(angleC+rotation)}
+  D = centre + {radius*sin(angleD+rotation),radius*cos(angleD+rotation)}
+  X = [A,C]
+  Y = [B,D]
+}
+## Eden Code to support the wheel definitions
+
+?_wheelEnd_rotation is PI*(wheelRotation/180);
+?_wheelEnd_halfpi = PI / 2;
+?A_wheelEnd_X = "linestyle=dotted";
+?A_wheelEnd_Y = "linestyle=dotted";
+?A_wheelEnd_wheel = "outlinecolor=red";
+## --------------------------------------------------------

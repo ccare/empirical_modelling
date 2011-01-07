@@ -1,0 +1,550 @@
+## ********************************************************
+##   Sasami Visualisation of a Wheel and Disc Planimeter   
+## ********************************************************
+
+## ========================================================
+## |               Inputs and Initialisation              |
+## ========================================================
+
+## Expected Inputs ----------------------------------------
+## planimeter_xy: list(real) A two element list [x,y]
+## inputRange_x: list(real)  A two element list [minX,maxX]
+## inputRange_y: list(real)  A two element list [minY,maxY]
+## --------------------------------------------------------
+
+## Associating Inputs -------------------------------------
+## From the server comes the input with a range
+## we want penPos t range 0 to 1
+##  and yInput to range -1 to 1
+
+## Resolve Inputs
+range_x is inputRange_x[2]-inputRange_x[1];
+range_y is inputRange_y[2]-inputRange_y[1];
+
+yFract is (planimeter_xy[2]-inputRange_y[1]+0.0)/range_y;
+xFract is (planimeter_xy[1]-inputRange_x[1]+0.0)/range_x;
+
+## Get these into appropriate forms (see code below)
+penPos is 0+xFract;
+yInput is -1+(yFract*2);
+carriagePos is 1-((yInput+1)/2);
+## --------------------------------------------------------
+
+## Initialisation -----------------------------------------
+%eden
+include("macros.eden");
+include("materials.sasami");
+if (useSasami == TRUE) {
+  execute("%sasami\nopen_display");
+};
+sasami_show_axes=0;
+## --------------------------------------------------------
+
+## ========================================================
+## |                  The Sasami Model                    |
+## ========================================================
+
+## Important Dimensions -----------------------------------
+## Dimensions of the planimeter
+width=10;
+length=21;
+## Width of shafts
+shaftWidth=0.2;
+rotatingShaftWidth is shaftWidth/2;
+## --------------------------------------------------------
+
+## Tracks -------------------------------------------------
+## Planimeter slides on two tracks
+##  create these using macro feature
+%eden
+execute(newCuboid("track1","trackWidth","trackHeight","trackLength","m_track"));
+execute(newCuboid("track2","trackWidth","trackHeight","trackLength","m_track"));
+
+## Tracks are positioned parallel to each other 
+##  with a gap of trackSep between them
+%sasami
+object_pos track1 trackInset 0 backWidth
+object_pos track2 trackInset+trackWidth+trackSep 0 backWidth
+
+## Some definitions of key dimensions relating to the track
+%eden
+trackWidth=0.5;
+trackHeight=1;
+trackLength is length-backWidth;
+trackInset=1;
+trackSep is width-2*(trackWidth+trackInset);
+## --------------------------------------------------------
+
+## Carriage -----------------------------------------------
+## On the track rests the carriage
+%eden
+carriageWidth is width;
+carriageLength=10.5;
+carriageHeight=0.3;
+
+## Its position is controlled by a variable
+##  (carriagePos ranges from 0 to 1)
+## carriagePos is defined in initialisation code above
+
+## This is resolved to a real position
+carriageZ is backWidth+carriagePos*(2*discRadius);
+
+## The carriage is represented as a rectangular base
+execute(newCuboid("carriageBase","carriageWidth","carriageHeight","carriageLength","m_carriage_frame"));
+%sasami
+object_pos carriageBase 0 trackHeight carriageZ
+## --------------------------------------------------------
+
+## Back ---------------------------------------------------
+## There is a supporting side at the end of the track
+%eden
+backHeight=6;
+backWidth=0.2;
+%eden
+execute(newCuboid("back","width","backHeight","backWidth","m_track"));
+%sasami
+object_pos back 0 0 0
+## --------------------------------------------------------
+
+## Pen and Shaft ------------------------------------------
+## A sliding pen shaft
+%eden
+execute(newCuboid("penShaft","penShaftLength","shaftWidth","shaftWidth","m_disc"));
+%sasami
+object_pos penShaft penShaftX penShaftY penShaftZ
+
+%eden
+penShaftLength=20;
+
+## the pen's postion is controlled by a variable
+##  (penPos ranges from 0 to 1)
+## penPos is defined in initialisation code above
+penShaftRange=10;
+penShaftX is (carriageWidth-shaftWidth)/2-penShaftLength+(1-penPos)*penShaftRange;
+penShaftY is trackHeight+0.5*discSep;
+penShaftZ is carriageZ+(carriageLength-shaftWidth)/2;
+
+## Import Definitions of the pen from external file
+include("pen.sasami");
+## --------------------------------------------------------
+
+## The Disc -----------------------------------------------
+%eden
+## Disc has a rotation
+discRotation=0;
+## And a dynamic rotation
+discSpindleRotation is 360*penPos;
+
+## After each clock cycle:
+##  discRotation == discSpindleRotation
+
+## Separation between disc and carriage
+discSep=1.5;
+
+## The disc sits on a shaft which is linked to pen shaft
+execute(newCuboid("discShaft","rotatingShaftWidth","0.5*discSep","rotatingShaftWidth","m_disc"));
+%sasami
+object_pos discShaft carriageWidth/2 trackHeight+carriageHeight+0.5*discSep carriageZ+(carriageLength-shaftWidth)/2
+object_rot discShaft 0 discRotation 0 
+
+## Import the disc's vertices
+%sasami
+load_obj disc "disc.obj"
+
+## Add marker to the disc
+##  (Aids the visualistation of rotation)
+vertex disc_markerD 2.4 2.5 -0.3
+vertex disc_markerC 2.5 2.5 -0.3
+vertex disc_markerB 2.5 2.4 -0.3
+vertex disc_markerA 2.4 2.4 -0.3
+polygon disc_marker
+poly_geom_vertex disc_marker disc_markerD disc_markerC disc_markerB disc_markerA
+object_poly disc_1 disc_marker
+
+## Position the disc
+object_rot disc_1 90 0 discRotation
+object_pos disc_1 (carriageWidth)/2 trackHeight+carriageHeight+discSep carriageZ+(carriageLength)/2
+## The disc has dimensions of radius 10 and width 0.3 units
+%eden
+discHeight=0.3;
+discRadius=5;
+## --------------------------------------------------------
+
+## The Wheel ----------------------------------------------
+%eden
+## The wheel has a rotation
+wheelRotation=0;
+
+## The wheel is connected to the backplate by a shaft
+%eden
+execute(newShaft("wheelShaft","rotatingShaftWidth","rotatingShaftWidth","0.5*wheelShaftLength","m_wheel"));
+
+%sasami
+object_pos wheelShaft carriageWidth/2 trackHeight+carriageHeight+discSep+wheelRadius-(shaftWidth/2) backWidth+(carriageLength-shaftWidth)/2+(discRadius)-0.5*wheelShaftLength
+object_rot wheelShaft 0 0 wheelRotation
+
+## Load the wheel object
+%sasami
+load_obj wheel "disc_taper.obj"
+
+## Add marker to the Wheel
+##  (aids the visualistation of rotation)
+vertex wheel_markerA 2 2.5 0.3
+vertex wheel_markerB 2.5 2.5 0.3
+vertex wheel_markerC 2.5 2 0.3
+vertex wheel_markerD 2 2 0.3
+polygon wheel_marker
+poly_geom_vertex wheel_marker wheel_markerD wheel_markerC wheel_markerB wheel_markerA
+object_poly wheel_1 wheel_marker
+
+## Position and scale the wheel Object
+object_rot wheel_1 0 0 wheelRotation
+object_scale wheel_1 wheelScale wheelScale wheelScale
+object_pos wheel_1 carriageWidth/2 trackHeight+carriageHeight+discSep+wheelRadius backWidth+(carriageLength)/2+discRadius
+
+## The wheel is loaded with radius=10 units 
+##  The scaling factor is derived from a chosen radius
+%eden
+wheelShaftLength is carriageLength+2;
+wheelRadius=1;
+wheelScale is 0.1*(wheelRadius*2);
+## --------------------------------------------------------
+
+## ========================================================
+## |                  The Control Panel                   |
+## ========================================================
+
+
+## Set the background parameters of the 'screen' window etc.  The
+##  screen window must not have been opened first
+DFwidth = 392;
+DFheight = 166;
+
+## Window Content: Clock Status ---------------------------
+%donald
+viewport clockStat
+
+openshape clockLabel
+within clockLabel {
+  circle g,r
+  point Cg,Cr
+  int radius
+  Cg = {0,-4}
+  Cr = {0,4}
+  radius = 3
+  g=circle(Cg,radius)
+  r=circle(Cr,radius)
+}
+## --------------------------------------------------------
+
+## Window Content: Wheel Status ---------------------------
+%donald
+viewport IntWheel
+
+openshape wheelEnd 
+within wheelEnd {
+  circle wheel
+  point centre
+  real radius,rotation
+  centre = {0,0}
+  wheel = circle(centre,radius)
+  radius = 4.0
+  
+  ## Dotted lines on the wheel
+  real halfpi
+  real angleA,angleB,angleC,angleD  
+  point A,B,C,D
+  line X,Y  
+  
+  angleA = halfpi
+  angleB = 2*halfpi
+  angleC = 3*halfpi
+  angleD = 4*halfpi
+  A = centre + {radius*sin(angleA+rotation),radius*cos(angleA+rotation)}
+  B = centre + {radius*sin(angleB+rotation),radius*cos(angleB+rotation)}
+  C = centre + {radius*sin(angleC+rotation),radius*cos(angleC+rotation)}
+  D = centre + {radius*sin(angleD+rotation),radius*cos(angleD+rotation)}
+  X = [A,C]
+  Y = [B,D]
+}
+## Eden Code to support the wheel definitions
+
+?_wheelEnd_rotation is PI*(wheelRotation/180);
+?_wheelEnd_halfpi = PI / 2;
+?A_wheelEnd_X = "linestyle=dotted";
+?A_wheelEnd_Y = "linestyle=dotted";
+?A_wheelEnd_wheel = "outlinecolor=red";
+## --------------------------------------------------------
+
+## Window Content: Rev Counter ----------------------------
+%eden
+wheelRevs is wheelRotation/360;
+wheelRevDisplay is wheelRevs-wheelRevZero;
+wheelRevZero=0;
+
+%donald
+viewport Revs
+label revs
+
+%eden
+_revs is label(wheelRevDisplay, cart(0, 0));
+## --------------------------------------------------------
+  
+## Window Content: Area Counter ---------------------------
+%eden
+
+## scale by variable calibrate
+## calibrate is the number of revolutions per unit area
+calibrate = 1;
+
+areaZero is wheelRevZero/calibrate;
+areaTraced is wheelRevs/calibrate;
+
+%donald
+viewport Area
+label area
+
+%eden
+_area is label(areaTraced-areaZero, cart(0, 0));
+## --------------------------------------------------------
+
+## Windows: Wheel Output ----------------------------------
+%scout
+window WheelTitle = {
+  type: TEXT,
+  frame: ([{10,10},{150,25}]),
+  sensitive: OFF,
+  string: "Integrating Wheel",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+window WheelDisplay = {
+ type: DONALD,
+   box: [{20,30},{140,150}],
+  sensitive: OFF,
+  pict: "IntWheel",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  bgcolor: "Grey60"
+  border: 1
+};
+## --------------------------------------------------------
+
+## Windows: Revs Output -----------------------------------
+%scout
+window RevsTitle = {
+  type: TEXT,
+  frame: ([{150,10},{290,25}]),
+  sensitive: OFF,
+  string: "Wheel Revolutions",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+window RevsDisplay = {
+ type: DONALD,
+   box: [{160,30},{280,60}],
+  sensitive: OFF,
+  pict: "Revs",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  bgcolor: "Grey60"
+  border: 1
+};
+## --------------------------------------------------------
+
+## Windows: Area Output -----------------------------------
+%scout
+window AreaTitle = {
+  type: TEXT,
+  frame: ([{150,70},{290,85}]),
+  sensitive: OFF,
+  string: "Area Traced",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+window AreaDisplay = {
+ type: DONALD,
+   box: [{160,90},{280,120}],
+  sensitive: OFF,
+  pict: "Area",
+  border: 1,
+  xmin:-5
+  xmax: 5
+  ymin: -5
+  ymax:5
+  bgcolor: "Grey60"
+  border: 1
+};
+## --------------------------------------------------------
+
+## Windows: Clock Output ----------------------------------
+%scout
+window TitleClock = {
+  type: TEXT,
+  frame: ([{300,10},{370,25}]),
+  sensitive: OFF,
+  string: "Clock",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 0
+};
+
+window clockStatus = {
+  type: DONALD,
+  box: [{300,30},{370,120}],
+  sensitive: OFF,
+  pict: "clockStat",
+  border: 1,
+  xmin:-7
+  xmax: 7
+  ymin: -9
+  ymax:9
+  bgcolor: "Grey60"
+};
+## --------------------------------------------------------
+
+## Buttons ------------------------------------------------
+%scout
+window ButtonReset = {
+  type: TEXT,
+  frame: ([{165,135},{210,150}]),
+  sensitive: ON,
+  string: "Reset",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+window ButtonCalibrate = {
+  type: TEXT,
+  frame: ([{220,135},{275,150}]),
+  sensitive: ON,
+  string: "Calibrate",
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+
+string textStartStop = "Start";
+window ButtonStartStop = {
+  type: TEXT,
+  frame: ([{310,135},{360,150}]),
+  sensitive: ON,
+  string: textStartStop,
+  font: "{Helvetica 12 bold}",
+  alignment: CENTRE,
+  border: 1
+};
+## --------------------------------------------------------
+
+## Add to Screen ------------------------------------------
+%scout
+screen = <WheelTitle/WheelDisplay/RevsTitle/RevsDisplay/AreaTitle/AreaDisplay/TitleClock/clockStatus/ButtonReset/ButtonStartStop/ButtonCalibrate>;
+## --------------------------------------------------------
+
+
+
+
+
+## ========================================================
+## |   The Relationship between the disc and the wheel    |
+## |       (with respect to a 'time' incrementor)         |
+## ========================================================
+
+
+## The Clock ----------------------------------------------
+%eden
+## A variable that is 1 when clock is running
+clockGoing = 0;
+
+## The change in the disc rotation is an angular displacement
+##  equal to the carriage's movement along the track
+
+proc clock {
+  ## Disc speed is the change in angular displacement in 
+  ## the last time unit
+  discSpeed = discSpindleRotation-discRotation; ## rads / time
+  ## discRotation is accumulated
+  discRotation = discRotation+discSpeed;
+  ## wheelSpeed is defined in terms of the discSpeed
+  ##  And is the change in angular displacement  
+  ##  during the last time unit
+  wheelSpeed = yInput*discSpeed;
+  ## wheelRotation is accumulated
+  wheelRotation = wheelRotation+wheelSpeed;
+  ## Re-run this procedure soon.
+  if (clockGoing == 1) {
+    todo("clock();");
+  }
+};
+## --------------------------------------------------------
+
+## Reset --------------------------------------------------
+##  Resets the counters
+%eden
+proc reset: ~ButtonReset_mouse_1 {
+  ## Set rev and area counter zero points to current values
+  wheelRevZero=wheelRevs;
+};
+## --------------------------------------------------------
+
+## Start-Stop ---------------------------------------------
+##  Starts (and stops) the clock
+%eden
+proc startstop: ~ButtonStartStop_mouse_1 {
+  if (~ButtonStartStop_mouse_1[2] == 4) {
+    ## if clock isn't already going then start it
+    if (clockGoing == 0) {
+      start();
+    } else {
+    ## if the clock is going then stop it
+      stop();
+    }
+  } 
+};
+## --------------------------------------------------------
+
+## stop ---------------------------------------------------
+proc stop {
+  clockGoing = 0;
+  textStartStop = "Start";
+  A_clockLabel_g = "outlinecolor=Black,color=Black,fill=solid";
+  A_clockLabel_r = "outlinecolor=Red,color=Red,fill=solid";
+};
+## --------------------------------------------------------
+
+## start --------------------------------------------------
+proc start {
+  clockGoing = 1;
+  textStartStop = "Stop";
+  A_clockLabel_g = "outlinecolor=Green,color=Green,fill=solid";
+  A_clockLabel_r = "outlinecolor=Black,color=Black,fill=solid";
+  clock();
+};
+## --------------------------------------------------------
+
+## Calibrate ----------------------------------------------
+##  Declares the area traced as the unit square
+%eden
+proc doCalibrate: ~ButtonCalibrate_mouse_1 {
+ if (wheelRevDisplay != 0) {
+   calibrate = wheelRevDisplay;
+ } else {
+   calibrate = 1;
+ }
+};
+## --------------------------------------------------------
+
+## Get display initialised in stop mode
+%eden
+stop();

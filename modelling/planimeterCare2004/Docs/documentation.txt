@@ -1,0 +1,19 @@
+This directory contains some relevant documentation.
+
+1) report.pdf
+	This is the text of my third year project. Part I is about planimeter 
+	history, but the Part II relates to the modelling undertaken
+	in this package. The reader should find a chapter dedicated 
+	to each model.
+
+	This report is missing a number of images due to their copyright status
+	being dubious. If you're interested further please contact me for more
+	details.
+
+2) planimeterModels.pdf
+	This is a thrown-together document designed as an idiots guide to 
+	running two of the models in this package - oppikofer and wetli.
+
+
+
+							Charlie Care 13/01/2005

@@ -1,0 +1,466 @@
+##==============================================================================
+##                         A Notation for Creating Notations
+##
+## parser.eden                                         Charlie Care - March 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Preamble
+##------------------------------------------------------------------------------
+## Load the up-to-date AOP
+cd("aop_v204");
+include("Run.e");
+cd("..");
+
+## Name of Notation
+AOP_notationName="%aop";
+
+##------------------------------------------------------------------------------
+## Blocks
+##------------------------------------------------------------------------------
+bras = [ ["(", ")"], ["bras","string"] ];
+cbras = [ ["{", "}"], ["bras"] ];
+addblocks("cbras");
+comment = [ ["/*", "*/"], [] ];
+addblocks("comment");
+string = [ ["\"", "\""], [] ];
+addblocks("string");
+sqbras = [ ["[", "]"], [] ];
+addblocks("sqbras");
+
+##------------------------------------------------------------------------------
+## Top-Level Rules
+##------------------------------------------------------------------------------
+
+## Initial Rule (parse in blocks between ";") 
+AOPparse_init = [";", "AOPparse_stm", ["cbras","comment","string"]];
+
+## Statements statements by ";"
+AOPparse_stm = ["suffix", ";", "AOPparse_query",
+			[ "ignore", ["cbras","comment","string"] ],
+			[ "fail", "AOPparse_ERROR1"] ];
+
+##------------------------------------------------------------------------------
+## Definitions to query %aop
+##------------------------------------------------------------------------------
+
+AOPparse_query = ["prefix", "?", "AOPparse_ruleName",
+			[ "fail", "AOPparse_notationDecl"],
+			["action",
+			["later",
+"writeln(AOPparse_formatQuery($p1));"]]];
+
+##------------------------------------------------------------------------------
+## Definitions to declare the parser and add the notation
+##------------------------------------------------------------------------------
+
+AOPparse_notationDecl = ["prefix", "notation", "AOPparse_notationDecl2",
+			[ "fail", "AOPparse_definition"],
+			["action",
+			["later", "if ($p1# == 2)
+				AOPparse_addNotation($p1[1],$p1[2],[]); 
+				else	
+				AOPparse_addNotation($p1[1],$p1[2],$p1[3]);"]]];
+
+proc AOPparse_addNotation {
+	para notationName, sepChar, blocks;
+	
+	execute(notationName//"_init = [\""//sepChar//"\",\""//notationName//
+			"\","//str(blocks)//"];");
+	execute("installAOP(\"%"//notationName//"\",\""//
+			notationName//"_init\");");
+}
+
+
+AOPparse_notationDecl2 = ["pivot", "=",
+			["AOPparse_ruleName","AOPparse_notationDecl3"],
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+				["now", "$v is [$p1] // $p2;"]]];
+
+AOPparse_notationDecl3 = ["pivot", ":", 
+			["AOPparse_notationDecl4","AOPparse_notDeclIgnore"],
+			["action",
+				["now", "$v is $p1 // $p2;"]],
+			[ "fail", "AOPparse_notationDecl4"],
+			[ "ignore", ["string","cbras"] ]];
+
+
+AOPparse_notationDecl4 = ["prefix", "split on", "AOPparse_string",
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+				["now", "$v is [$p1];"]]];
+
+
+AOPparse_notDeclIgnore = ["prefix", "ignore", "AOPparse_ignore2",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is [$p1];"]] ];
+
+##------------------------------------------------------------------------------
+## Definitions to define the parser
+##------------------------------------------------------------------------------
+
+AOPparse_definition = ["pivot", "=", 
+			["AOPparse_term_parserRule","AOPparse_definition2"],
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+				["later", "writeln(transCode(
+						$p1[1][2] // \" is \" //
+						 str($p2) // \";\"));"]]];
+
+func transCode {
+	## observables names are passed back as a string
+	##  of the form [...,"%name%",...]. This converts
+	##   ["%n%\"] -> [n]
+	para str;
+	str = regreplace("\"%","",str);
+	str = regreplace("%\"","",str);
+	
+	## return the translated eden code produced.
+	return str;	
+}
+
+
+AOPparse_definition2 = ["pivot", "|",
+			["AOPparse_rule","AOPparse_term_parserRule"],
+			[ "fail", "AOPparse_rule"],
+			[ "ignore", ["string","cbras"] ],
+			["action",
+			["later", "$v is $p1 // [[\"fail\",$p2[1][2]]];"]]];
+
+AOPparse_rule = ["pivot", ":", ["AOPparse_terms","AOPparse_actionIgnore"],
+			["action",
+				["now", "$v is $p1 // $p2;"]],
+			[ "fail", "AOPparse_terms"],
+			[ "ignore", ["string","cbras"] ]];
+
+
+##------------------------------------------------------------------------------
+## Actions and ignored blocks
+##------------------------------------------------------------------------------
+
+AOPparse_actionIgnore = ["pivot", ":", ["AOPparse_ignore","AOPparse_ignore"],
+				["action",
+				["now", "$v is $p1 // $p2;"]],
+				[ "fail", "AOPparse_ignore"],
+				[ "ignore", ["string"] ]];
+
+
+AOPparse_ignore = ["prefix", "ignore", "AOPparse_ignore2",
+			["fail","AOPparse_action"],
+			["action",["now", "$v is [[\"ignore\",$p1]];"]] ];
+			
+AOPparse_ignore2 = ["prefix", "[", "AOPparse_ignore3",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is $p1;"]] ];
+			
+AOPparse_ignore3 = ["suffix", "]", "AOPparse_ignore4",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is $p1;"]] ];
+			
+AOPparse_ignore4 = ["pivot", "," ,["AOPparse_blockName","AOPparse_ignore4"],
+				[ "fail", "AOPparse_blockName"],
+				[ "ignore", ["string"] ],
+				["action",
+				["now", "$v is $p1 // $p2;"]]];
+
+AOPparse_action = ["prefix", "do" , "AOPparse_actionNow",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [[\"action\",$p1]];"]]];
+
+AOPparse_actionNow = ["suffix", "now" , "AOPparse_actionBlock",
+				[ "fail", "AOPparse_actionLater"],
+				["action",
+				["now", "$v is [\"now\",$p1];"]]];
+				
+AOPparse_actionLater = ["suffix", "later" , "AOPparse_actionBlock",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [\"later\",$p1];"]]];
+
+
+AOPparse_actionBlock= ["prefix", "{" , "AOPparse_actionBlock2",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is $p1;"]]];
+
+AOPparse_actionBlock2 = ["suffix", "}" , "AOPparse_actionCode",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["later", "$v is $p1;"]]];
+
+AOPparse_actionCode = [ "read_all", [], 
+			["action",
+			["now", "$v=regreplace(\"\\\"\",\"\\\\\\\"\",$j);"]]];
+
+
+
+
+AOPparse_null = ["literal", "",["fail","AOPparse_ERROR1"],
+				 ["action",["now", "$v=[];"]]];
+
+AOPparse_string = ["prefix", "\"" , "AOPparse_string2",
+				[ "fail", "AOPparse_varName"],
+				["action",
+				["later", "$v=$p1;"]]];
+				
+AOPparse_string2 = ["suffix", "\"" , "AOPparse_string3",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["later", "$v=$p1;"]]];
+				
+AOPparse_string3 = [ "read_all", [], 
+			["action",
+				["now", "$v=\"$t\";"]]];
+
+
+##------------------------------------------------------------------------------
+## Names
+##------------------------------------------------------------------------------
+
+AOPparse_varName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v = \"`\\\"$t\\\"`\";"]] ];
+
+AOPparse_blockName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v=[\"$t\"];"]] ];
+
+
+AOPparse_nameERROR = [ "read_all", [], 
+			["action",
+				["now", "reportError(\"$t is not a valid \" 
+				// AOP_notationName // \" definition\");"]]];
+
+AOPparse_ruleName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v=\"$t\";"]] ];
+
+
+##------------------------------------------------------------------------------
+## General Error Case
+##------------------------------------------------------------------------------
+
+AOPparse_ERROR1 = [ "read_all", [], 
+			["action",
+				["now", "reportError($j);"]]];
+
+##------------------------------------------------------------------------------
+## Install this parser
+##------------------------------------------------------------------------------
+
+installAOP(AOP_notationName//"_hidden","AOPparse_init");
+
+AOPparse_transQuotes = [";", "AOPparse_transQuotes2", ["cbras","comment","string"]];
+
+AOPparse_transQuotes2 = [ "read_all", [], 
+			["action",
+			["now", "writeln(AOP_notationName//\"_hidden\n\"//
+					$j);todo(AOP_notationName);"]]];
+
+installAOP(AOP_notationName,"AOPparse_transQuotes");
+##removeNotationRadioButton(AOP_notationName//"_hidden");
+## -------------------------------------------------------------------
+## Parser Rules:
+## -------------------------------------------------------------------
+## 
+## Allowed rules have either 1,2 or 3 terms
+##
+## Pivots have three terms. Terms 1 & 3 are <X> terms 
+##	and term 2 is an "X" `X` or [X]
+##
+## Prefix and Suffix have 2 rules:
+##   either Y <X> (prefix) or <X> Y (suffix)
+##
+## Literal has one term that is either an "X",`X` or [X]
+##
+## ReadAll has the term *
+
+AOPparse_terms = ["prefix","","AOPparse_terms1",
+			["action",
+			["later","$v = AOPparse_interpretTerms($p1);"]]];
+
+AOPparse_terms1 = ["pivot"," ",["AOPparse_term_string","AOPparse_terms2"],
+			["fail","AOPparse_term_string"],
+			["action",
+			["now","$v is $p1 // $p2;"]]];
+
+AOPparse_terms2 = ["pivot"," ",["AOPparse_term_string",
+					"AOPparse_term_string"],
+			["fail","AOPparse_term_string"],
+			["action",["now","$v is $p1 // $p2;"]]];
+
+## -------------------------------------------------------------------
+## Function to work out which of pivot, prefix, prefix_re etc. to use:
+## -------------------------------------------------------------------
+
+func AOPparse_interpretTerms {
+	para terms;
+	auto n;
+	n = terms#;
+	if (n == 3) { ## Terms must be a pivot
+		if (terms[1][1] == "rule" && terms[3][1] == "rule" 
+			&& (terms[2][1] == "string" || 
+				 terms[2][1] == "observable")) {
+			return(["pivot",terms[2][2],
+					[terms[1][2],terms[3][2]]]);
+		} else {
+			reportError("Expecting:\n\t rule pattern rule\n 
+			Got:\n\t " //
+			terms[1][1] //" "//
+			terms[2][1] //" "//
+			terms[3][1] //" ");
+		}
+	}
+	else if (n == 2) { ## Terms must be a prefix or suffix
+		if (terms[2][1] == "rule"
+			&& (terms[1][1] == "string" || 
+				 terms[1][1] == "regexp" ||
+				 terms[1][1] == "observable")) {
+			if (terms[1][1] == "regexp") {
+				return(["prefix_re",terms[1][2],terms[2][2]]);
+			} else {
+				return(["prefix",terms[1][2],terms[2][2]]);
+			}
+		} else if (terms[1][1] == "rule"
+			&& (terms[2][1] == "string" || 
+				 terms[2][1] == "regexp" ||
+				 terms[2][1] == "observable")) {
+			if (terms[2][1] == "regexp") {
+				return(["suffix_re",terms[2][2],terms[1][2]]);
+			} else {
+				return(["suffix",terms[2][2],terms[1][2]]);
+			}
+		} else {
+			reportError("Expecting:\n\t rule pattern\n"//
+			"Or:\n\t pattern rule\nGot:\n\t " //
+			terms[1][1] //" "//
+			terms[2][1] //" ");
+		}
+	}
+	else if (n == 1) { ## Terms must be a literal or *
+
+		if (terms[1][1] == "string" || 
+			terms[1][1] == "regexp" ||
+			terms[1][1] == "observable") {
+			if (terms[1][1] == "regexp") {
+				return(["literal_re",terms[1][2]]);
+			} else {
+				return(["literal",terms[1][2]]);
+			}
+		} else if (terms[1][1] == "readAll") {
+			return(["read_all",[]]);	 
+		} else {
+			reportError("Expecting:\n\t pattern\n"//
+			"Got:\n\t " //
+			terms[1][1]);
+		}
+	}
+}
+
+## -------------------------------------------------------------------
+## Parser Terms:
+## -------------------------------------------------------------------
+##
+## <X> is the parser rule X
+## "X" is the string X
+## `X` is the value of the eden observable X
+## (X) is the regular expression X
+##  *  is read all
+
+## -------------------------------------------------------------------
+## An string is designated by a "X" notation
+## -------------------------------------------------------------------
+
+AOPparse_term_string = ["prefix","\"","AOPparse_term_string2",
+			["fail","AOPparse_term_observable"],
+			["action", ["later","$v is [[\"string\",$p1]];"]]];
+			
+AOPparse_term_string2 = ["suffix","\"","AOPparse_stringText",
+			["fail","AOPparse_term_stringErr"],
+			["action", ["now","$v is $p1;"]]];
+
+AOPparse_term_stringErr = [ "read_all", [], ["action",
+				["now", "reportError(\"Expecting a \\\"\");"]]];
+
+AOPparse_stringText = [ "read_all", [], 
+			["action",["now", "$v=\"$t\";"]]];
+
+## -------------------------------------------------------------------
+## An eden obervable is designated by a `X` notation
+## -------------------------------------------------------------------
+
+AOPparse_term_observable = ["prefix","`","AOPparse_term_observable2",
+			["fail","AOPparse_term_regexp"],
+			["action", ["now","$v is [[\"observable\",$p1]];"]]];
+			
+AOPparse_term_observable2 = ["suffix","`","AOPparse_term_observableName",
+			["fail","AOPparse_term_observable2Err"],
+			["action", ["now","$v is $p1;"]]];
+
+AOPparse_term_observableErr = [ "read_all", [], ["action",
+				["now", "reportError(\"Expecting a `\");"]]];
+		
+AOPparse_term_observableName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v is \"%$t%\";"]] ];
+
+## -------------------------------------------------------------------
+## An regexp is designated by a (X) notation
+## -------------------------------------------------------------------
+
+AOPparse_term_regexp = ["prefix","(","AOPparse_term_regexp2",
+			["fail","AOPparse_term_readAll"],
+			["action", ["now","$v is [[\"regexp\",$p1]];"]]];
+			
+AOPparse_term_regexp2 = ["suffix",")","AOPparse_stringText",
+			["fail","AOPparse_term_regexpErr"],
+			["action", ["now","$v is $p1;"]]];
+
+AOPparse_term_regexpErr = [ "read_all", [], ["action",
+				["now", "reportError(\"Expecting a ]\");"]]];
+
+AOPparse_term_error = [ "read_all", [], ["action",
+				["now", "reportError(\"Expecting a term\");"]]];
+
+## -------------------------------------------------------------------
+## An readall is designated by a *
+## -------------------------------------------------------------------
+
+AOPparse_term_readAll = ["literal","*",
+				["fail","AOPparse_term_parserRule"],
+				["action",
+				["now","$v is [[\"readAll\",\"*\"]];"]]];
+
+## -------------------------------------------------------------------
+## A Parser Rule is designated by a <X> notation
+## -------------------------------------------------------------------
+
+AOPparse_term_parserRule = ["prefix","<","AOPparse_term_parserRule2",
+			["fail","AOPparse_term_error"],
+			["action", ["now","$v is [[\"rule\",$p1]];"]]];
+			
+AOPparse_term_parserRule2 = ["suffix",">","AOPparse_ruleName",
+			["fail","AOPparse_term_parserRuleErr"],
+			["action", ["now","$v is $p1;"]]];
+
+AOPparse_term_parserRuleErr = [ "read_all", [], ["action",
+				["now", "reportError(\"Expecting a >\");"]]];
+
+## -------------------------------------------------------------------
+## General Error for not matching a term
+## -------------------------------------------------------------------
+
+AOPparse_term_error = [ "read_all", [], ["action",
+			["now", "reportError(\"couldn't match a term\");"]]];
+
+## -------------------------------------------------------------------
+## Error handling
+## -------------------------------------------------------------------
+
+## Currently errors to terminal
+proc reportError {
+	para str;
+	writeln("AOP ERROR: -----------------------------------------------------------\n" //str);
+	writeln("----------------------------------------------------------------------");
+	error(AOP_notationName// " error: See terminal output\n\n");
+}
+
+

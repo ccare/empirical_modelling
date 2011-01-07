@@ -1,0 +1,277 @@
+%aop
+%aop
+notation text = <text> split on "\n";
+<text> = <text> " " </text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 1: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 2: type clash: expecting string (in execute(), got @) in ex...
+## ERROR number 3: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 4: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 5: %aop error: See terminal output
+
+ in error called by AOP...
+%aop
+notation text = <text> split on "\n";
+<text> = <text> "z" </text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 6: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 7: type clash: expecting string (in execute(), got @) in ex...
+## ERROR number 8: %aop error: See terminal output
+
+ in error called by AOP...
+%aop
+notation text = <text> split on "a";
+<text> = <text> "a" </text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 9: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 10: type clash: expecting string (in execute(), got @) in ex...
+## ERROR number 11: %aop error: See terminal output
+
+ in error called by AOP...
+%aop
+notation text = <text> split on "a";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 12: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 13: type clash: expecting string (in execute(), got @) in ex...
+%aop
+notation text = <text> split on "a";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 14: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 15: type clash: expecting string (in execute(), got @) in ex...
+%aop
+notation text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+## ERROR number 16: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 17: type clash: expecting string (in execute(), got @) in ex...
+%aop
+notation text = <text> split on ";";
+
+## ERROR number 18: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 19: type clash: expecting string (in execute(), got @) in ex...
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$j = 1;} now;
+%text
+hello world
+%eden
+?hello;
+?WORD_hello;
+%aop
+%eden
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {execute("WORD_$j = 1;");} now;
+%text
+hello world
+
+%eden
+?WORD_hello;
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {writeln("WORD_$j = 1;");} now;
+%text
+hello world
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {writeln("WORD_$j = 1;");} now;
+%text
+hello world
+%eden
+
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$t = 1;);} now;
+%text
+hello world
+%eden
+
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$t = 1;);} now;
+%text
+hello world
+%eden
+
+%text
+%angel
+%text
+sdasd
+asd
+sad
+a
+
+asaasd asdasd asd asd asd saa
+
+asd
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {writeln("hello");WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%aop
+notation %text = <text> split on ";";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {writeln("hello");WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%aop
+%text
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {writeln("hello");WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+## ERROR number 20: parse error, encountered `VAR', expecting `'?'' or `OR' ...
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> "a" <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+## ERROR number 21: parse error, encountered `VAR', expecting `'?'' or `OR' ...
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> " " <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+## ERROR number 22: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 23: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 24: %aop error: See terminal output
+
+ in error called by AOP...
+%eden
+space = " ";
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> `space` <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> " " <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+## ERROR number 25: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 26: %aop error: See terminal output
+
+ in error called by AOP...
+## ERROR number 27: %aop error: See terminal output
+
+ in error called by AOP...
+%eden
+space = " ";
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> `space` <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%sasami
+%eden
+space = " ";
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> `space` <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%eden
+space = " ";
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> `space` <text> | <word>;
+<word> = * : do {WORD_$t = 1;} now;
+%text
+hello world
+%eden
+
+%text
+hello world
+
+asdsa
+
+?WORD_hello
+## ERROR number 28: parse error, encountered `';'', expecting `'?'' or `OR' ...
+%eden
+?WORD_hello
+
+?WORD_hello;
+%eden
+space = " ";
+%aop
+notation %text = <text> split on "\n";
+<text> = <text> `space` <text> | <word>;
+<word> = * : do {if (WORD_$t == @) WORD_$t = 1; else WORD_$t++;} now;
+%text
+hello world
+%eden
+
+%text
+hello hello hello hello
+%eden
+?WORD_hello;
+

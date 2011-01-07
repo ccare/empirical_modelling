@@ -1,0 +1,9 @@
+1) open tkeden
+2) execute the eden script Run.e
+3) Trace on the 2D input chart to move the planimeter needle
+
+The wheel of the planimeter will rotate in proportion ot the area traced.
+For convenience the displacement of the wheel is represented in 2D and also
+by a numerical value.
+
+                                                      Charlie Care, March 2005

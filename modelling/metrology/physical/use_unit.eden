@@ -1,0 +1,10 @@
+## Format of new unit
+PH_userUnits=[["feet","ft","0.3","[\\\"m_\\\",1]"],
+		["coulombs","C","1","[\\\"A_\\\",1,\\\"s_\\\",1]"]];
+		
+PH_userUnits=[["feet","ft","","[\\\"m_\\\",1,\\\"scale_\\\",1]"],
+		["coulombs","C","","[\\\"A_\\\",1,\\\"s_\\\",1]"]];
+
+		
+		PH_userUnits=[["ft","[\\\"m_\\\",1,\\\"scale_\\\",0.3]"]];
+		PH_userUnits=[["ft",regreplace("\"","\\\"","[\"m_\",1,\"scale_\",0.3]")]];

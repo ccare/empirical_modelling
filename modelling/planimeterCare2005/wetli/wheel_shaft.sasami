@@ -1,0 +1,35 @@
+%sasami
+object wheel_shaft
+
+vertex wheel_shaft_a1 -5 5 0
+vertex wheel_shaft_b1 5 5 0
+vertex wheel_shaft_c1 5 -5 0
+vertex wheel_shaft_d1 -5 -5 0
+vertex wheel_shaft_a2 -5 5 0.2
+vertex wheel_shaft_b2 5 5 0.2
+vertex wheel_shaft_c2 5 -5 0.2
+vertex wheel_shaft_d2 -5 -5 0.2
+
+polygon wheel_shaft_end1 
+polygon wheel_shaft_end2 
+polygon wheel_shaft_sideA
+polygon wheel_shaft_sideB
+polygon wheel_shaft_sideC
+polygon wheel_shaft_sideD
+
+poly_geom_vertex wheel_shaft_end1 wheel_shaft_a1 wheel_shaft_b1 wheel_shaft_c1 wheel_shaft_d1
+poly_geom_vertex wheel_shaft_end2 wheel_shaft_d2 wheel_shaft_c2 wheel_shaft_b2 wheel_shaft_a2
+poly_geom_vertex wheel_shaft_sideA wheel_shaft_a2 wheel_shaft_b2 wheel_shaft_b1 wheel_shaft_a1
+poly_geom_vertex wheel_shaft_sideB wheel_shaft_b2 wheel_shaft_c2 wheel_shaft_c1 wheel_shaft_b1
+poly_geom_vertex wheel_shaft_sideC wheel_shaft_c2 wheel_shaft_d2 wheel_shaft_d1 wheel_shaft_c1
+poly_geom_vertex wheel_shaft_sideD wheel_shaft_d2 wheel_shaft_a2 wheel_shaft_a1 wheel_shaft_d1
+
+poly_material wheel_shaft_end1 m_wheel
+poly_material wheel_shaft_end2 m_wheel
+poly_material wheel_shaft_sideA m_wheel
+poly_material wheel_shaft_sideB m_wheel
+poly_material wheel_shaft_sideC m_wheel
+poly_material wheel_shaft_sideD m_wheel
+
+object_poly wheel_shaft wheel_shaft_end1 wheel_shaft_end2
+object_poly wheel_shaft wheel_shaft_sideA wheel_shaft_sideB wheel_shaft_sideC wheel_shaft_sideD

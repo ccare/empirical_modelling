@@ -1,0 +1,338 @@
+##==============================================================================
+##                            A Notation for Creating Notations
+##
+## parser.eden                                         Charlie Care - March 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Preamble
+##------------------------------------------------------------------------------
+## Load the up-to-date AOP
+cd("aop_v204");
+include("Run.e");
+cd("..");
+
+## Name of Notation
+AOP_notationName="%aop";
+
+##------------------------------------------------------------------------------
+## Blocks
+##------------------------------------------------------------------------------
+bras = [ ["(", ")"], ["bras"] ];
+cbras = [ ["{", "}"], ["bras"] ];
+addblocks("cbras");
+comment = [ ["/*", "*/"], [] ];
+addblocks("comment");
+string = [ ["\"", "\""], [] ];
+addblocks("string");
+sqbras = [ ["[", "]"], [] ];
+addblocks("sqbras");
+
+##------------------------------------------------------------------------------
+## Top-Level Rules
+##------------------------------------------------------------------------------
+
+## Initial Rule (parse in blocks between ";") 
+AOPparse_init = [";", "AOPparse_stm", ["cbras","comment","string"]];
+
+## Statements statements by ";"
+AOPparse_stm = ["suffix", ";", "AOPparse_notationDecl",
+			[ "ignore", ["cbras","comment","string"] ],
+			[ "fail", "AOPparse_ERROR1"] ];
+
+AOPparse_notationDecl = ["prefix", "notation", "AOPparse_notationDecl2",
+			[ "fail", "AOPparse_definition"],
+			["action",
+			["later", "if ($p1# == 2)
+				AOPparse_addNotation($p1[1],$p1[2],[]); 
+				else	
+				AOPparse_addNotation($p1[1],$p1[2],$p1[3]);"]]];
+
+proc AOPparse_addNotation {
+	para notationName, sepChar, blocks;
+	
+	execute(notationName//"_init = [\""//sepChar//"\",\""//notationName//
+			"\","//str(blocks)//"];");
+	execute("installAOP(\"%"//notationName//"\",\""//
+			notationName//"_init\");");
+}
+
+
+AOPparse_notationDecl2 = ["pivot", "=",["AOPparse_ruleName","AOPparse_notationDecl3"],
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+			["now", "$v is [$p1] // $p2;"]]];
+
+AOPparse_notationDecl3 = ["pivot", ":", ["AOPparse_notationDecl4","AOPparse_notDeclIgnore"],
+				["action",
+				["now", "$v is $p1 // $p2;"]],
+				[ "fail", "AOPparse_notationDecl4"],
+				[ "ignore", ["string","cbras"] ]];
+
+
+AOPparse_notationDecl4 = ["prefix", "split on", "AOPparse_string",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [$p1];"]]];
+
+AOPparse_notDeclIgnore = ["prefix", "ignore", "AOPparse_ignore2",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is [$p1];"]] ];
+
+
+
+
+
+
+
+
+
+AOPparse_definition = ["pivot", "->", ["AOPparse_ruleName","AOPparse_definition2"],
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+			["later", "execute($p1 // \" is \" // str($p2) // \";\");"]]];
+
+
+AOPparse_definition2 = ["pivot", "|", ["AOPparse_rule","AOPparse_ruleName"],
+				[ "fail", "AOPparse_readAll"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1 // [[\"fail\",$p2]];"]]];
+
+
+AOPparse_readAll = ["prefix", "readAll","AOPparse_readAll2",
+				[ "fail", "AOPparse_rule"],
+				["action",
+				["now", "$v is [ \"read_all\", []] // $p1;"]]];
+
+AOPparse_readAll2 = ["prefix", "()","AOPparse_readAll3",
+				[ "fail", "AOPparse_readAll3"],
+				["action",
+				["now", "$v is $p1;"]]];
+
+AOPparse_readAll3 = ["prefix", ":","AOPparse_action",
+				[ "fail", "AOPparse_null"],
+				["action",
+				["now", "$v is $p1;"]]];
+
+
+AOPparse_rule = ["pivot", ":", ["AOPparse_literal_re","AOPparse_actionIgnore"],
+				["action",
+				["now", "$v is $p1 // $p2;"]],
+				[ "fail", "AOPparse_literal_re"],
+				[ "ignore", ["string","cbras"] ]];
+
+AOPparse_literal_re = ["prefix", "literal_re" , "AOPparse_literal2",
+				[ "fail", "AOPparse_literal"],
+				["action",
+				["now", "$v is [\"literal_re\"] // $p1;"]]];
+
+AOPparse_literal = ["prefix", "literal" , "AOPparse_literal2",
+				[ "fail", "AOPparse_prefix_re"],
+				["action",
+				["now", "$v is [\"literal\"] // $p1;"]]];
+
+
+AOPparse_literal2 = ["prefix", "(" , "AOPparse_literal3",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1;"]]];
+				
+
+AOPparse_literal3 = ["suffix", ")" ,"AOPparse_string",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is [$p1];"]]];
+				
+AOPparse_prefix_re = ["prefix", "prefix_re" , "AOPparse_prefixsuffix",
+				[ "fail", "AOPparse_prefix"],
+				["action",
+				["now", "$v is [\"prefix_re\"] // $p1;"]]];
+				
+AOPparse_prefix = ["prefix", "prefix" , "AOPparse_prefixsuffix",
+				[ "fail", "AOPparse_suffix_re"],
+				["action",
+				["now", "$v is [\"prefix\"] // $p1;"]]];
+				
+AOPparse_suffix_re = ["prefix", "suffix_re" , "AOPparse_prefixsuffix",
+				[ "fail", "AOPparse_suffix"],
+				["action",
+				["now", "$v is [\"suffix_re\"] // $p1;"]]];
+
+AOPparse_suffix = ["prefix", "suffix" , "AOPparse_prefixsuffix",
+				[ "fail", "AOPparse_pivot"],
+				["action",
+				["now", "$v is [\"suffix\"] // $p1;"]]];
+				
+
+
+
+AOPparse_prefixsuffix= ["prefix", "(" , "AOPparse_prefixsuffix2",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1;"]]];
+
+AOPparse_prefixsuffix2 = ["suffix", ")" ,"AOPparse_prefixsuffix3",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1;"]]];
+				
+				
+AOPparse_prefixsuffix3 = ["pivot", "," ,["AOPparse_string","AOPparse_ruleName"],
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string"] ],
+				["action",
+				["now", "$v is [$p1,$p2];"]]];
+				
+AOPparse_pivot = ["prefix", "pivot" , "AOPparse_pivot2",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [\"pivot\"] // $p1;"]]];
+
+AOPparse_pivot2 = ["prefix", "(" , "AOPparse_pivot3",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1;"]]];
+
+AOPparse_pivot3 = ["suffix", ")" , "AOPparse_pivot4",
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string","cbras"] ],
+				["action",
+				["now", "$v is $p1;"]]];
+				
+AOPparse_pivot4 = ["pivot", "," ,["AOPparse_string","AOPparse_pivot5"],
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string"] ],
+				["action",
+				["now", "$v is [$p1,$p2];"]]];	
+				
+AOPparse_pivot5 = ["pivot", "," , ["AOPparse_ruleName","AOPparse_ruleName"],
+				[ "fail", "AOPparse_ERROR1"],
+				[ "ignore", ["string"] ],
+				["action",
+				["now", "$v is [$p1,$p2];"]]];
+						
+
+
+
+
+
+AOPparse_actionIgnore = ["pivot", ":", ["AOPparse_ignore","AOPparse_ignore"],
+				["action",
+				["now", "$v is $p1 // $p2;"]],
+				[ "fail", "AOPparse_action"],
+				[ "ignore", ["string"] ]];
+
+
+AOPparse_ignore = ["prefix", "ignore", "AOPparse_ignore2",
+			["fail","AOPparse_action"],
+			["action",["now", "$v is [[\"ignore\",$p1]];"]] ];
+			
+AOPparse_ignore2 = ["prefix", "[", "AOPparse_ignore3",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is $p1;"]] ];
+			
+AOPparse_ignore3 = ["suffix", "]", "AOPparse_ignore4",
+			["fail","AOPparse_ERROR1"],
+			["action",["now", "$v is $p1;"]] ];
+			
+			
+AOPparse_ignore4 = ["pivot", "," ,["AOPparse_blockName","AOPparse_ignore4"],
+				[ "fail", "AOPparse_blockName"],
+				[ "ignore", ["string"] ],
+				["action",
+				["now", "$v is $p1 // $p2;"]]];
+
+				
+
+
+AOPparse_action = ["prefix", "do" , "AOPparse_actionNow",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [[\"action\",$p1]];"]]];
+
+AOPparse_actionNow = ["suffix", "now" , "AOPparse_actionBlock",
+				[ "fail", "AOPparse_actionLater"],
+				["action",
+				["now", "$v is [\"now\",$p1];"]]];
+				
+AOPparse_actionLater = ["suffix", "later" , "AOPparse_actionBlock",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is [\"later\",$p1];"]]];
+
+
+AOPparse_actionBlock= ["prefix", "{" , "AOPparse_actionBlock2",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["now", "$v is $p1;"]]];
+
+AOPparse_actionBlock2 = ["suffix", "}" , "AOPparse_actionCode",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["later", "$v is $p1;"]]];
+
+AOPparse_actionCode = [ "read_all", [], 
+			["action",
+				["now", "$v=regreplace(\"\\\"\",\"\\\\\\\"\",$j);"]]];
+
+
+
+
+AOPparse_null = ["literal", "",["fail","AOPparse_ERROR1"],
+				 ["action",["now", "$v=[];"]]];
+
+
+
+
+
+
+
+
+
+
+
+AOPparse_string = ["prefix", "\"" , "AOPparse_string2",
+				[ "fail", "AOPparse_varName"],
+				["action",
+				["later", "$v=$p1;"]]];
+				
+AOPparse_string2 = ["suffix", "\"" , "AOPparse_string3",
+				[ "fail", "AOPparse_ERROR1"],
+				["action",
+				["later", "$v=$p1;"]]];
+				
+AOPparse_string3 = [ "read_all", [], 
+			["action",
+				["now", "$v=\"$t\";"]]];
+
+
+## Names
+AOPparse_ruleName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v=\"$t\";"]] ];
+
+AOPparse_varName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v = \"`\\\"$t\\\"`\";"]] ];
+
+AOPparse_blockName = [ "literal_re", "[a-zA-Z]+[a-zA-Z0-9_]*", 
+["fail", "AOPparse_nameERROR"], ["action", ["now","$v=[\"$t\"];"]] ];
+
+
+AOPparse_nameERROR = [ "read_all", [], 
+			["action",
+				["now", "error(\"$t is not a valid \" 
+				// AOP_notationName // \" definition\");"]]];
+
+
+## General Error Case
+AOPparse_ERROR1 = [ "read_all", [], 
+			["action",
+				["now", "error(\"$t\");"]]];
+
+installAOP(AOP_notationName,"AOPparse_init");
+

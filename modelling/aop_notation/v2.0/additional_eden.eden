@@ -1,0 +1,37 @@
+/* add a radio button for the new notation, but not in ttyeden.
+   Pass the name of a notation, including the initial % character. 
+   Check that notation is actually installed (i.e. in notations) */
+proc addNotationRadioButton {
+  para name;
+
+  if (name[1] != '%')
+    error("addNotationRadioButton should be passed a string starting with %");
+
+  if (tcl != @)
+	if (isInstalledNotation(name))
+      tcl("addNotationRadioButton " // substr(name, 2, name#));
+    else error("Notation " // name // " is not installed");
+}
+
+
+/* Is a notation already installed (i.e. in notations) */
+func isInstalledNotation {
+  para name;
+  auto i;
+  
+  if (name[1] != '%')
+    error("isInstalledNotation should be passed a string starting with %");
+  
+  ## Check user defined notations      
+  for (i=1;i<=notations#;i++) {
+    if (name == notations[i][1]) return TRUE;
+  }
+  
+  ## Check builtin notations
+  if (name=="%eden" || name=="%donald"|| name=="%scout" || name=="%sasami") {
+    return TRUE;
+  }
+  
+  
+  return FALSE;
+}

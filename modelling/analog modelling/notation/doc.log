@@ -1,0 +1,174 @@
+This is pdfeTeX, Version 3.141592-1.20a-rc7.2-2.2 (MiKTeX 2.4) (preloaded format=latex 2004.9.17)  9 DEC 2004 12:17
+entering extended mode
+**doc.tex
+(doc.tex
+LaTeX2e <2003/12/01>
+Babel <v3.8a> and hyphenation patterns for english, french, german, ngerman, du
+mylang, nohyphenation, loaded.
+(C:\texmf\tex\latex\base\article.cls
+Document Class: article 2004/02/16 v1.4f Standard LaTeX document class
+(C:\texmf\tex\latex\base\size10.clo
+File: size10.clo 2004/02/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (C:\texmf\tex\latex\ltxmisc\anysize.sty
+Package: anysize 1994/08/13 1.0 Contributed LaTeX2e package
+
+Package: `anysize' 1.0 <1994/08/13>
+\@Leftmargin=\dimen103
+\@Rightmargin=\dimen104
+\@Topmargin=\dimen105
+\@Bottommargin=\dimen106
+) (C:\texmf\tex\latex\tools\array.sty
+Package: array 2003/12/17 v2.4a Tabular extension package (FMi)
+\col@sep=\dimen107
+\extrarowheight=\dimen108
+\NC@list=\toks14
+\extratabsurround=\skip43
+\backup@length=\skip44
+)
+(C:\texmf\tex\latex\graphics\graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\texmf\tex\latex\graphics\keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks15
+)
+(C:\texmf\tex\latex\graphics\graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+ (C:\texmf\tex\latex\graphics\trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+) (C:\texmf\tex\latex\00miktex\graphics.cfg
+File: graphics.cfg 2003/03/12 v1.1 MiKTeX 'graphics' configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 80.
+
+(C:\texmf\tex\latex\graphics\pdftex.def
+File: pdftex.def 2002/06/19 v0.03k graphics/color for pdftex
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen109
+\Gin@req@width=\dimen110
+) (doc.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+
+(C:\texmf\tex\context\base\supp-pdf.tex (C:\texmf\tex\context\base\supp-mis.tex
+loading : Context Support Macros / Miscellaneous 
+\protectiondepth=\count88
+\scratchcounter=\count89
+\scratchtoks=\toks16
+\scratchdimen=\dimen111
+\scratchskip=\skip45
+\scratchmuskip=\muskip10
+\scratchbox=\box26
+\scratchread=\read1
+\scratchwrite=\write3
+\zeropoint=\dimen112
+\onepoint=\dimen113
+\onebasepoint=\dimen114
+\minusone=\count90
+\thousandpoint=\dimen115
+\onerealpoint=\dimen116
+\emptytoks=\toks17
+\nextbox=\box27
+\nextdepth=\dimen117
+\everyline=\toks18
+\!!counta=\count91
+\!!countb=\count92
+\recursecounter=\count93
+)
+loading : Context Support Macros / PDF (2004.03.26)
+\nofMPsegments=\count94
+\nofMParguments=\count95
+\everyMPtoPDFconversion=\toks19
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 15.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 15.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 15.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 26.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 26.
+ <amplifyExample.pdf, id=1, 416.99791pt x 344.7279pt>
+File: amplifyExample.pdf Graphic file (type pdf)
+
+<use amplifyExample.pdf>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<integratorSummer.pdf, id=2, 416.99791pt x 380.8629pt>
+File: integratorSummer.pdf Graphic file (type pdf)
+
+<use integratorSummer.pdf>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: Citation `charlesworth' on page 1 undefined on input line 53.
+
+<summer.pdf, id=3, 200.1879pt x 164.0529pt>
+File: summer.pdf Graphic file (type pdf)
+ <use summer.pdf>
+<integrator.pdf, id=4, 200.1879pt x 164.0529pt>
+File: integrator.pdf Graphic file (type pdf)
+ <use integrator.pdf>
+<pot.pdf, id=5, 200.1879pt x 164.0529pt>
+File: pot.pdf Graphic file (type pdf)
+ <use pot.pdf>
+<amplify.pdf, id=6, 200.1879pt x 164.0529pt>
+File: amplify.pdf Graphic file (type pdf)
+ <use amplify.pdf> [1
+
+{sfonts.map}]
+[2 <summer.pdf> <integrator.pdf> <pot.pdf> <amplify.pdf>] [3 <amplifyExample.pd
+f> <integratorSummer.pdf>] (doc.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 1058 strings out of 95519
+ 11662 string characters out of 1189651
+ 62462 words of memory out of 1061118
+ 4136 multiletter control sequences out of 35000
+ 10173 words of font info for 33 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 607
+ 25i,14n,21p,628b,339s stack positions out of 1500i,500n,5000p,200000b,32768s
+ 101 PDF objects out of 300000
+ 0 named destinations out of 300000
+ 31 words of extra memory for PDF output out of 65536
+{r.enc}<C:\texmf\fonts\type1\bluesky\cm\cmr8.pfb><C:\texmf\fonts\type1\bluesk
+y\cm\cmex10.pfb><C:\texmf\fonts\type1\bluesky\cm\cmmi12.pfb><C:\texmf\fonts\typ
+e1\bluesky\cm\cmbx10.pfb><C:\texmf\fonts\type1\bluesky\cm\cmbx12.pfb><C:\texmf\
+fonts\type1\bluesky\cm\cmti10.pfb><C:\texmf\fonts\type1\bluesky\cm\cmr10.pfb><C
+:\texmf\fonts\type1\bluesky\cm\cmtt10.pfb><C:\texmf\fonts\type1\bluesky\cm\cmr1
+2.pfb><C:\texmf\fonts\type1\bluesky\cm\cmti12.pfb><C:\texmf\fonts\type1\bluesky
+\cm\cmr17.pfb>
+Output written on doc.pdf (3 pages, 94637 bytes).

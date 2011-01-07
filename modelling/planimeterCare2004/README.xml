@@ -1,0 +1,40 @@
+<README>
+	<TITLE>Planimeter Models</TITLE>
+	<AUTHOR>Charles Care</AUTHOR>
+	<SHORTDESCRIPTION>Models relating to my third year project &lt;i&gt;Illustrating the History of the Planimeter&lt;/i&gt;</SHORTDESCRIPTION>
+	<LONGDESCRIPTION>
+	The planimeter is a mathematical instrument used for measuring areas and
+	is an example of an analogue computing device. 
+	The models provide visualisation of some of the various planimeters 
+developed in the nineteenth century:
+&lt;ul&gt;
+&lt;li&gt;3D model of an Oppikofer Planimeter&lt;/li&gt;
+&lt;li&gt;2D model of a Wetli Planimeter&lt;/li&gt;
+&lt;li&gt;3D model of a Wetli Planimeter&lt;/li&gt;
+&lt;li&gt;2D model of an Amsler Planimeter&lt;/li&gt;
+&lt;/ul&gt;
+
+Some documentation is also included in the /Docs folder.
+	</LONGDESCRIPTION>
+	<DATE>
+		<YEAR>2004</YEAR>
+		<MONTH>4</MONTH>
+	</DATE>
+	<CODE>planimeterCare2004</CODE>
+	<TYPE>model</TYPE>
+	<FUNDING>3YP</FUNDING>
+	<TECH>tkeden</TECH>
+	<TECH>dtkeden</TECH>
+	<TECH>%eden</TECH>
+	<TECH>%scout</TECH>
+	<TECH>%donald</TECH>
+	<TECH>%sasami</TECH>
+	<SCREENSHOT>screenshot-sm.jpg</SCREENSHOT>
+	<KEYWORD>education</KEYWORD>
+	<KEYWORD>history of computing</KEYWORD>
+	<KEYWORD>history of mathematics</KEYWORD>
+	<KEYWORD>planimeter</KEYWORD>
+	<KEYWORD>analogue computing</KEYWORD>
+	<KEYWORD>mathematical instruments</KEYWORD>
+	<PUBLISHING>YES</PUBLISHING>
+</README>

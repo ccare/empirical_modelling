@@ -1,0 +1,65 @@
+## Source file for the track
+
+%eden
+## Primary dimensions of track
+track_width=1;
+track_height=0.3;
+track_length=20;
+
+## Secondary dimensions of track
+track_height_1 is track_height+track_width*sin(PI/12);
+track_width_1 is track_width*cos(PI/12);
+
+## Track Position
+track_pos_x = 0;
+track_pos_y = 0;
+track_pos_z = 0;
+
+## 3D Stuff
+%sasami
+
+## The track object
+object track
+
+## define vertices
+vertex tracka1 0 0 track_width_1
+vertex trackb1 0 0 0
+vertex trackc1 0 track_height_1 0
+vertex trackd1 0 track_height track_width_1
+
+vertex tracka2 -track_length 0 track_width_1
+vertex trackb2 -track_length 0 0
+vertex trackc2 -track_length track_height_1 0
+vertex trackd2 -track_length track_height track_width_1
+
+## Define polygons
+polygon track_end1
+polygon track_end2
+polygon track_top
+polygon track_bottom
+polygon track_side1
+polygon track_side2
+
+## Add vertices to polygons
+poly_geom_vertex track_end1 tracka1 trackb1 trackc1 trackd1
+poly_geom_vertex track_end2 trackd2 trackc2 trackb2 tracka2
+poly_geom_vertex track_top trackd1 trackc1 trackc2 trackd2 
+poly_geom_vertex track_bottom trackb1 tracka1 tracka2 trackb2 
+poly_geom_vertex track_side1 trackc1 trackb1 trackb2 trackc2 
+poly_geom_vertex track_side2 tracka1 trackd1 trackd2 tracka2 
+
+## Add material to polygons
+poly_material track_end1 track
+poly_material track_end2 track
+poly_material track_top track
+poly_material track_bottom track
+poly_material track_side1 track
+poly_material track_side2 track
+
+## Add polygons to object
+object_poly track track_end1 track_end2
+object_poly track track_top track_bottom
+object_poly track track_side1 track_side2
+
+## Define object's position
+object_pos track track_pos_x track_pos_y track_pos_z

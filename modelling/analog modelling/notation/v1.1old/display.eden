@@ -1,0 +1,150 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## display.e                                          Charlie Care - November 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Add new window
+##------------------------------------------------------------------------------
+##%eden
+##OpenDisplay("observables", 320, 500);
+##proc observables_display_screen : observables { DisplayScreen(&observables, "observables"); }
+
+##%scout
+##display ANdisplay;
+##------------------------------------------------------------------------------
+
+%scout
+integer ANdisp_windowHeight = 20;
+integer ANdisp_windowWidth_a = 100;
+integer ANdisp_windowWidth_b = 100;
+integer ANdisp_windowWidth_c = 100;
+integer ANdisp_windowGap_x = 5;
+integer ANdisp_windowGap_y = 5;
+integer ANdisp_win_a_x = 5;
+integer ANdisp_win_b_x = ANdisp_win_a_x+ANdisp_windowWidth_a+ANdisp_windowGap_x;
+integer ANdisp_win_c_x = ANdisp_win_b_x+ANdisp_windowWidth_b+ANdisp_windowGap_x;
+integer ANdisp_dummyWindow_y = ANdisp_windowGap_y;
+
+integer ANdisp_title_a_x = ANdisp_windowGap_x;
+window ANdisp_title_a = {
+  type: TEXT
+  string: "Observable"
+  alignment: CENTRE
+  frame: ([{ANdisp_windowGap_x, ANdisp_windowGap_y}, {ANdisp_windowGap_x+ANdisp_windowWidth_a, ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  font: "{helvetica 12 bold}"
+};
+integer ANdisp_title_b_x = ANdisp_title_a_x+ANdisp_windowWidth_a+ANdisp_windowGap_x;
+window ANdisp_title_b = {
+  type: TEXT
+  string: "Definition"
+  alignment: CENTRE
+  frame: ([{ANdisp_title_b_x, ANdisp_windowGap_y}, {ANdisp_title_b_x+ANdisp_windowWidth_b, ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  font: "{helvetica 12 bold}"
+};
+integer ANdisp_title_c_x = ANdisp_title_b_x+ANdisp_windowWidth_b+ANdisp_windowGap_x;
+window ANdisp_title_c = {
+  type: TEXT
+  string: "Value"
+  alignment: CENTRE
+  frame: ([{ANdisp_title_c_x, ANdisp_windowGap_y}, {ANdisp_title_c_x+ANdisp_windowWidth_c, ANdisp_windowGap_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 0
+  font: "{helvetica 12 bold}"
+};
+
+%eden
+ANdisp_window = "
+
+%scout
+string ANdisp_w?1a_string;
+integer ANdisp_w?1a_y;
+integer ANdisp_w?1a_x;
+window ANdisp_w?1a = {
+  type: TEXT
+  string: ANdisp_w?1a_string
+  alignment: CENTRE
+  frame: ([{ANdisp_win_a_x, ANdisp_w?1a_y}, {ANdisp_win_a_x+ANdisp_windowWidth_a, ANdisp_w?1a_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  font: \"{helvetica 12}\"
+};
+
+string ANdisp_w?1b_string;
+integer ANdisp_w?1b_y;
+integer ANdisp_w?1b_x;
+
+window ANdisp_w?1b = {
+  type: TEXT
+  string: ANdisp_w?1b_string
+  alignment: CENTRE
+  frame: ([{ANdisp_win_b_x, ANdisp_w?1b_y}, {ANdisp_win_b_x+ANdisp_windowWidth_b, ANdisp_w?1b_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  font: \"{helvetica 12}\"
+};
+
+string ANdisp_w?1c_string;
+integer ANdisp_w?1c_y;
+integer ANdisp_w?1c_x;
+
+window ANdisp_w?1c = {
+  type: TEXT
+  string: ANdisp_w?1c_string
+  alignment: CENTRE
+  frame: ([{ANdisp_win_c_x, ANdisp_w?1c_y}, {ANdisp_win_c_x+ANdisp_windowWidth_c, ANdisp_w?1c_y+ANdisp_windowHeight}])
+  sensitive: OFF
+  border: 1
+  font: \"{helvetica 12}\"
+};
+%eden
+ANdisp_w?1a_string is str(AN_tables_VariablesSorted[?1][1]);
+ANdisp_w?1b_string is str(AN_tables_VariablesSorted[?1][2]);
+## ANdisp_w?1c_string contents defined separately in ANdisp_w?1c_string_contents
+## ANdisp_w?1c_string is (ANdisp_w?1c_string_contents != @) ?? ANdisp_w?1c_string_contents : \"\";
+%eden
+";
+
+ANdisp_numWindows is AN_tables_Variables#;
+
+
+proc ANdisp_makeWindows : AN_tables_Variables{
+	auto i,screen;
+	screen="ANdisp_title_a / ANdisp_title_b / ANdisp_title_c";
+	ANdisp_oldWindow_a="ANdisp_dummyWindow";
+	ANdisp_oldWindow_b="ANdisp_dummyWindow";
+	ANdisp_oldWindow_c="ANdisp_dummyWindow";
+	for (i=1;i<=ANdisp_numWindows;i++) {
+		ANdisp_newWindow_a = "ANdisp_w" // str(i) // "a";
+		ANdisp_newWindow_b = "ANdisp_w" // str(i) // "b";
+		ANdisp_newWindow_c = "ANdisp_w" // str(i) // "c";
+		
+		execute("ANdisp_w"// str(i) //"c_string_contents = "//
+		str(AN_tables_VariablesSorted[i][1]) //";");
+		
+		execute(macro(ANdisp_window,str(i)));		
+		
+		screen = screen // "/" // 
+			 ANdisp_newWindow_a // "/" // 
+			 ANdisp_newWindow_b;
+			 ##// "/" // 
+			 ##ANdisp_newWindow_c;
+			 
+		execute("%eden\n" // ANdisp_newWindow_a // "_y is "//
+		ANdisp_oldWindow_a // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;"
+		// ANdisp_newWindow_b // "_y is "//
+		ANdisp_oldWindow_b // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;"
+		// ANdisp_newWindow_c // "_y is "//
+		ANdisp_oldWindow_c // "_y + ANdisp_windowGap_y + ANdisp_windowHeight;");
+		
+		ANdisp_oldWindow_a=ANdisp_newWindow_a;
+		ANdisp_oldWindow_b=ANdisp_newWindow_b;
+		ANdisp_oldWindow_c=ANdisp_newWindow_c;
+	}
+	execute("%scout\nscreen=\<" // screen // "\>;\n%eden\n");
+}

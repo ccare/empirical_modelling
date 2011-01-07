@@ -1,0 +1,5 @@
+## Set up sasami window.
+%sasami
+open_display
+%eden
+sasami_show_axes=0;

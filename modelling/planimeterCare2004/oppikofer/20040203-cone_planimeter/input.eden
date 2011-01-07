@@ -1,0 +1,22 @@
+%scout
+window drawPanel;
+
+image bg = ImageFile("gif","test.gif");
+
+drawPanel = {
+	box:	[{10,10}, {610,210}],
+	type:	IMAGE,
+	pict: "bg",
+	xmin:	0,
+	ymin:	0,
+	xmax:	1,
+	ymax:	1,
+	border:	0,
+	sensitive: MOTION
+};
+
+screen= <drawPanel>;
+
+%eden
+wheelPos is drawPanel_mousePos[2];
+carriagePos is -8+16*drawPanel_mousePos[1];

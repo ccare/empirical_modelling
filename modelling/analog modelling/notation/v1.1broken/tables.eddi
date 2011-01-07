@@ -1,0 +1,227 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## tables.eddi                                      Charlie Care - November 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Utility functions 
+##------------------------------------------------------------------------------
+
+## Utility function to determine whether a list is empty
+%eden
+func AN_isEmpty {
+    para list;
+    if (list# > 0) {return 0;} else {return 1;}
+}
+
+func AN_substitute {
+    para input,match,sub;
+    ## AN_substitute("abcdefg","de","xx") returns abcxxfg
+    AN_tmp_subj is AN_tmp_subi+match#-1;
+    for (AN_tmp_subi=1;AN_tmp_subi<=(input# - match# +1);AN_tmp_subi++) {
+       if (substr(input,AN_tmp_subi,AN_tmp_subj) == match) {
+          input=strcat(substr(input,1,AN_tmp_subi-1),sub,substr(input,AN_tmp_subj+1,input#));
+       }
+    }
+    AN_tmp_subj=@;
+    AN_tmp_subi=@;
+    return input;
+}
+
+##------------------------------------------------------------------------------
+## Eddi Pre-Amble
+##------------------------------------------------------------------------------
+%eden
+installeddi();
+
+## New Garbage collector to ensure that EDDI works in tkeden 1.46
+%eden
+proc garbage_collect {
+	/* the revised eddi garbage collection procedure */
+        auto ix, j, dCAT;
+        for (ix=2; ix<=CATALOGUE#; ix++) {
+                dCAT = dependants(CATALOGUE[ix][1]);
+                /* writeln("ix = ", ix); writeln(dCAT); writeln((dCAT[2])#); */
+                for (j=1; j<=dCAT[2]#; j++) {
+                        /* writeln(dependants(dCAT[2][j])); */
+                        if ((dependants(dCAT[2][j])[1])==[]) {
+                                /* writeln(dCAT[2][j]); */
+                        	if(substr(dCAT[2][j],1,4)=="var_") self_asgn(dCAT[2][j]);
+                        }
+                }
+        }
+}
+
+##------------------------------------------------------------------------------
+## Define Eddi Tables
+##------------------------------------------------------------------------------
+
+%eddi
+## EDDI table to store information about the integrators' initial conditions
+AN_tables_InitialConditions (variable CHAR,value CHAR);
+
+## EDDI table to store information about each integrator' source variable
+AN_tables_Integrators (variable CHAR,integrate CHAR);
+
+## EDDI table to store information about each analogue variable
+AN_tables_Variables (variable CHAR,definition CHAR,translation CHAR);
+
+##------------------------------------------------------------------------------
+## Ordered list of variables
+##------------------------------------------------------------------------------
+%eden
+AN_tables_VariablesSorted is AN_sortFirst(tail(AN_tables_Variables));
+
+func AN_sortFirst {
+para list;
+auto i,j,out;
+out = [];
+for(i=int('a');i<=int('a')+25;i++) {
+	for(j=1;j<=list#;j++) {
+		if (list[j][1][1] == char(i)) {
+			out = out // [list[j]];
+		}
+	}
+}
+return out;
+}
+##------------------------------------------------------------------------------
+## Procedures for Database Access (integrators)
+##------------------------------------------------------------------------------
+
+## Add an entry (information about an integrator) cleanly to the database
+## 
+## ADD record to both tables for each integrator defined
+##  IF (exists entry for the integrator)
+##      THEN delete record before adding new record
+%eden
+proc AN_addIntegrator {
+    para var,accum,ic;
+    
+    AN_tmp_variable="\"" // str(var) // "\"";
+    AN_tmp_integrate="\"" // str(accum) // "\"";
+    AN_tmp_ic="\"" // str(ic) // "\"";    
+    
+    execute("%eddi
+    AN_tables_icDups is AN_tables_InitialConditions : variable == " // AN_tmp_variable // ";
+    AN_tables_acDups is AN_tables_Integrators : variable == " // AN_tmp_variable // ";
+     ");   
+    
+    if (AN_isEmpty(tail(AN_tables_icDups)) == 0) {
+        execute("%eddi
+	AN_tables_tmpic = AN_tables_InitialConditions-AN_tables_icDups;
+	~~AN_tables_icDups;
+	~~AN_tables_InitialConditions;
+	AN_tables_InitialConditions = AN_tables_tmpic;
+	~~AN_tables_tmpic;
+        ");  
+    }
+    else {
+        execute("%eddi
+	~~AN_tables_icDups;
+        "); 
+    }
+    
+    if (AN_isEmpty(tail(AN_tables_acDups)) == 0) {
+        execute("%eddi
+	AN_tables_tmpac = AN_tables_Integrators-AN_tables_acDups;
+	~~AN_tables_acDups;
+	~~AN_tables_Integrators;
+	AN_tables_Integrators = AN_tables_tmpac;
+	~~AN_tables_tmpac;
+        ");  
+    }
+    else {
+        execute("%eddi
+	~~AN_tables_acDups;
+        "); 
+    }
+    
+    execute("%eddi
+    AN_tables_InitialConditions << [" // AN_tmp_variable // "," // AN_tmp_ic // "];
+    AN_tables_Integrators << [" // AN_tmp_variable // "," // AN_tmp_integrate // "];
+    ");
+    
+}
+
+## Clean up the database (remove unwanted integrator deinfitions)
+## 
+## CALLED when components other than integrators are defined
+##   IF (component being defined was already known as an integrator) 
+##      THEN drop that record from the database
+proc AN_dbCleanUp {
+    para var;
+        execute("%eddi
+	AN_tables_tmp = AN_tables_InitialConditions : variable != \"AN_value_" // var // "\";
+	~~AN_tables_InitialConditions;
+	AN_tables_InitialConditions = AN_tables_tmp;
+	~~AN_tables_tmp;
+	AN_tables_tmp = AN_tables_Integrators : variable != \"AN_value_" // var // "\";
+	~~AN_tables_Integrators;
+	AN_tables_Integrators = AN_tables_tmp;
+	~~AN_tables_tmp;
+        "); 
+}
+##------------------------------------------------------------------------------
+## Procedures for Database Access (variables)
+##------------------------------------------------------------------------------
+
+proc AN_addVar {
+	para var,defn,trans;
+	
+	## To aid readability, replace reference variables with numbers
+	defn = AN_substitute(defn,"AN_REFERENCE_ZERO","0 MU");
+	defn = AN_substitute(defn,"AN_REFERENCE_POSITIVE","+1 MU");
+	defn = AN_substitute(defn,"AN_REFERENCE_NEGATIVE","-1 MU");
+	
+	execute("%eddi
+	AN_tables_varDups is AN_tables_Variables : variable == \"" // var // "\";
+	"); 
+	## Check whether the variable has been defined already
+	if (! AN_isEmpty(tail(AN_tables_varDups))) {
+		execute("%eddi
+		AN_tables_tmp = AN_tables_Variables - AN_tables_varDups;
+		~~AN_tables_varDups;
+		~~AN_tables_Variables;
+		AN_tables_Variables = AN_tables_tmp;
+		~~AN_tables_tmp;
+		"); 
+	} else {
+		execute("%eddi
+		~~AN_tables_varDups;
+		"); 	
+	}
+		
+	execute("%eddi
+	AN_tables_Variables << [\"" // var // "\",\"" // defn // "\",\"" //
+	trans // "\"];
+        "); 
+}
+
+proc AN_removeVar {
+	para var;
+	execute("%eddi
+	AN_tables_tmp = AN_tables_Variables - (AN_tables_Variables : variable ==\"" // var // "\");
+	~~AN_tables_Variables;
+	AN_tables_Variables = AN_tables_tmp;
+	~~AN_tables_tmp;
+	");
+}
+
+func AN_variableExists{
+	para var;
+	auto result;
+	execute("%eddi
+	AN_tables_var is AN_tables_Variables : variable == \"" // var // "\";
+	");
+	if (AN_isEmpty(tail(AN_tables_var))) {
+		result=0;
+	} else {
+		result=1;
+	}
+	execute("%eddi
+	~~AN_tables_var;
+	");
+	return result;
+}

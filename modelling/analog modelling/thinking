@@ -1,0 +1,124 @@
+## x isaccumulate (x,
+
+## wheel and disk 
+## defineaccumulate(wheelRot,wheelPos*discSpeed,0)
+
+wheelRot=0;
+proc AN_maintain_wheelRot {
+    wheelRot = wheelRot + (wheelPos*discSpeed);
+    todo("AN_maintain_wheelRot();");
+}
+
+## wheelRot is accumulate(wheelPos*discSpeed,0)
+
+wheelRot is AN_value_wheelRot;
+
+AN_value_wheelRot=0;
+proc AN_maintain_wheelRot {
+    AN_value_wheelRot = AN_value_wheelRot + (wheelPos*discSpeed);
+    todo("AN_maintain_wheelRot();");
+}
+
+
+
+need variable as fraction of MU. 
+
+variables range -1 -> +1 so represent as a real
+
+Could have circuit nodes - each have a value between -1 and 1.
+
+func AN_filter {
+    if ($1 > 1) {overload=1;return 1;}
+    else if ($1 < -1) {overload=1;return -1;}
+    else {return $1;}
+}
+
+
+
+
+
+x=summer(a,b,c)
+y=scale(0.5,x)
+z=accumulate(y,0)
+a=scale(0.5,z)
+
+## x=summer(a,b,c)
+x is AN_summer(a,b,c);
+
+## y=scale(0.5,x)
+y is AN_scale(0.5,x);
+
+## z=accumulate(y,1)
+
+z is AN_value_z;
+
+AN_value_z=1;
+proc AN_maintain_z : AN_calc {
+    AN_value_z = AN_value_z + y;
+    todo("AN_maintain_z();");
+}
+
+## a=scale(-1,z)
+
+a is AN_scale(-0.9,z);
+
+
+
+
+
+AN_calc=0;
+
+
+
+
+
+
+DS_win1content is str(a);
+DS_win2content is str(b);
+DS_win3content is str(c);
+DS_win7content is str(x);
+DS_win8content is str(y);
+DS_win9content is str(z);
+
+
+
+func AN_summer {
+    return sum($);
+}
+func AN_scale {
+    return $1*$2;
+}
+
+
+
+
+
+b=accumulate(a,0)
+c=scale(-1,b)
+a=accumulate(c,0)
+
+## b=accumulate(a,0)
+
+b is AN_value_b;
+
+AN_value_b=0;
+proc AN_maintain_b : AN_calc {
+    AN_value_b = AN_value_b + a;
+    todo("AN_maintain_b();");
+}
+
+## c=scale(-1,b)
+c is AN_scale(-1,b);
+
+## a=accumulate(c,0)
+a is AN_value_a;
+
+AN_value_a=0;
+proc AN_maintain_a : AN_calc {
+    AN_value_a = AN_value_a + c;
+    todo("AN_maintain_a();");
+}
+
+
+
+

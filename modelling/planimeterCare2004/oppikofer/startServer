@@ -1,0 +1,12 @@
+#! /usr/bin/sh
+
+HOSTNAMEFILE=${HOME}/.planimeterCare2004-oppikofer-hostname.temp
+
+# Save the hostname of the server into a temp file
+hostname > $HOSTNAMEFILE
+
+# run the server
+/dcs/emp/empublic/bin/dtkeden server.eden
+
+# when finished delete the temp files
+rm $HOSTNAMEFILE

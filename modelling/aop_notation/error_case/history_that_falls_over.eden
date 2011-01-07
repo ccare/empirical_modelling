@@ -1,0 +1,26 @@
+%eden
+include("aop_notation.eden"); /* (invoked from command line) */
+%eden
+include("palindrome.aop"); /* (invoked from command line) */
+%eden
+AOPparse_definition = ["pivot", "=", 
+			["AOPparse_term_parserRule","AOPparse_definition2"],
+			[ "fail", "AOPparse_ERROR1"],
+			["action",
+				["later", "executeCode(
+						$p1[1][2] // \" is \" //
+						 str($p2) // \";\");"]]];
+
+proc executeCode {
+	## observables names are passed back as a string
+	##  of the form [...,"%name%",...]. This converts
+	##   ["%n%\"] -> [n]
+	para str;
+	str = regreplace("\"%","",str);
+	str = regreplace("%\"","",str);
+	
+	## execute the translated eden code produced.
+	execute(str);	
+}
+%aop
+a = "";

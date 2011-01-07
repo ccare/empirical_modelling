@@ -1,0 +1,13 @@
+\newcommand{\code}[1]{\hspace{0pt}\hbox{\texttt{#1}}}
+\renewcommand{\th}{$^{th}$}
+
+\newsavebox{\myquoteEnd}
+\newenvironment{myquote}[1]
+{\begin{sloppypar}\begin{quote}\small\sbox{\myquoteEnd}{#1}\itshape}
+{ \ \\ \hspace*{\fill} \usebox{\myquoteEnd} \end{quote}\end{sloppypar}}
+
+\newenvironment{fragment}{\begin{quote}\small}{\end{quote}}
+
+
+\newenvironment{centrefigure}
+{\begin{figure}[h] \begin{center} }{\end{center}\end{figure}}

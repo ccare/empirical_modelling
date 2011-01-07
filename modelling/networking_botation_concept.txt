@@ -1,0 +1,40 @@
+Currently dtkeden consists of a number of components
+
+1) The eden machine
+2) The tcl interface
+3) dtkeden protocol support
+4) The eden code (definitions)
+
+By using %gel component 2 will be definable as a subset of component 4.
+What would be nice is if the the networking could be definitive in a 
+similar way.
+
+I visualise a basic tkeden in which dtkeden would be defined by the following
+
+%gel
+... ## Augmented definitions to make tkeden look like the current dtkeden
+
+%eden
+installNetwork();
+
+%network
+... ## definitions about the current dtkeden protocol
+
+%eden
+... ## some code to trigger networking upon redefinition etc.
+
+
+This would provide a very general tool. For example the following
+would create a definitive web server:
+
+%eden
+installNetwork();
+
+%network
+... ## definitions about http protocol
+
+%eden
+... ## definitions triggered on the action within the defined protocol
+
+Possible applications: instant message client, interface to cvs tree, ssh client.
+

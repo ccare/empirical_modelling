@@ -1,0 +1,42 @@
+proc posterClicking {
+	para x,y;
+	if (x > var1NW[1] && x < var1SE[1]) {
+		if (y<var1NW[2] && y> var1SE[2]) {
+			writeln("var1");
+		}
+	}
+	else if (x > var2NW[1] && x < var2SE[1]) {
+		if (y<var2NW[2] && y> var2SE[2]) {
+			writeln("var2");
+		}
+	}
+	else if (x > var3NW[1] && x < var3SE[1]) {
+		if (y<var3NW[2] && y> var3SE[2]) {
+			writeln("var3");
+		}
+	}
+	else if (x > var4NW[1] && x < var4SE[1]) {
+		if (y<var4NW[2] && y> var4SE[2]) {
+			writeln("var4");
+		}
+	}
+	else if (x > var56NW[1] && x < var56SE[1]) {
+		if (y<var56NW[2] && y> var56SE[2]) {
+			writeln("var56");
+		}
+	}
+	else if (x > var78NW[1] && x < var78SE[1]) {
+		if (y<var78NW[2] && y> var78SE[2]) {
+			writeln("var78");
+		}
+	}
+	else if (x > var9NW[1] && x < var9SE[1]) {
+		if (y<var9NW[2] && y> var9SE[2]) {
+			writeln("var9");
+		}
+	}
+	else if (x > themeNW[1] && x < themeSE[1]) {
+		if (y<themeNW[2] && y> themeSE[2]) {
+			writeln("theme")
+	else {
+		writeln("nothing")

@@ -1,0 +1,36 @@
+%sasami
+
+object pen_shaft
+
+vertex pen_shaft_a1 -5 5 0
+vertex pen_shaft_b1 5 5 0
+vertex pen_shaft_c1 5 -5 0
+vertex pen_shaft_d1 -5 -5 0
+vertex pen_shaft_a2 -5 5 0.2
+vertex pen_shaft_b2 5 5 0.2
+vertex pen_shaft_c2 5 -5 0.2
+vertex pen_shaft_d2 -5 -5 0.2
+
+polygon pen_shaft_end1 
+polygon pen_shaft_end2 
+polygon pen_shaft_sideA
+polygon pen_shaft_sideB
+polygon pen_shaft_sideC
+polygon pen_shaft_sideD
+
+poly_geom_vertex pen_shaft_end1 pen_shaft_a1 pen_shaft_b1 pen_shaft_c1 pen_shaft_d1
+poly_geom_vertex pen_shaft_end2 pen_shaft_d2 pen_shaft_c2 pen_shaft_b2 pen_shaft_a2
+poly_geom_vertex pen_shaft_sideA pen_shaft_a2 pen_shaft_b2 pen_shaft_b1 pen_shaft_a1
+poly_geom_vertex pen_shaft_sideB pen_shaft_b2 pen_shaft_c2 pen_shaft_c1 pen_shaft_b1
+poly_geom_vertex pen_shaft_sideC pen_shaft_c2 pen_shaft_d2 pen_shaft_d1 pen_shaft_c1
+poly_geom_vertex pen_shaft_sideD pen_shaft_d2 pen_shaft_a2 pen_shaft_a1 pen_shaft_d1
+
+poly_material pen_shaft_end1 m_linkage
+poly_material pen_shaft_end2 m_linkage
+poly_material pen_shaft_sideA m_linkage
+poly_material pen_shaft_sideB m_linkage
+poly_material pen_shaft_sideC m_linkage
+poly_material pen_shaft_sideD m_linkage
+
+object_poly pen_shaft pen_shaft_end1 pen_shaft_end2
+object_poly pen_shaft pen_shaft_sideA pen_shaft_sideB pen_shaft_sideC pen_shaft_sideD

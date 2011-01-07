@@ -1,0 +1,17 @@
+%eden
+include("d:/ccare/analog modelling/drawSlide-1.0.eden");
+%angel
+a = scout {
+   display = "drawingBoard";
+   width = 500;
+   height = 500;
+   fill = "both" };
+
+b = scout {
+   display = "modeSwitcher";
+   width = 500;
+   height = 500;
+   fill = "both" };
+
+w = window {
+	content = [a,b] };

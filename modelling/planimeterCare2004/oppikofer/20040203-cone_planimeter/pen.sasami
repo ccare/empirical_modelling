@@ -1,0 +1,28 @@
+%sasami
+
+object pen
+
+vertex pen_a -5 5 0
+vertex pen_b 5 5 0
+vertex pen_c 5 -5 0
+vertex pen_d -5 -5 0
+vertex pen_x 0 0 15
+
+polygon pen_end 
+polygon pen_sideA
+polygon pen_sideB
+polygon pen_sideC
+polygon pen_sideD
+
+poly_geom_vertex pen_end pen_a pen_b pen_c pen_d
+poly_geom_vertex pen_sideA pen_x pen_b pen_a
+poly_geom_vertex pen_sideB pen_x pen_c pen_b
+poly_geom_vertex pen_sideB pen_x pen_d pen_c
+poly_geom_vertex pen_sideB pen_x pen_a pen_d
+object_poly pen pen_end pen_sideA pen_sideB pen_sideC pen_sideD
+
+poly_material pen_end m_linkage
+poly_material pen_sideA m_linkage
+poly_material pen_sideB m_linkage
+poly_material pen_sideC m_linkage
+poly_material pen_sideD m_linkage

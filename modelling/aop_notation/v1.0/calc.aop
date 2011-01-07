@@ -1,0 +1,24 @@
+%aop
+calc -> prefix("",calc_expr) : do {writeln('=',$p1);} later | calc_err;
+
+calc_expr -> pivot("+",calc_expr,calc_expr) 
+	: ignore [bras] : do {$v is $p1 + $p2;} now | calc_expr2;
+	
+calc_expr2 -> pivot("-",calc_expr,calc_expr) 
+	: ignore [bras] : do {$v is $p1 - $p2;} now | calc_expr3;
+
+calc_expr3 -> pivot("*",calc_expr,calc_expr) 
+	: ignore [bras] : do {$v is $p1 * $p2;} now | calc_expr4;
+
+calc_expr4 -> pivot("/",calc_expr,calc_expr) 
+	: ignore [bras] : do {$v is $p1 / $p2;} now | calc_expr5;
+
+calc_expr5 -> prefix("(",calc_expr6) : do {$v is $p1;} now | calc_term;
+
+calc_expr6 -> suffix("\)",calc_expr) : do {$v is $p1;} now | calc_err;
+
+calc_term -> literal_re("[0-9]+") : do {$v = $t;} now | calc_err;
+
+calc_err -> readAll : do {writeln("calc: syntax error");} now;
+
+notation calc = split on "\n";

@@ -1,0 +1,3005 @@
+%angel
+%angel
+
+radiowindow = window {
+   title = "Radio Button Example";
+   background = mycolour;
+   content = [choose,radio1,radio2,radio3] };
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow" };
+
+choose = label { text="Choose:" };
+
+radio1_mouseover=1;
+`radio1_variable`=radio1_value;
+radio1_mouseover=0;
+radio2_mouseover=1;
+`radio2_variable`=radio2_value;
+radio2_mouseover=0;
+radio3_mouseover=1;
+`radio3_variable`=radio3_value;
+radio3_mouseover=0;
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+}
+accept = button {
+	text = "Accept" };
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept" };
+%angel
+
+radiowindow = window {
+   title = "Radio Button Example";
+   background = mycolour;
+   content = [choose,radio1,radio2,radio3] };
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept" };
+accept_mouseover=1;
+accept_mouseover=0;
+radio1_mouseover=1;
+radio1_mouseover=0;
+
+accept = button {
+	side = "left";
+	text = "Accept" };
+%angel
+
+radiowindow = window {
+   title = "Radio Button Example";
+   background = mycolour;
+   content = [choose,radio1,radio2,radio3] };
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept" 
+	side = "left"};
+## ERROR number 1: parse error, encountered `VAR', expecting `'?'' or `OR' ...
+%angel
+
+radiowindow = window {
+   title = "Radio Button Example";
+   background = mycolour;
+   content = [choose,radio1,radio2,radio3] };
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+accept_mouseover=1;
+accept_mouseover=0;
+radio1_mouseover=1;
+`radio1_variable`=radio1_value;
+radio1_mouseover=0;
+radio2_mouseover=1;
+`radio2_variable`=radio2_value;
+radio2_mouseover=0;
+radio3_mouseover=1;
+`radio3_variable`=radio3_value;
+radio3_mouseover=0;
+%angel
+
+radio1 = radiobutton {
+   text = "%eden";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+radio2 = radiobutton {
+   text = "%donald";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+radio3 = radiobutton {
+   text = "%scout";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,radio1,radio2,radio3]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+radio2_mouseover=1;
+radio2_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mycolour";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mycolour";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mycolour";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+donaldradio_mouseover=1;
+donaldradio_mouseover=0;
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+donaldradio_mouseover=1;
+donaldradio_mouseover=0;
+scoutradio_mouseover=1;
+`scoutradio_variable`=scoutradio_value;
+scoutradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "hi";
+	fill = "x"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "hi";
+	fill = "x"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = myNotation;
+	fill = "x"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = mynotation;
+	fill = "x"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+edenradio_mouseover=1;
+edenradio_mouseover=0;
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+scoutradio_mouseover=1;
+`scoutradio_variable`=scoutradio_value;
+scoutradio_mouseover=0;
+donaldradio_mouseover=1;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "red";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "blue";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "yellow";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+scoutradio_mouseover=1;
+`scoutradio_variable`=scoutradio_value;
+scoutradio_mouseover=0;
+donaldradio_mouseover=1;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+	align = "left"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "top";
+	align = "left"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	align = "left"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left"
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio];
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+txt = textbox {
+   expand="true"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+   expand="true"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+   expand="true";
+	side="bottom"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+scoutradio_mouseover=1;
+scoutradio_mouseover=0;
+scoutradio_mouseover=1;
+scoutradio_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsg,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsgFrame = frame {
+	side = "bottom";
+	contents = [notationMsg]
+}
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,notationMsgFrame,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationMsgFrame = frame {
+	side = "bottom";
+	contents = [notationMsg]
+}
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "bottom";
+	contents = [notationMsg]
+}
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	contents = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both"};
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	contents = [notationMsg];
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsg]
+};
+notationMsgFrame = frame {
+	contents = [notationMsg];
+	
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	contents = [notationMsg]	
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	contents = [notationMsg];
+	side = "top"
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	contents = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="bottom";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	contents = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationMsgFrame,notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	contents = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	contents = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	content = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "top";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "right";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "left";
+	content = [accept]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	side = "left";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [notationBarButton,notationMsgFrame]
+};
+notationBarButton = frame {
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+	
+};
+notationMsgFrame = frame {
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [notationBarButton,notationMsgFrame]
+};
+notationBarButton = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+	
+};
+notationMsgFrame = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationBarButton = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+	
+};
+notationMsgFrame = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [accept,edenradio,donaldradio,scoutradio,notationMsgFrame]
+};
+notationMsgFrame = frame {
+	fill = "x";
+	side = "left";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "left";
+	content = [notationMsg]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "left";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "left";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "left";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	fill = "x";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+accept_mouseover=1;
+accept_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+
+interupt = button {
+	text = "Interrupt";
+	side = "right"};
+
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio,interupt]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+
+interupt = button {
+	text = "Interrupt";
+	side = "right"};
+
+input_text="";
+input_text="";
+input_text="";
+input_text="";
+input_text="";
+input_text="";
+input_text="";
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio,interupt]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+
+interupt = button {
+	text = "Interrupt";
+	side = "right"};
+
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio,interupt]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+
+interupt = button {
+	text = "Interrupt";
+	side = "right"};
+
+interupt_mouseover=1;
+interupt_mouseover=0;
+%angel
+
+edenradio = radiobutton {
+   text = "%eden";
+   variable = "mynotation";
+   value = "%eden";
+   side = "left" };
+
+donaldradio = radiobutton {
+   text = "%donald";
+   variable = "mynotation";
+   value = "%donald";
+   side = "left" };
+
+scoutradio = radiobutton {
+   text = "%scout";
+   variable = "mynotation";
+   value = "%scout";
+   side = "left" };
+
+choose = label { text="Choose:" };
+
+mywin = window {
+      title = "tkeden gel";
+      width = 600;
+      height = 250;
+      content = [notationBar,input] };
+  
+notationBar = frame {
+	side = "top";
+	content = [notationButtons,notationPrompt]
+};
+notationButtons = frame {
+	fill = "x";
+	side = "top";
+	content = [accept,edenradio,donaldradio,scoutradio,interupt]
+};
+notationPrompt = frame {
+	fill = "x";
+	side = "bottom";
+	content = [notationMsg]
+};
+
+notationMsg = label {
+	text = "Enter " // mynotation // " statements";
+	fill = "x";
+	side = "left";
+};
+
+input = textbox {
+	side="top";
+	fill="both" };
+
+accept = button {
+	text = "Accept";
+	side = "left"};
+
+interupt = button {
+	text = "Interrupt";
+	side = "right"};
+
+donaldradio_mouseover=1;
+`donaldradio_variable`=donaldradio_value;
+donaldradio_mouseover=0;
+edenradio_mouseover=1;
+`edenradio_variable`=edenradio_value;
+edenradio_mouseover=0;
+accept_mouseover=1;
+accept_mouseover=0;
+interupt_mouseover=1;
+interupt_mouseover=0;
+interupt_mouseover=1;
+interupt_mouseover=0;
+interupt_mouseover=1;
+interupt_mouseover=0;
+interupt_mouseover=1;
+interupt_mouseover=0;
+interupt_mouseover=1;
+interupt_mouseover=0;
+

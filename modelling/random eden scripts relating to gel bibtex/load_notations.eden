@@ -1,0 +1,13 @@
+%eden
+cd("/cygdrive/d/ccare/analog modelling/notation/v1.11/");
+include("d:/ccare/analog modelling/notation/v1.11/Run.e");
+%eden
+%eden
+cd("/cygdrive/d/ccare/metrology/physical/");
+include("d:/ccare/metrology/physical/physical_1-02.eden");
+%analog
+%eden
+cd("/cygdrive/d/ccare/aop_notation/v2.0/");
+include("d:/ccare/aop_notation/v2.0/aop_notation.eden");
+%eden
+

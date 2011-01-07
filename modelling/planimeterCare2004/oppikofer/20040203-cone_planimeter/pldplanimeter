@@ -1,0 +1,140 @@
+%eden
+include("setup.eden");
+include("materials.sasami");
+
+%eden
+coneRotate=0;
+wheelPos = 0;
+carriagePos = 0;
+
+
+## Import the Cone Object file, Dimensions of the cone are:
+##
+##     .     ^                                             
+##    . .    |                                         
+##   .   .   |10 units                                 
+##  .     .  |                                             
+##  -------  |                                            
+##  <----->
+##  5 units
+##
+## The cone needs to therefore be rotate through 15 degrees to
+##  become horizontal.
+
+## The cone has accumulated rotation 
+coneRotation=0;
+
+## and a varying rotation
+## The cone has a 
+
+coneSpindleRotation is -360*carriagePos/(2.5*2*PI);
+
+%sasami
+load_obj cone "cone_point.obj"
+object_rot cone_1 15 0 coneRotation
+
+## The cone moves along the x axis with the carriage
+%sasami
+object_pos cone_1 carriagePos 0 0 
+## Add marker to the cone (aids the visualistation of rotation)
+vertex cone_markerA 1 1.25 0.3
+vertex cone_markerB 1.25 1.25  0.3
+vertex cone_markerC 1.25 1  0.3
+vertex cone_markerD 1 1 0.3
+polygon cone_marker
+poly_geom_vertex cone_marker cone_markerD cone_markerC cone_markerB cone_markerA
+object_poly cone_1 cone_marker
+
+
+## Distance between cone and roller
+%eden
+shaft_length=6;
+
+## Position of roller
+roller_pos_x is carriagePos;
+roller_pos_y is -shaft_length*sin(PI/12);
+roller_pos_z is shaft_length*cos(PI/12);
+
+## Size of roller
+roller_size = 0.3;
+
+## Load Roller in correct postition
+%sasami
+load_obj roller "disc.obj"
+object_pos roller_1 roller_pos_x roller_pos_y roller_pos_z
+object_rot roller_1 15 0 coneRotation
+object_scale roller_1 roller_size roller_size 8*roller_size
+
+## Add marker to the roller (aids the visualistation of rotation)
+vertex roller_markerA 2 2.5 0.3
+vertex roller_markerB 2.5 2.5 0.3
+vertex roller_markerC 2.5 2 0.3
+vertex roller_markerD 2 2 0.3
+polygon roller_marker
+poly_geom_vertex roller_marker roller_markerD roller_markerC roller_markerB roller_markerA
+object_poly roller_1 roller_marker
+
+## load definitions for the shaft
+%eden
+include("shaft.sasami");
+
+## Set position between the cone and roller
+## make a little longer so it goes through the roller.
+%sasami
+object_pos shaft carriagePos 0 0 
+object_scale shaft 0.02 0.02 (shaft_length+8*roller_size*0.3)/0.2
+object_rot shaft 15 0 coneRotation
+
+## Import the carriage
+%eden
+include("carriage.sasami");
+%sasami
+object_pos carriage carriagePos 0 0
+
+%eden
+include("track.eden");
+%eden
+track_pos_z is shaft_length*cos(PI/12)-track_width_1/2;
+track_pos_x is track_length/2;
+track_pos_y is -shaft_length*sin(PI/12)-5*roller_size*cos(PI/12)-track_height_1;
+
+## Load the wheel, pen and linkage
+%eden
+include("wheel_and_pen.eden");
+
+
+
+
+## =====================================================
+## |  The Relationship between the cone and the wheel  |
+## |      (with respect to a 'time' incrementor)       |
+## =====================================================
+
+%eden
+
+## A variable that is 1 when clock is running
+clockGoing = 0;
+
+## The change in the cones rotation is an angular displacement
+##  equal to the carriage's movement along the track
+
+
+
+proc clock {
+  ## Cone speed is the change in angular displacement in the last time unit
+  coneSpeed = coneSpindleRotation-coneRotation; ## rads / time
+  ## coneRotation is accumulated
+  coneRotation = coneRotation+coneSpeed;
+  ## wheelSpeed is defined in terms of the coneSpeed
+  ##  And is the change in angular displacement during the last time unit
+  wheelSpeed = -(wheelPos*coneSpeed);
+  ## wheelRotation is accumulated
+  wheelRotation = wheelRotation+wheelSpeed;
+
+  ## Re-run this procedure soon if not stopped.
+  if (clockGoing == 1) {
+    todo("clock();");
+  }
+};
+
+clockGoing=1;

@@ -1,0 +1,15 @@
+
+%analog
+in=scale(0.5,+);
+a=scale(0.15,in);
+b=amplify(a);
+c=summer(b,z);
+d=integrator(c,ic);
+e=summer(d,0);
+f=scale(0.125,e);
+z=amplify(f);
+ic=0;
+
+
+
+

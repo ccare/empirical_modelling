@@ -1,0 +1,63 @@
+## =====================================================
+## |             Definitions of The Wheel              |
+## =====================================================
+
+%eden
+
+## The Wheel has an angular displacement
+wheelRotation = 0;
+
+## Size of wheel and Shaft
+wheel_size = 0.3;
+wheel_shaft_size is wheel_size/20;
+wheel_shaft_length is wheel_size*3;
+
+wheel_pos_x is carriagePos;
+wheel_pos_y = 2.5*cos(PI/12)+5*wheel_size;
+wheel_pos_z is 2.5*sin(PI/12)-wheel_width-9.85*(1-wheelPos);
+
+wheel_shaft_pos_z is wheel_pos_z-(wheel_shaft_length/2);
+wheel_width is 0.15*wheel_size;
+
+## Import the wheel with these constraints
+%sasami
+load_obj wheel "disc_taper.obj"
+object_pos wheel_1 wheel_pos_x wheel_pos_y wheel_pos_z
+object_rot wheel_1 0 0 wheelRotation
+object_scale wheel_1 wheel_size wheel_size wheel_size
+
+## Add marker to the wheel (aids the visualistation of rotation)
+vertex wheel_markerA 2 2.5 0.3
+vertex wheel_markerB 2.5 2.5 0.3
+vertex wheel_markerC 2.5 2 0.3
+vertex wheel_markerD 2 2 0.3
+polygon wheel_marker
+poly_geom_vertex wheel_marker wheel_markerD wheel_markerC wheel_markerB wheel_markerA
+object_poly wheel_1 wheel_marker
+%eden
+include("wheel_shaft.sasami");
+%sasami
+object_pos wheel_shaft wheel_pos_x wheel_pos_y wheel_shaft_pos_z
+object_scale wheel_shaft 0.02 0.02 (wheel_shaft_length/0.2)
+object_rot wheel_shaft 0 0 wheelRotation
+
+%eden
+
+pen_shaft_length = 30;
+
+include("pen_shaft.sasami");
+
+%sasami
+object_pos pen_shaft wheel_pos_x+5 wheel_pos_y wheel_shaft_pos_z-11
+object_scale pen_shaft 0.02 0.02 (pen_shaft_length/0.2)
+
+%eden
+include("pen.sasami");
+%sasami
+
+object_scale pen 0.02 0.02 0.6
+object_rot pen 90 0 0
+object_pos pen wheel_pos_x+5 wheel_pos_y wheel_shaft_pos_z-11.1+pen_shaft_length
+
+%eden
+include("wheel_linkage.sasami");

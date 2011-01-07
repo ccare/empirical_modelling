@@ -1,0 +1,72 @@
+/* A simple calculator.
+ *
+ * Accepts expressions of the form:
+ *   1+1
+ *   2*3-4
+ *   (5+6)/7
+ *   etc
+ *
+ * [Ant 19/10/2002]
+ */
+
+calc_init =
+  [ "\n", "calc", [] ];
+
+calc =
+  [ "prefix", "", "calc_expr",
+    [ "action",
+      [ "later", "writeln('=',$p1);" ] ],
+    [ "fail", "calc_err" ] ];
+
+calc_expr =
+  [ "pivot", "+", [ "calc_expr", "calc_expr" ],
+    [ "ignore", ["bras"] ],
+    [ "action",
+      [ "now", "$v is $p1 + $p2;" ] ],
+    [ "fail", "calc_expr2" ] ];
+
+calc_expr2 =
+  [ "pivot", "-", [ "calc_expr", "calc_expr" ],
+    [ "ignore", ["bras"] ],
+    [ "action",
+      [ "now", "$v is $p1 - $p2;" ] ],
+    [ "fail", "calc_expr3" ] ];
+
+calc_expr3 =
+  [ "pivot", "*", [ "calc_expr", "calc_expr" ],
+    [ "ignore", ["bras"] ],
+    [ "action",
+      [ "now", "$v is $p1 * $p2;" ] ],
+    [ "fail", "calc_expr4" ] ];
+
+calc_expr4 =
+  [ "pivot", "/", [ "calc_expr", "calc_expr" ],
+    [ "ignore", ["bras"] ],
+    [ "action",
+      [ "now", "$v is $p1 / $p2;" ] ],
+    [ "fail", "calc_expr5" ] ];
+
+calc_expr5 =
+  [ "prefix", "(", "calc_expr6",
+    [ "action",
+      [ "now", "$v is $p1;" ] ],
+    [ "fail", "calc_term" ] ];
+
+calc_expr6 =
+  [ "suffix", ")", "calc_expr",
+    [ "action",
+      [ "now", "$v is $p1;" ] ],
+    [ "fail", "calc_err" ] ];
+
+calc_term =
+  [ "literal_re", "[0-9]+",
+    [ "action",
+      [ "now", "$v = $t;" ] ],
+    [ "fail", "calc_err" ] ];
+
+calc_err =
+  [ "read_all", [],
+    [ "action",
+      [ "now", "writeln(\"calc: syntax error\");" ] ] ];
+
+installAOP("%calc", "calc_init");

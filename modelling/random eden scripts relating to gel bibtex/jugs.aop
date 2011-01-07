@@ -1,0 +1,21 @@
+%aop
+notation %jugs = <jug1> split on "\n";
+<jug1> = `jugText` : do {writeln(Afull);} now | <nothing>;
+<nothing> = *;
+%eden
+jugText = "is jug A full";
+
+
+ask questions
+is jug A full?
+
+which jug is bigger?
+
+commands:
+fill jug A!
+
+statements
+Jug A is full.
+
+Empty from the larger jug;
+Empty the jug with more water.

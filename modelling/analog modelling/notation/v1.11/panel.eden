@@ -1,0 +1,228 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## panel.e                                          Charlie Care - November 2004
+##==============================================================================
+
+
+
+
+##------------------------------------------------------------------------------
+## Add new window
+##------------------------------------------------------------------------------
+%scout
+integer AN_panel_winWidth=120;
+integer AN_panel_winHeight=230;
+
+%eden
+OpenDisplay("panel", AN_panel_winWidth, AN_panel_winHeight);
+proc panel_display_screen : panel { DisplayScreen(&panel, "panel"); }
+
+##------------------------------------------------------------------------------
+## Have a reference point at corner of display
+##  - this will help if interfaces are to be mixed in a drawslide presentation
+##------------------------------------------------------------------------------
+%scout
+integer AN_panel_refPoint_x = 0;
+integer AN_panel_refPoint_y = 0;
+
+##------------------------------------------------------------------------------
+## Dimensions of windows
+##------------------------------------------------------------------------------
+%scout
+integer AN_panel_buttonWidth = 100;
+integer AN_panel_buttonHeight = 15;
+integer AN_panel_buttonGap = 5;
+integer AN_panel_Xspace=10;
+integer AN_panel_Yspace=5;
+
+
+##------------------------------------------------------------------------------
+## Scout Strings for the background of each button
+##------------------------------------------------------------------------------
+
+%scout
+
+string AN_panel_potSet_bg;
+string AN_panel_pc_bg;
+string AN_panel_hold_bg;
+string AN_panel_compute_bg;
+string AN_panel_repop_bg;
+
+##------------------------------------------------------------------------------
+## Scout Strings for the values of time and rep-op period
+##------------------------------------------------------------------------------
+
+string AN_panel_time;
+string AN_panel_repopPeriod;
+
+##------------------------------------------------------------------------------
+## Scout windows (one for each button)
+##------------------------------------------------------------------------------
+
+string AN_panel_potSet_relief = "raised";
+string AN_panel_pc_relief = "raised";
+string AN_panel_hold_relief = "raised";
+string AN_panel_compute_relief = "raised";
+string AN_panel_repop_relief = "raised";
+
+window AN_panel_title = {
+  type: TEXT
+  string: "Mode"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+AN_panel_buttonHeight}])
+  sensitive: OFF
+  alignment: CENTRE
+  font: "{helvetica 12 bold}"
+};
+window AN_panel_potSet = {
+  type: TEXT
+  string: "POT SET"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace+1*AN_panel_buttonHeight+2*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+2*AN_panel_buttonHeight+2*AN_panel_buttonGap}])
+  sensitive: ON
+  border: 1
+  bgcolour: AN_panel_potSet_bg
+  alignment: CENTRE
+  relief: AN_panel_potSet_relief
+};
+window AN_panel_pc = {
+  type: TEXT
+  string: "RESET"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace+2*AN_panel_buttonHeight+3*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+3*AN_panel_buttonHeight+3*AN_panel_buttonGap}])
+  sensitive: ON
+  border: 1
+    bgcolour: AN_panel_pc_bg
+    alignment: CENTRE
+  relief: AN_panel_pc_relief
+};
+window AN_panel_hold = {
+  type: TEXT
+  string: "HOLD"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace+3*AN_panel_buttonHeight+4*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+4*AN_panel_buttonHeight+4*AN_panel_buttonGap}])
+  sensitive: ON
+  border: 1
+    bgcolour: AN_panel_hold_bg
+    alignment: CENTRE
+  relief: AN_panel_hold_relief
+};
+window AN_panel_compute = {
+  type: TEXT
+  string: "COMPUTE"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace+4*AN_panel_buttonHeight+5*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+5*AN_panel_buttonHeight+5*AN_panel_buttonGap}])
+  sensitive: ON
+  border: 1
+    bgcolour: AN_panel_compute_bg
+    alignment: CENTRE
+  relief: AN_panel_compute_relief
+};
+window AN_panel_repop = {
+  type: TEXT
+  string: "REP-OP"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+AN_panel_Yspace+5*AN_panel_buttonHeight+6*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+AN_panel_Yspace+6*AN_panel_buttonHeight+6*AN_panel_buttonGap}])
+  sensitive: ON
+  border: 1
+    bgcolour: AN_panel_repop_bg
+    alignment: CENTRE
+  relief: AN_panel_repop_relief
+};
+window AN_panel_clockTitle = {
+  type: TEXT
+  string: "Clock"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+3*AN_panel_Yspace+6*AN_panel_buttonHeight+6*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+3*AN_panel_Yspace+7*AN_panel_buttonHeight+6*AN_panel_buttonGap}])
+    alignment: CENTRE
+  font: "{helvetica 12 bold}"
+};
+window AN_panel_clock = {
+  type: TEXT
+  string: AN_panel_time
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+4*AN_panel_Yspace+7*AN_panel_buttonHeight+6*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+4*AN_panel_Yspace+8*AN_panel_buttonHeight+6*AN_panel_buttonGap}])
+    alignment: CENTRE
+};
+window AN_panel_periodTitle = {
+  type: TEXT
+  string: "Period"
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+4*AN_panel_Yspace+8*AN_panel_buttonHeight+7*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+4*AN_panel_Yspace+9*AN_panel_buttonHeight+7*AN_panel_buttonGap}])
+    alignment: CENTRE
+  font: "{helvetica 12 bold}"
+};
+window AN_panel_period = {
+  type: TEXT
+  string: AN_panel_repopPeriod
+  frame: ([{AN_panel_refPoint_x+AN_panel_Xspace, AN_panel_refPoint_y+6*AN_panel_Yspace+9*AN_panel_buttonHeight+7*AN_panel_buttonGap}, {AN_panel_refPoint_x+AN_panel_Xspace+AN_panel_buttonWidth, AN_panel_refPoint_y+6*AN_panel_Yspace+10*AN_panel_buttonHeight+7*AN_panel_buttonGap}])
+    alignment: CENTRE
+};
+
+##------------------------------------------------------------------------------
+## Add windows to display
+##------------------------------------------------------------------------------
+
+display panel;
+panel=<AN_panel_title / AN_panel_potSet / AN_panel_pc / AN_panel_hold
+        / AN_panel_compute / AN_panel_repop
+	/ AN_panel_clockTitle / AN_panel_clock
+	/ AN_panel_periodTitle / AN_panel_period>;
+
+##------------------------------------------------------------------------------
+## `Listening' procedures, one for each button (executes change-mode procedures)
+##------------------------------------------------------------------------------
+
+%eden
+proc AN_panel_potSet_click : ~AN_panel_potSet_mouse_1 {
+   if (~AN_panel_potSet_mouse_1[2] == 4) {
+	AN_potset();
+	AN_panel_potSet_relief is "sunken"; 
+   } else {
+	AN_panel_potSet_relief is "raised";
+   }
+}
+proc AN_panel_pc_click : ~AN_panel_pc_mouse_1 {
+   if (~AN_panel_pc_mouse_1[2] == 4) {
+	AN_pc();
+	AN_panel_pc_relief is "sunken"; 
+   } else {
+	AN_panel_pc_relief is "raised";
+   }
+}
+proc AN_panel_hold_click : ~AN_panel_hold_mouse_1 {
+   if (~AN_panel_hold_mouse_1[2] == 4) {
+	AN_hold();
+	AN_panel_hold_relief is "sunken"; 
+   } else {
+	AN_panel_hold_relief is "raised";
+   }
+}
+proc AN_panel_compute_click : ~AN_panel_compute_mouse_1 {
+   if (~AN_panel_compute_mouse_1[2] == 4) {
+	AN_compute();
+	AN_panel_compute_relief is "sunken"; 
+   } else {
+	AN_panel_compute_relief is "raised";
+   }
+}
+proc AN_panel_repop_click : ~AN_panel_repop_mouse_1 {
+   if (~AN_panel_repop_mouse_1[2] == 4) {
+	AN_repop();
+	AN_panel_repop_relief is "sunken"; 
+   } else {
+	AN_panel_repop_relief is "raised";
+   }
+}
+
+##------------------------------------------------------------------------------
+## Logic to control background of buttons
+##------------------------------------------------------------------------------
+
+AN_panel_potSet_bg is ((AN_mode_potset==1) ? AN_panel_bgOn : AN_panel_bgOff);
+AN_panel_pc_bg is  ((AN_mode_pc==1) ? AN_panel_bgOn : AN_panel_bgOff);
+AN_panel_hold_bg is ((AN_mode_hold==1) ? AN_panel_bgOn : AN_panel_bgOff);
+AN_panel_compute_bg is ((AN_mode_compute==1) ? AN_panel_bgOn : AN_panel_bgOff);
+AN_panel_repop_bg is ((AN_mode_repop==1) ? AN_panel_bgOn : AN_panel_bgOff);
+
+AN_panel_bgOn="green";
+AN_panel_bgOff="darkgrey";
+
+##------------------------------------------------------------------------------
+## Link to computer observables
+##------------------------------------------------------------------------------
+
+AN_panel_time is str(AN_time);
+AN_panel_repopPeriod is str(AN_repopPeriod);

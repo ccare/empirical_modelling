@@ -1,0 +1,34 @@
+##------------------------------------------------------------------------------
+## Some functions to provide %physical algebra in the eden-like functions
+##------------------------------------------------------------------------------
+			
+func PH_multiply {
+	para a,b; ## two lists (1st element: value, 2nd element: dimension)
+	return [a[1]*b[1],PH_vectorAdd(a[2],b[2])];
+}
+func PH_divide {
+	para a,b; ## two lists (1st element: value, 2nd element: dimension)
+	return [a[1]/b[1],PH_vectorMinus(a[2],b[2])];
+}
+func PH_add {
+	para a,b; ## two lists (1st element: value, 2nd element: dimension)
+	auto dim;
+	
+	dim = PH_vectorComp(a,b);
+	if (dim != @) {
+		return [a[1]+b[1],dim];
+	} else {
+		return [@,@];
+	}
+}
+func PH_minus {
+	para a,b; ## two lists (1st element: value, 2nd element: dimension)
+	auto dim;
+	
+	dim = PH_vectorComp(a,b);
+	if (dim != @) {
+		return [a[1]-b[1],dim];
+	} else {
+		return [@,@];
+	}
+}

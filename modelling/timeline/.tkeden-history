@@ -1,0 +1,156 @@
+%donald
+openshape timeline1
+
+int year,start,end,displayWidth
+year = 5
+start = 1900
+end = 2000
+displayWidth = 1000
+year = displayWidth div (end-start)
+
+within timeline1 {
+	line l
+	point l1,l2
+	int range,start,yPos,end
+	l1 = {(start-~/start)*~/year,yPos}
+	l2 = l1 + {~/year*range,0}
+	l = [l1,l2]
+	range = end-start
+	yPos = 250
+	start = 1910
+	end = 1990
+}
+
+%eden
+timePointMacroString = "
+%donald
+openshape timePoint?1 
+within timePoint?1 {
+	point p
+	circle c
+  c = circle(p,5)
+	p = ~/?3/l1+{(?2-~/?3/start)*~/year,0}
+}
+";
+
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"1900","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+points = [["1930","timeline1","label"],["1960","timeline1","label"]];
+points = [["1960","timeline1","label"]];
+points = [["1960","timeline1","label"]];
+
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"-1900","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"0","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"1900","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"1800","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"1800","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"1800","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+points = [["1930","timeline1","label"]];
+points = [["1930","timeline1","label"],["1960","timeline1","label"]];
+points = [["1930","timeline1","label"]];
+%eden
+points = [["1930","timeline1","label"]];
+maxPoints = 0;
+proc updatePoints : points,timePointMacroString {
+	auto i;
+	for (i=1;i<=points#;i++) {
+		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+	}
+	for (;i<=maxPoints;i++) {
+		execute(macro(timePointMacroString,str(i),"0","timeline1"));
+	}
+	if (maxPoints < points#) {maxPoints = points#;}
+}
+	
+points = [["1930","timeline1","label"],["1960","timeline1","label"]];
+points = [["1930","timeline1","label"]];

@@ -1,0 +1,21 @@
+%sasami
+
+material m_carriage_frame
+material_ambient m_carriage_frame 0 0 0
+material_diffuse m_carriage_frame 0 1 0
+material_specular m_carriage_frame 0 1 0
+
+material m_wheel
+material_ambient m_wheel 0 0 0
+material_diffuse m_wheel 1 0 0
+material_specular m_wheel 1 0 0
+
+material m_track
+material_ambient m_track 0 0 0
+material_diffuse m_track 1 1 1
+material_specular m_track  1 1 1
+
+material m_disc
+material_ambient m_disc 0 0 0
+material_diffuse m_disc 0 0 1
+material_specular m_disc 0 0 1

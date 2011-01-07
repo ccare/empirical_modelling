@@ -1,0 +1,8 @@
+%analog
+m=scale(0.5,-);
+b=integrator(a,m);
+c=scale(0.999,b);
+d=integrator(c,0);
+a=summer(d,0);
+o=b;
+

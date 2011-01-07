@@ -1,0 +1,256 @@
+%aop
+<structure> = <structure_stm> ";" : do {writeln(STRUCTURE_translate($p1));} later;
+
+<structure_stm> = "structure" <structure_def> 
+                : do {$v is ["structure",$p1];} now
+                | <structure_stm2>;
+
+<structure_stm2> = "instance" <structure_instance> 
+                 : do {$v is ["instance",$p1];} now
+                 | <structure_stm3>;
+
+<structure_stm3> = "forget" <structure_name> 
+                 : do {$v is ["forget",$p1];} now
+                 | <structure_stm4>;
+
+<structure_stm4> = "within" <structure_within> 
+                 : do {$v is ["within",$p1];} now;
+		 
+<structure_def> = <structure_name> "=" <structure_expr>
+                : do {$v is [$p1,$p2];} now;
+		
+<structure_within> = <structure_name> "{" <structure_exprBlock2>
+                : do {$v is [$p1,["block",$p2]];} now;
+
+<structure_instance> = <structure_name> "=" <structure_name>
+                     : do {$v is [$p1,$p2];} now;
+
+<structure_expr> = "" <structure_exprAdd>
+                 : do {$v is $p1;} now;
+
+<structure_exprAdd> = <structure_expr> "+" <structure_expr>
+		    : ignore [bras,cbras]
+                    : do {$v is ["union",$p1,$p2];} now
+                    | <structure_exprMinus>;
+		 
+<structure_exprMinus> = <structure_expr> "-" <structure_expr>
+		      : ignore [bras,cbras]
+                      : do {$v is ["difference",$p1,$p2];} now
+                      | <structure_exprInter>;
+		  
+<structure_exprInter> = <structure_expr> "." <structure_expr>
+		      : ignore [bras,cbras]
+                      : do {$v is ["intersection",$p1,$p2];} now
+                      | <structure_exprBlock>;
+		  
+<structure_exprBlock> = "{" <structure_exprBlock2>
+                      : do {$v is ["block",$p1];} now
+		      | <structure_exprBrac>;
+
+<structure_exprBlock2> = <structure_exprBlock3> "}"
+                  : do {$v is $p1;} now;
+
+<structure_exprBlock3> = <structure_vars> ";"
+                  : do {$v is $p1;} now;
+
+<structure_vars> = <structure_variable> ";" <structure_vars>
+                 : do {$v is $p1 // $p2;} now
+                 | <structure_variable>;
+		 
+<structure_variable> = <structure_name> "=" <structure_val>
+                     : do {$v is [[$p1,$p2]];} now
+                     | <structure_variable2>;
+		     
+<structure_variable2> = "" <structure_name>
+                      : do {$v is [[$p1,@]];} now;
+
+<structure_val> = * : do {$v is $j;} now;
+
+<structure_exprBrac> = "(" <structure_expr2>
+                     : do {$v is $p1;} now
+                     | <structure_name>;
+		 
+<structure_exprBrac2> = <structure_expr> ")" 
+                      : do {$v is $p1;} now;
+		      
+
+<structure_exisitingName> = ([a-zA-Z]+[0-9a-zA-Z_]*) : do {$v is $j;} now;
+<structure_name> = ([a-zA-Z]+[0-9a-zA-Z_]*) : do {$v is $j;} now;
+
+notation structure = split on ";" : ignore [cbras,string];
+
+%eden
+STRUCTURE = "structure";
+
+%eden
+func STRUCTURE_translate {
+	para l;
+	auto code,name,tmp,vars;
+	vars = [];
+	code = "%eden\n";
+	if (l# == 2 && l[2]# == 2) {
+		if (l[1] == "structure") {
+			name = l[2][1];
+			code = code // name // " is STRUCTURE;\n";
+			code = code // "STRUCTURE_" // name // " is ("
+				// name // " == STRUCTURE);\n";
+			if (l[2][2]# > 1) {
+				if (l[2][2][1] == "block") {
+					tmp = STRUCTURE_transBlock(name,l[2][2][2]);
+					code = code // tmp[1];
+					vars = vars // tmp[2];
+					tmp = @;
+				}
+			}
+			code = code // "STRUCTURE_" // name // "_vars = "
+				// str(vars) // ";\n";
+			code = code // "if (STRUCTURE_" // name // 
+				"_instances == @ ) {STRUCTURE_" // name // 
+				"_instances = [];};\n";
+						
+		}
+		if (l[1] == "within") {
+			name = l[2][1];
+			if (l[2][2]# > 1) {
+				if (l[2][2][1] == "block") {
+					tmp = STRUCTURE_transBlock(name,l[2][2][2]);
+					code = code // tmp[1];
+					vars = vars // tmp[2];
+					tmp = @;
+				}
+			}
+			code = code // "STRUCTURE_" // name // 
+				"_vars = STRUCTURE_removeFromList(" // 
+				"STRUCTURE_" // name // "_vars," // str(vars)//
+				") // " // str(vars) // ";\n";
+			code = code // "if (STRUCTURE_" // name // 
+				"_instances != @ ) {STRUCTURE_broadcastChanges(\""
+					// name // "\");};\n";
+		}
+		else if (l[1] == "instance") {
+			name = l[2][1];
+			code = code // STRUCTURE_makeInstance(name,l[2][2]);
+		}
+		return code;
+	}
+	else if (l# == 2) {
+		if (l[1] == "forget") {
+			code = code // STRUCTURE_forgetInstance(l[2]);
+			return code;			
+		}
+	} else {
+		writeln("Problem with translation: List should have 2
+		arguments");
+	}
+}
+
+func STRUCTURE_makeInstance {
+	para name,structure;
+	auto code,vars,i;
+	code = name // " is " // structure // ";\n";
+	vars = `"STRUCTURE_"//structure//"_vars"`;
+	for(i=1;i<=vars#;i++) {
+		code = code // name // "_" // vars[i] // " is " // 
+			structure // "_" // vars[i] // ";\n";
+	}
+	code = code // "STRUCTURE_" // structure // 
+		"_instances = STRUCTURE_removeFromList(STRUCTURE_" // 
+				structure // "_instances,[\"" // name // 
+				"\"]) // [\"" // name // "\"];\n";
+	code = code // "STRUCTURE_" // name // 
+		"_vars = STRUCTURE_" // structure // "_vars;\n";
+	code = code // "STRUCTURE_" // name // 
+		"_structure = \""// structure // "\";\n";
+	code = code // "STRUCTURE_" // name // 
+		" is ("// name // " == STRUCTURE);\n";
+	return code;
+}
+
+func STRUCTURE_forgetInstance {
+	para name;
+	auto code,vars,i,structure,instanceList;
+	structure = `"STRUCTURE_" // name // "_structure"`;
+	instanceList = "STRUCTURE_" // structure // "_instances";
+	code = name // "=@;\n";
+	vars = `"STRUCTURE_"//name//"_vars"`;
+	for(i=1;i<=vars#;i++) {
+		code = code // name // "_" // 
+				vars[i] // "=@;\n";
+	}
+	code = code // "STRUCTURE_" // name // "_vars=@;\n";
+	code = code // instanceList // " = " // "STRUCTURE_removeFromList(" 
+			// instanceList // ",[\"" // name // "\"]);\n";
+	return code;
+}
+
+func STRUCTURE_removeFromList {  
+	para l,strList;
+	auto i,j,ll;
+	ll=[];
+	for (j=1;j<=strList#;j++) {
+		for (i=1;i<=l#;i++) {
+			if (l[i] == strList[j]) {
+				l[i]=@;
+			}
+		}
+	}
+	for (j=1;j<=l#;j++) {
+		if (l[j] != @) {
+			ll = ll // [l[j]];
+		}
+	}
+	return ll;
+}
+
+func STRUCTURE_transBlock {
+	para name,l;
+	auto vars,code,i;
+	code="";
+	vars = [];
+	for(i=1;i<=l#;i++) {
+		if (l[i]# == 2) {
+			vars = vars // [l[i][1]];
+			code = code // name // "_" // l[i][1] // "_value is "
+				// str(l[i][2]) // ";\n";
+			code = code // name // "_" // l[i][1] // 
+				" is STRUCTURE_" // name // " ? " // name // 
+				"_" // l[i][1] // "_value : @;\n";
+		}
+	}
+	return [code,vars];	
+}
+
+proc STRUCTURE_broadcastChanges {
+	para structure; ## structure that has been modified
+	auto i,j,k,ok,instances,vars,instanceVars;
+	
+	## list of instances of the structure
+	instances = `"STRUCTURE_" // structure // "_instances"`;
+	## Observables in the structure
+	vars = `"STRUCTURE_" // structure // "_vars"`;
+	
+	## for each instance send new definitions
+	for (i=1;i<=instances#;i++) {
+		## Observables in the instance
+		instanceVars = `"STRUCTURE_" // instances[i] // "_vars"`;
+		
+		## for each observable in the structure check whether
+		##   there is a corresponding observable in the instance
+		##   if not then create it and link it to the default value.
+		for(j=1;j<=vars#;j++) {
+			ok = 0;
+			for(k=1;k<=instanceVars#;k++) {
+				if (vars[j] == instanceVars[k]) {ok++;};
+			}
+			if (ok == 0) {
+				execute(str(instances[i])//"_"//str(vars[j])//
+					" is "//structure//"_"//str(vars[j])//
+					";");
+				execute("STRUCTURE_" // str(instances[i]) //
+					"_vars = STRUCTURE_" // 
+					str(instances[i]) // "_vars // [\"" // 
+					str(vars[j]) // "\"];");
+			}
+		}
+	}
+}

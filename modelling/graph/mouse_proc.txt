@@ -1,0 +1,167 @@
+nodeClicked = "";
+
+proc graphClick : graphWindow_mouse {
+	auto x,y,node;
+if (graphWindow_mouse[1] == 1) {
+	if (graphWindow_mouse[2] == 4) {
+		buttonClicked=graphWindow_mouse[1];
+		x = 10*round(graphWindow_mouse[4]/10);
+		y = 10*round(graphWindow_mouse[5]/10);
+		node = getNode([x,y],nodes);
+		if (node != "") {
+			nodeClicked=node;
+		}
+	}
+	else if (graphWindow_mouse[2] == 5 && nodeClicked != "") {
+		x = 10*round(graphWindow_mouse[4]/10);
+		y = 10*round(graphWindow_mouse[5]/10);
+		nodes = updatePosition(nodeClicked,[x,y],nodes);
+		nodeClicked = "";
+	}
+}
+if (graphWindow_mouse[1] == 3) {
+	if (graphWindow_mouse[2] == 4) {
+		buttonClicked=graphWindow_mouse[1];
+		x = 10*round(graphWindow_mouse[4]/10);
+		y = 10*round(graphWindow_mouse[5]/10);
+		node = getNode([x,y],nodes);
+		if (node != "") {
+			nodeClicked=node;
+		}
+	}
+	else if (graphWindow_mouse[2] == 5 && nodeClicked != "") {
+		x = 10*round(graphWindow_mouse[4]/10);
+		y = 10*round(graphWindow_mouse[5]/10);
+		node = getNode([x,y],nodes);
+		if (node != "" && node != nodeClicked) {
+			links = addRemoveLink([nodeClicked,node],links);
+		}
+	}
+}
+
+}
+
+
+
+
+%donald
+viewport viewGraph
+int radius
+radius = 5
+
+- node n -
+%donald
+openshape n
+within n {
+ point position
+ circle dot
+
+ dot = circle(position,~/radius)
+}
+?A_n_dot ="fill=solid,outlinecolor=black,color=green";
+?_n_position is cart(getPosition("n",nodes)[1],getPosition("n",nodes)[2]);
+
+
+
+
+
+
+
+
+func getPosition {
+ para node,nodeList;
+ auto i,rtn;
+ rtn = [-10,-10];
+ for (i=1;i<=nodeList#;i++) {
+  if (nodeList[i][1] == node) {rtn = nodeList[i][2];}
+ }
+ return rtn;
+}
+
+
+func getNode {
+ para position,nodeList;
+ auto i,rtn;
+ rtn = "";
+ for (i=1;i<=nodeList#;i++) {
+  if (nodeList[i][2] == position) {rtn = nodeList[i][1];}
+ }
+ return rtn;
+}
+
+
+
+%eden
+nodes = [["n",[10,10]],["m",[10,20]]];
+_n_position is cart(getPosition("n",nodes)[1],getPosition("n",nodes)[2]);
+
+
+
+
+func updatePosition {
+ para node,position,nodeList;
+ auto i;
+ for (i=1;i<=nodeList#;i++) {
+  if (nodeList[i][1] == node) {nodeList[i][2] = position;}
+ }
+ return nodeList;
+}
+
+
+nodeMacroStr = "%donald
+openshape ?1
+within ?1 {
+ point position
+ circle dot
+
+ dot = circle(position,~/radius)
+}
+%eden
+A_?1_dot =\"fill=solid,outlinecolor=black,color=red\";
+_?1_position is cart(getPosition(\"?1\",nodes)[1],getPosition(\"?1\",nodes)[2]);
+";
+
+proc addNode {
+	para node;
+	if (node != "") {
+		nodes=nodes//[[node,[10,10]]];
+		execute(macro(nodeMacroStr,node));
+	}
+}
+
+
+
+
+links = [["a","z"],["a","b"]];
+
+maxlinks=0;
+
+proc updateLinks : links {
+	auto i,cmd;
+	cmd="%donald\n";
+	if (links# > maxlinks) {maxlinks = links#;}
+	for (i=1;i<=links#;i++) {
+		cmd=cmd//"line l"//str(i)//"\n";
+		cmd=cmd//"l"//str(i)//"=["//links[i][1]//"/position,"//links[i][2]//"/position]\n";
+	}
+	cmd=cmd//"%eden\n";
+	for (i;i<=maxlinks;i++) {
+		cmd=cmd//"_l"//str(i)//" = @;\n";
+	}
+	execute(cmd);
+}
+
+func addRemoveLink {
+	para link,linkList;
+	auto i,newLinkList,found;
+	found=0;
+	newLinkList=[];
+	for(i=1;i<=linkList#;i++) {
+		if (linkList[i] == link) {found=1;}
+		else {newLinkList = newLinkList//[linkList[i]];}
+	}
+	if (found != 1) {
+		newLinkList = newLinkList//[link];
+	}
+	return newLinkList;
+}

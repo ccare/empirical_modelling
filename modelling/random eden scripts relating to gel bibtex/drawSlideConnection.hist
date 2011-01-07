@@ -1,0 +1,2517 @@
+
+/* declare width and height (to be used for the drawingboard) to keep scout happy */ 
+%scout
+integer DS_width;
+integer DS_height;
+string DS_infobarcontent;
+
+%eden
+/* initialise width and height */
+DS_width=1024;
+DS_height=800;
+DS_infobarcontent="Starting.....";
+
+/* setup modes to create, manipulate and use the tool (NB each mode requires a different value) */
+DS_createMode=1;
+DS_manipulateMode=2;
+DS_useMode=3;
+
+/* initialise the type of windows to be created */
+DS_windowtype="TEXT";
+
+func DS_max {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]>result) {result = data[i];}
+  }
+  return result;
+}
+
+func DS_min {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]<result) {result = data[i];}
+  }
+  return result;
+}
+
+
+/* define the default colours to be used for the scout windows created */
+DS_default_bgcolour="#E3E369";
+DS_default_fgcolour="black";
+DS_default_bdcolour="black";
+
+DS_default_font=DFfont;
+DS_default_relief="flat";
+DS_default_border=1;
+
+DS_drawingboard_bgcolour="#585880";	
+
+DS_currentSlideNumber=1;
+
+/* create the sensitive drawingboard and put it in the drawingBoard display window */
+%scout 
+string DS_drawingboard_bgcolour;
+
+window DS_drawingboard = {
+    type: TEXT
+    frame: ([{0, 0}, {DS_width, DS_height}])
+    string: ""
+    sensitive: ON
+    bgcolour: DS_drawingboard_bgcolour
+};
+
+window DS_infobar = {
+	type: TEXT
+	frame:  ([{0, DS_height}, {DS_width, DS_height+1.r}])
+    	string: DS_infobarcontent
+    	sensitive: OFF
+	bgcolour: "grey"
+};
+
+window DS_welcome = {
+	type: TEXT
+	frame:  ([{0, DS_height}, {DS_width, DS_height+1.r}])
+    	string: "DrawScout version 1 | Enjoy!"
+    	sensitive: OFF
+	bgcolour: "grey"
+};
+
+display drawingBoard=<DS_welcome/DS_drawingboard>;
+
+%eden
+/* initialise the mouse, clearing all values */
+DS_drawingboard_mouse_1=[0,0,0,0,0];
+
+/* these are the mouse positions on the drawingboard, defined by dependency so that they are dynamic */
+DS_mouseposX is DS_drawingboard_mousePos_1[1];
+DS_mouseposY is DS_drawingboard_mousePos_1[2];
+
+/* when a click occurs the value of DS_drawingboard_mouse_1[2] changes. DS_mouseclick is used by the tool to sense clicks */
+DS_mouseclick is DS_drawingboard_mouse_1[2];
+
+/* these variables store the mouse position on clicks */
+DS_mouseclickposX is DS_drawingboard_mouse_1[4];
+DS_mouseclickposY is DS_drawingboard_mouse_1[5];
+
+/* variables to be used in tracing click and release mouse actions */
+DS_clicked=0;
+DS_clicked1=0;
+
+/* this ensures that EDEN does not make certain changes, defined in parts of this script, when drawScout is first loaded*/
+DS_go=0;
+
+/* set current mode to manipulate */
+DS_mode=DS_manipulate;
+DS_currentWindowNumber=0;
+DS_currentWindowNumber1=0;
+
+DS_startpos=[0,0];
+DS_endpos=[0,0];
+
+/* open a new display to use to draw Scout windows. This should enable integrated use of drawScout with existing models */
+OpenDisplay("drawingBoard", DS_width, DS_height+fontHeight);
+proc drawingBoard_display_screen : drawingBoard { DisplayScreen(&drawingBoard, "drawingBoard"); }
+
+
+func DS_entry {
+	
+	para mouse,i;
+
+	DS_whereIsMyMouse=str(i);
+
+	return DS_whereIsMyMouse;
+
+}
+
+DS_whereIsMyMouse=0;
+
+DS_win0_string is "This is the drawing board";
+
+DS_lookup is "DS_win"//str(DS_whereIsMyMouse)//"_string";
+
+DS_infobarcontent is DS_whereIsMyMouse=="0"?"Window: Drawing Board | In create mode, click and drag to draw scout windows!":"Window: DS_win"//str(DS_whereIsMyMouse)//" | DS_win"//str(DS_whereIsMyMouse)//"_string:"//symboltext(DS_lookup);
+
+DS_senseEntry0 is DS_entry(DS_drawingboard_mousePos_1,0);
+
+%eden
+/* function used when clicks occur to trace clicks and releases of the mouse*/
+
+
+func DS_clicking {
+
+	para mouse,i;
+	auto j;
+
+	/* writeln("sensing click window"//str(i)); */
+
+	if(mouse[1]==1&&DS_mode==DS_createMode)
+	{
+		DS_clicked=1-DS_clicked; 
+		DS_setwindownumber="%eden\n DS_currentWindowNumber1="//str(i)//";";
+		execute(DS_setwindownumber);
+		DS_go=1;
+	};		
+
+	if(mouse[1]==1&&DS_mode==DS_manipulateMode)
+	{
+		DS_clicked1=1-DS_clicked1; 
+		DS_go=2; 
+		DS_setwindownumber="%eden\n DS_currentWindowNumber="//str(i)//";";
+		execute(DS_setwindownumber);
+
+		if(DS_clicked1==1&&DS_currentWindowNumber>0&&DS_myWindowList#>1)
+		{
+			/*
+			DS_currentForegroundWindow=DS_myWindowList[DS_myWindowList#];
+			
+			DS_removeFromList="%eden\n delete DS_myWindowList, DS_win"//str(i)//"listpos; DS_thisWindowlistpos=DS_win"//str(i)//"listpos;";
+			
+			DS_appendToList="%eden\n append DS_myWindowList,\"DS_win"//str(i)//"\";";
+			execute(DS_removeFromList);
+			execute(DS_appendToList);
+
+			for(j=1;j<DS_myWindowList#;j++)
+			{
+				DS_getWindowPos="DS_windowpos=DS_win"//str(j)//"listpos;";
+				execute(DS_getWindowPos);
+
+				if(i!=j&&DS_windowpos>DS_thisWindowlistpos)
+				{
+					DS_newlistpos="DS_win"//str(j)//"listpos=DS_win"//str(j)//"listpos-1;";
+					execute(DS_newlistpos);
+				}
+			}
+			
+			DS_newWindowListPos="DS_win"//str(i)//"listpos="//str(DS_myWindowList#)//";";
+			execute(DS_newWindowListPos);
+
+			DS_updateScreen="%scout\n display drawingBoard=" // DS_windowManager//";";
+
+			execute(DS_updateScreen);
+
+			*/
+
+			/* NEW STUFF FOR SLIDES (INSTEAD OF A SINGLE DRAWINGBOARD)*/
+		
+			DS_currentSlideForegroundWindow=DS_currentSlideList[DS_currentSlideList#];
+			
+			DS_removeFromList="%eden\n delete DS_slide"//str(DS_currentSlideNumber)//"List, DS_win"//str(i)//"slidelistpos; 
+					   DS_thisSlidelistpos=DS_win"//str(i)//"slidelistpos;";
+			
+			DS_appendToList="%eden\n append DS_slide"//str(DS_currentSlideNumber)//"List,\"DS_win"//str(i)//"\";";
+			execute(DS_removeFromList);
+			execute(DS_appendToList);
+
+			execute("DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");
+			
+			for(j=2;j<DS_currentSlideList#+1;j++)
+			{
+				DS_newslidelistpos=str(DS_currentSlideList[j])//"slidelistpos="//str(j)//";";
+				/* writeln(DS_newslidelistpos);*/
+				execute(DS_newslidelistpos);
+
+			}
+		
+			DS_updateScreen="%scout\n display drawingBoard=" // DS_windowManager//";";
+
+			execute(DS_updateScreen);
+		}
+	};
+}
+
+
+DS_go=0;
+
+/* whenever a click occurs, DS_drawingboard_mouse_1 changes and DS_senseclicks ensures that the appropriate variables are changed using the DS_clicking function*/
+DS_senseclicks is DS_clicking(DS_drawingboard_mouse_1,0);
+
+/* declaration of integers to be used for click and release positions to keep scout happy */
+%scout
+integer DS_posX1,DS_posX2,DS_posY1,DS_posY2;
+
+%eden
+/* dependencies to set the click and release positions, taking into accout the fact that the user can drag the mouse from bottom right to top left in window creation*/
+DS_posX1 is DS_min(DS_startpos[1],DS_endpos[1]);
+DS_posY1 is DS_min(DS_startpos[2],DS_endpos[2]);
+DS_posX2 is DS_max(DS_startpos[1],DS_endpos[1]);
+DS_posY2 is DS_max(DS_startpos[2],DS_endpos[2]);
+
+
+func DS_FontWidth {
+        para win, font;
+        /* Measuring the width of the (wide) character 'W' */
+        return DS_StringWidth(win, font, "W");
+}
+
+func DS_StringWidth {
+        para win, font, string;
+
+        if ((win == @) || (font == @) || (string == @)) return @;
+
+        return int(tcl("font measure " // font //
+                " -displayof ." // win // " " // "{" // string // "}"));
+}
+
+func DS_FontHeight {
+        para win, font;
+        return int(tcl("font metrics " // font //
+                " -displayof ." // win // " -linespace"));
+}
+
+
+
+
+/* this function "draws" the windows on to the drawingboard */
+func DS_windowSetup {
+	para DS_clicked,i,DS_myWindowList;
+	
+		if(DS_clicked==1&&DS_mode==DS_createMode&&DS_go==1&&DS_currentWindowNumber1==0)
+		{
+			DS_startpos[1]=DS_mouseclickposX;
+			DS_startpos[2]=DS_mouseclickposY;
+		};
+	
+		if(DS_clicked==0&&DS_mode==DS_createMode&&DS_go==1&&DS_currentWindowNumber1==0)
+		{
+			DS_endpos[1]=DS_mouseclickposX;
+			DS_endpos[2]=DS_mouseclickposY;
+		
+			
+			if(DS_windowtype=="TEXT")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: TEXT\n
+					string: DS_win"//str(i)//"_string\n
+					sensitive: ON+MOTION+ENTER\n
+					frame: ([ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2} ])\n 
+					font: DS_win"//str(i)//"_font\n
+					border: DS_win"//str(i)//"_border\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					alignment: LEFT\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					bgcolour: DS_win"//str(i)//"_bgcolour\n};";
+
+				DS_contentScout="%scout\n string DS_win"//str(i)//"_string;
+							  string DS_win"//str(i)//"_font;
+							  integer DS_win"//str(i)//"_border; 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_relief;
+							  string DS_win"//str(i)//"_bdcolour;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is window DS_win"//str(i)//"\"; 
+						DS_win"//str(i)//"_font=DS_default_font;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2="//str(DS_posX2)//"; 
+						DS_win"//str(i)//"_Y2="//str(DS_posY2)//"; 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+			
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse_1,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter_1,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+
+			}
+			
+			if(DS_windowtype=="IMAGE"||DS_windowtype=="DONALD")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: "//DS_windowtype//"\n
+					sensitive: ON+MOTION+ENTER\n
+					box: [ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2}]\n 
+					bgcolour: DS_win"//str(i)//"_bgcolour\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					border: DS_win"//str(i)//"_border\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					pict: \"DS_win"//str(i)//"_pict\"\n};";
+
+				DS_contentScout="%scout\n image DS_win"//str(i)//"_pict;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bdcolour;
+							  integer DS_win"//str(i)//"_border;
+						      	  string DS_win"//str(i)//"_relief;	 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is image window DS_win"//str(i)//"\";
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2="//str(DS_posX2)//"; 
+						DS_win"//str(i)//"_Y2="//str(DS_posY2)//";
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour; 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+			
+			}
+			
+			if(DS_windowtype=="TEXTBOX")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: TEXTBOX\n
+					string: DS_win"//str(i)//"_string\n
+					sensitive: ON+MOTION+ENTER\n
+					frame: ([ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2} ])\n 
+					font: DS_win"//str(i)//"_font\n
+					border: DS_win"//str(i)//"_border\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					alignment: LEFT\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					bgcolour: DS_win"//str(i)//"_bgcolour\n};";
+
+				DS_contentScout="%scout\n string DS_win"//str(i)//"_string;
+							  string DS_win"//str(i)//"_font;
+							  integer DS_win"//str(i)//"_border; 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_relief;
+							  string DS_win"//str(i)//"_bdcolour;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is window DS_win"//str(i)//"\"; 
+						DS_win"//str(i)//"_font=DS_default_font;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2=("//str(DS_posX2)//"-"//
+								      str(DS_posX1)//")/(DS_FontWidth(\"drawingBoard\",DS_win"//str(i)//"_font)); 
+						DS_win"//str(i)//"_Y2=("//str(DS_posY2)//"-"//
+								      str(DS_posY1)//")/(DS_FontHeight(\"drawingBoard\",DS_win"//str(i)//"_font)); 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+			
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse_1,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter_1,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+
+			}
+		
+			DS_listUpdate= "%eden\n append DS_myWindowList,\"DS_win"//str(i)//"\";"; 
+			
+			execute(DS_listUpdate);
+			
+			
+			DS_slideUpdate="%eden\n append DS_slide"//str(DS_currentSlideNumber)//"List,\"DS_win"//str(i)//"\";";
+			execute(DS_slideUpdate);
+			
+			DS_windowNumber=DS_windowNumber+1;
+			
+			DS_screenUpdate = "%scout\n display drawingBoard=" // DS_windowManager//";";
+			
+			execute(DS_screenUpdate);
+		};
+	
+}
+
+DS_windowNumber=1;
+
+DS_myWindowList=["DS_drawingboard","DS_infobar"];
+
+DS_slide1List=["DS_drawingboard"];
+DS_numberOfSlides=1;
+
+DS_setWindow is DS_windowSetup(DS_clicked,DS_windowNumber,DS_myWindowList);
+
+%eden
+func DS_windows {
+
+	para DS_windowList,DS_windowNumber,DS_currentWindowNumber,DS_currentSlideNumber;
+	auto result;
+	result=""//DS_windowList[1]//"";
+	
+	execute("%eden\n DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");
+
+	for(i=2;i<DS_currentSlideList#+1;i++)
+	{
+		result=DS_currentSlideList[i]//"/"//result;	
+	}
+
+	/* writeln(result); */
+
+	result="<"//result//">";
+
+	return result;
+}
+
+DS_windowManager is DS_windows(DS_myWindowList,DS_windowNumber,DS_currentWindowNumber,DS_currentSlideNumber);
+
+DS_MovingWindows is DS_windowMove(DS_currentWindowNumber);
+
+
+proc DS_slideManager : DS_currentSlideNumber {
+
+		DS_screenUpdate="%scout\n display drawingBoard=" // DS_windowManager//";";
+		execute("%eden\n DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");	
+		execute(DS_screenUpdate);
+	
+}
+
+
+%eden
+/* function used in moving created windows */
+func DS_windowMove {
+
+	para DS_windownumber;
+
+	execute("DS_thisWindowType=DS_win"//str(DS_currentWindowNumber)//"_type;");
+
+	if(DS_currentWindowNumber>0&&DS_clicked1==1&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+		if(DS_thisWindowType=="TEXT" || DS_thisWindowType=="TEXTBOX")
+		{
+			DS_mouseDown="%eden\n DS_startpos[1]=DS_win"//str(DS_windownumber)//"_mouse_1[4]; 
+					      DS_startpos[2]=DS_win"//str(DS_windownumber)//"_mouse_1[5];";
+		}
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseDown="%eden\n DS_startpos[1]=DS_win"//str(DS_windownumber)//"_mouse[4]; 
+					      DS_startpos[2]=DS_win"//str(DS_windownumber)//"_mouse[5];";	
+
+		}
+		execute(DS_mouseDown);
+	};
+	
+	if(DS_currentWindowNumber>0&&DS_clicked1==0&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+		if(DS_thisWindowType=="TEXT" || DS_thisWindowType=="TEXTBOX")
+		{
+			DS_mouseUp="%eden\n DS_endpos[1]=DS_win"//str(DS_windownumber)//"_mouse_1[4]; 
+					    DS_endpos[2]=DS_win"//str(DS_windownumber)//"_mouse_1[5];";
+		}
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseUp="%eden\n DS_endpos[1]=DS_win"//str(DS_windownumber)//"_mouse[4]; 
+					    DS_endpos[2]=DS_win"//str(DS_windownumber)//"_mouse[5];";
+			
+		}
+		execute(DS_mouseUp);
+			
+	};
+	
+	if(DS_currentWindowNumber>0&&DS_clicked1==0&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+	
+		if(DS_thisWindowType=="TEXT")
+		{
+			DS_relativeX=DS_endpos[1]-DS_startpos[1];
+			DS_relativeY=DS_endpos[2]-DS_startpos[2];
+		
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[2][1][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[2][1][2];";
+			execute(DS_currentYstart);
+		
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_win"//str(DS_windownumber)//"[2][1][3];";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_win"//str(DS_windownumber)//"[2][1][4];";
+			execute(DS_currentYfinish);
+		
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart; 
+		        DS_newposXstart=DS_oldposXstart+DS_relativeX;
+		
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart; 
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;
+			
+			DS_newposXfinish=DS_newposXstart+DS_dimensionX;
+			DS_newposYfinish=DS_newposYstart+DS_dimensionY;
+
+		}
+
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseMovementX=DS_endpos[1]-DS_startpos[1];
+			DS_mouseMovementY=DS_endpos[2]-DS_startpos[2];
+				
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[4][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[4][2];";
+			execute(DS_currentYstart);
+		
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_win"//str(DS_windownumber)//"[4][3];";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_win"//str(DS_windownumber)//"[4][4];";
+			execute(DS_currentYfinish);
+
+
+			DS_unitX=float(DS_oldposXfinish-DS_oldposXstart)/1000; 
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart;
+		
+			DS_unitY=float(DS_oldposYfinish-DS_oldposYstart)/1000; 
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart;
+			
+			DS_relativeX=DS_mouseMovementX*DS_unitX;
+			DS_relativeY=DS_mouseMovementY*DS_unitY*-1;
+		
+			DS_newposXstart=DS_oldposXstart+DS_relativeX;
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;
+		
+			DS_newposXfinish=DS_newposXstart+DS_dimensionX;
+			DS_newposYfinish=DS_newposYstart+DS_dimensionY;	
+	
+		}
+			
+
+		if(DS_thisWindowType=="TEXTBOX")
+		{
+			DS_relativeX=DS_endpos[1]-DS_startpos[1];
+			DS_relativeY=DS_endpos[2]-DS_startpos[2];
+		
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[2][1][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[2][1][2];";
+			execute(DS_currentYstart);
+		
+			execute("%eden\n DS_windowWidth=DS_win"//str(DS_windownumber)//"[2][1][3];");
+			execute("%eden\n DS_windowHeight=DS_win"//str(DS_windownumber)//"[2][1][4];");
+
+			execute("%eden\n DS_thisFontWidth=DS_FontWidth(\"drawingBoard\",DS_win"//str(DS_windownumber)//"_font);");
+			execute("%eden\n DS_thisFontHeight=DS_FontHeight(\"drawingBoard\",DS_win"//str(DS_windownumber)//"_font);");
+
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_oldposXstart+((DS_win"//str(DS_windownumber)//
+						   "[2][1][3])*DS_thisFontWidth);";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_oldposYstart+((DS_win"//str(DS_windownumber)//
+						   "[2][1][4])*DS_thisFontHeight);";
+			execute(DS_currentYfinish);
+		
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart; 
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart; 
+			
+			DS_newposXstart=DS_oldposXstart+DS_relativeX;
+		
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;	
+	
+
+		}
+		
+
+
+		if(DS_thisWindowType=="TEXT")
+		{
+
+			if(DS_startpos[1]>(DS_dimensionX-5) && DS_startpos[2]>(DS_dimensionY-5))
+			{
+			
+				DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+DS_endpos[1])); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart+DS_endpos[2]));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+			
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;
+							DS_win"//str(DS_windownumber)//"_X2=DS_newposXfinish;
+							DS_win"//str(DS_windownumber)//"_Y2=DS_newposYfinish;";
+
+			};
+		
+		}
+	
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+
+			/* NEEDS TO BE MADE A LITTLE MORE ELEGANT AND TO TAKE xmin,xmax,ymin,ymax INTO account */
+			if(DS_startpos[1]>950 && DS_startpos[2]<50)
+			{
+				
+				if(DS_endpos[2]>=1000)
+				{
+					
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart-((DS_endpos[2]-1000)*DS_unitY)));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				
+				}
+				else
+				{
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart-DS_relativeY));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				};
+				if(DS_endpos[2]<0)
+				{
+					
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_oldposYstart;
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				
+				}
+			
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;
+							DS_win"//str(DS_windownumber)//"_X2=DS_newposXfinish;
+							DS_win"//str(DS_windownumber)//"_Y2=DS_newposYfinish;";
+
+			};
+
+
+		}
+		
+		if(DS_thisWindowType=="TEXTBOX")
+		{
+
+			if(DS_startpos[1]>(DS_dimensionX-10) && DS_startpos[2]>(DS_dimensionY-10))
+			{
+					if(DS_endpos[1]>0 && DS_endpos[2]>0)
+					{
+						DS_moveWindow="%eden\n 	
+						DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+DS_endpos[1])); 
+						DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart+DS_endpos[2]));
+						DS_win"//str(DS_windownumber)//"_X2=DS_windowWidth+(DS_relativeX/DS_thisFontWidth);
+						DS_win"//str(DS_windownumber)//"_Y2=DS_windowHeight+(DS_relativeY/DS_thisFontHeight);";
+					}
+
+	
+					-(DS_endpos[1]/DS_thisFontWidth);
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;";
+
+			};
+		
+		}
+		
+		execute(DS_moveWindow);
+		
+	};
+
+}
+
+
+/* The display window for Mode Switching */
+
+%eden
+OpenDisplay("modeSwitcher", 300, 70);
+proc modeSwitcher_display_screen : modeSwitcher { DisplayScreen(&modeSwitcher, "modeSwitcher"); }
+
+
+%scout
+
+string DS_selectedColour="white";
+string DS_defaultColour="grey";
+
+string DS_createColour=DS_defaultColour;
+string DS_manipulateColour=DS_defaultColour;
+string DS_useColour=DS_selectedColour;
+string DS_clearColour=DS_defaultColour;
+
+string DS_TEXT_bgcolour=DS_selectedColour;
+string DS_TEXTBOX_bgcolour=DS_defaultColour;
+string DS_IMAGE_bgcolour=DS_defaultColour;
+string DS_DONALD_bgcolour=DS_defaultColour;
+
+string DS_CREATESLIDE_bgcolour=DS_selectedColour;
+string DS_NEXTSLIDE_bgcolour=DS_selectedColour;
+string DS_PREVSLIDE_bgcolour=DS_selectedColour;
+
+
+window DS_create= {
+    type: TEXT
+    frame: ([{5,5},{11.c,5+1.r}])
+    string: "  Create  "
+    sensitive: ON
+    bgcolour: DS_createColour	
+};
+
+window DS_manipulate= {
+    type: TEXT
+    frame: ([{5,10+1.r},{11.c,10+2.r}])
+    string: "Manipulate "
+    sensitive: ON
+    bgcolour: DS_manipulateColour
+};
+
+window DS_use= {
+    type: TEXT
+    frame: ([{5,15+2.r},{11.c,15+3.r}])
+    string: "    Use    "
+    sensitive: ON
+    bgcolour: DS_useColour
+};
+
+window DS_TEXT= {
+    type: TEXT
+    frame: ([{5+15.c,5},{5+26.c,5+1.r}])
+    string: "TEXT"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_TEXT_bgcolour
+};
+
+window DS_TEXTBOX= {
+    type: TEXT
+    frame: ([{5+15.c,10+1.r},{5+26.c,10+2.r}])
+    string: "TEXTBOX"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_TEXTBOX_bgcolour
+};
+
+window DS_IMAGE= {
+    type: TEXT
+    frame: ([{5+15.c,15+2.r},{5+26.c,15+3.r}])
+    string: "IMAGE"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_IMAGE_bgcolour
+};
+
+window DS_DONALD= {
+    type: TEXT
+    frame: ([{5+15.c,20+3.r},{5+26.c,20+4.r}])
+    string: "DONALD"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_DONALD_bgcolour
+};
+
+window DS_CREATESLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,5},{5+41.c,5+1.r}])
+    string: "New Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_CREATESLIDE_bgcolour
+};
+
+window DS_NEXTSLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,10+1.r},{5+41.c,10+2.r}])
+    string: "Next Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_NEXTSLIDE_bgcolour
+};
+
+window DS_PREVSLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,15+2.r},{5+41.c,15+3.r}])
+    string: "Prev Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_PREVSLIDE_bgcolour
+};
+
+display modeSwitcher=<DS_create/DS_manipulate/DS_use/DS_TEXT/DS_TEXTBOX/DS_IMAGE/DS_DONALD/DS_CREATESLIDE/DS_NEXTSLIDE/DS_PREVSLIDE>;
+
+%eden
+
+DS_mode=DS_useMode;
+
+DS_selectCreate is DS_modeSelection(DS_create_mouse_1,DS_createMode);
+DS_selectManipulate is DS_modeSelection(DS_manipulate_mouse_1,DS_manipulateMode);
+DS_selectUse is DS_modeSelection(DS_use_mouse_1,DS_useMode);
+
+
+func DS_modeSelection {
+
+	para mouse,i;
+
+	DS_mode=i;
+
+	DS_clicked=0;
+
+	if(DS_mode==DS_createMode)
+		DS_createColour=DS_selectedColour; else DS_createColour=DS_defaultColour;
+	
+	if(DS_mode==DS_manipulateMode)
+		DS_manipulateColour=DS_selectedColour; else DS_manipulateColour=DS_defaultColour;
+	
+	if(DS_mode==DS_useMode)
+		DS_useColour=DS_selectedColour; else DS_useColour=DS_defaultColour;
+
+
+	return i;
+}
+
+
+DS_type="TEXT";
+
+DS_selectTEXT is DS_windowtypeselection(DS_TEXT_mouse_1,"TEXT");
+DS_selectTEXTBOX is DS_windowtypeselection(DS_TEXTBOX_mouse_1,"TEXTBOX");
+DS_selectIMAGE is DS_windowtypeselection(DS_IMAGE_mouse_1,"IMAGE");
+DS_selectDONALD is DS_windowtypeselection(DS_DONALD_mouse_1,"DONALD");
+
+
+func DS_windowtypeselection {
+
+	para mouse,type;
+
+	DS_windowtype=type;
+
+	if(DS_windowtype=="TEXT")
+		DS_TEXT_bgcolour=DS_selectedColour; 
+	else 
+		DS_TEXT_bgcolour=DS_defaultColour;;
+	
+	if(DS_windowtype=="TEXTBOX")
+		DS_TEXTBOX_bgcolour=DS_selectedColour; 
+	else 
+		DS_TEXTBOX_bgcolour=DS_defaultColour;;
+	
+	if(DS_windowtype=="IMAGE")
+		DS_IMAGE_bgcolour=DS_selectedColour; 
+	else 
+		DS_IMAGE_bgcolour=DS_defaultColour;;	
+		
+	if(DS_windowtype=="DONALD")
+		DS_DONALD_bgcolour=DS_selectedColour; 
+	else 
+		DS_DONALD_bgcolour=DS_defaultColour;;
+
+}
+
+
+proc DS_createNewSlide : DS_CREATESLIDE_mouse_1 {
+	
+	if(DS_CREATESLIDE_mouse_1[2]==5)
+	{
+		DS_numberOfSlides++;
+	
+		execute("DS_slide"//str(DS_numberOfSlides)//"List=[\"DS_drawingboard\"];");
+
+		DS_currentSlideNumber=DS_numberOfSlides;
+	}
+}
+
+
+proc DS_nextSlide : DS_NEXTSLIDE_mouse_1 {
+
+	if(DS_NEXTSLIDE_mouse_1[2]==5)
+	{ 
+		if(DS_currentSlideNumber!=DS_numberOfSlides)
+		{
+			DS_currentSlideNumber++;
+		}
+		else
+		{	DS_numberOfSlides++;
+	
+			execute("DS_slide"//str(DS_numberOfSlides)//"List=[\"DS_drawingboard\"];");
+
+			DS_currentSlideNumber=DS_numberOfSlides;
+		};
+	}
+}
+
+proc DS_prevSlide : DS_PREVSLIDE_mouse_1 {
+
+	if(DS_PREVSLIDE_mouse_1[2]==5 && DS_currentSlideNumber!=1)
+	{
+		DS_currentSlideNumber--;
+	}
+
+}
+
+DS_clicked=0;
+
+
+func DS_circleSimple
+{
+        para  DS_xCentre,DS_yCentre,DS_circle_radius,DS_border_width;
+
+        auto x, y, r2;
+
+        DS_default_border=DS_border_width;
+
+        r2 = DS_circle_radius * DS_circle_radius;
+
+        for (x = -DS_circle_radius; x <= DS_circle_radius; x++)
+        {
+            y = int(nthroot((r2 - x*x), 2)+ 0.5);
+
+            DS_drawingboard_mouse_1=[1,4,0,DS_xCentre+x-1,DS_yCentre+y-1];
+            DS_drawingboard_mouse_1=[1,5,256,DS_xCentre+x,DS_yCentre+y];
+
+            DS_drawingboard_mouse_1=[1,4,0,DS_xCentre+x-1, DS_yCentre-y-1];
+            DS_drawingboard_mouse_1=[1,5,256,DS_xCentre+x, DS_yCentre-y];
+
+        }
+}
+
+
+/*
+proc DS_save_draft {
+
+	auto i,j;
+	fp=fopen("DS_Presentation_draft.txt", "w");
+	fprintf(fp,"autocalc=0;\n");
+	fclose(fp);
+
+	for(i=1;i<symboltable()#+1;i++)
+	{
+		if(substr((symboltable()[i][1]),1,3)=="DS_")
+		{	
+			writeln(symboldefinition(symboltable()[i][1]));
+			fp=fopen("DS_Presentation_draft.txt","a");
+			fprintf(fp,symboldefinition(symboltable()[i][1])//"\n"); 
+			fclose(fp);	
+	
+		}
+	}	
+
+	fp=fopen("DS_Presentation_draft.txt", "a");
+        fprintf(fp,"autocalc=1;\n");
+        fclose(fp);
+}
+
+
+
+
+func DS_textify {
+
+	para windowName;
+
+	DS_stringToBeExecuted="%eden\n "//windowName//"_string="//windowName//"_TEXT_1;";
+
+	execute(DS_stringToBeExecuted);
+
+	DS_stringToBeExecuted="%scout\n window "//
+			    windowName//" = {
+			    type: TEXT\n
+    			    frame: ([{"//windowName//"_X1,"//windowName//"_Y1},{"//windowName//"_X2,"//windowName//"_Y2}])\n
+    		  	    string: "//windowName//"_string\n
+    			    font: "//windowName//"_font\n
+    		  	    bgcolor: "//windowName//"_bgcolour\n
+    			    fgcolor: "//windowName//"_fgcolour\n
+    			    bdcolor: "//windowName//"_bdcolour\n
+    			    border: "//windowName//"_border\n
+    			    relief: "//windowName//"_relief\n
+    			    alignment: LEFT\n
+			    sensitive: ON+MOTION+ENTER\n
+			    };";
+
+	execute(DS_stringToBeExecuted);
+
+}
+
+*/
+
+~DS_drawingboard_mouse_1 = [1,4,0,98, 33];
+~DS_drawingboard_mouse_1 = [1,5,256,196, 156];
+~DS_create_mouse_1 = [1,4,0,63, 2];
+~DS_create_mouse_1 = [1,5,256,63, 2];
+~DS_drawingboard_mouse_1 = [1,4,0,96, 206];
+~DS_drawingboard_mouse_1 = [1,5,256,221, 293];
+~DS_win1_mouseEnter_1 = 1;
+~DS_drawingboard_mouse_1 = [1,4,0,437, 406];
+~DS_drawingboard_mouse_1 = [1,5,256,557, 476];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [116, 68];
+~DS_win2_mousePos_1 = [109, 61];
+~DS_win2_mousePos_1 = [105, 58];
+~DS_win2_mousePos_1 = [100, 55];
+~DS_win2_mousePos_1 = [99, 54];
+~DS_win2_mousePos_1 = [96, 53];
+~DS_win2_mousePos_1 = [94, 53];
+~DS_win2_mousePos_1 = [89, 53];
+~DS_win2_mousePos_1 = [89, 52];
+~DS_win2_mousePos_1 = [82, 48];
+~DS_win2_mousePos_1 = [70, 39];
+~DS_win2_mousePos_1 = [52, 28];
+~DS_win2_mousePos_1 = [35, 17];
+~DS_win2_mousePos_1 = [21, 6];
+~DS_win2_mousePos_1 = [16, 1];
+~DS_drawingboard_mouse_1 = [1,4,0,264, 243];
+~DS_drawingboard_mouse_1 = [1,5,256,501, 256];
+~DS_win3_mouseEnter_1 = 1;
+~DS_win3_mousePos_1 = [238, 15];
+~DS_drawingboard_mouse_1 = [1,4,0,517, 253];
+~DS_drawingboard_mouse_1 = [1,5,256,526, 389];
+~DS_win4_mouseEnter_1 = 1;
+~DS_win4_mousePos_1 = [8, 137];
+~DS_win4_mousePos_1 = [1, 134];
+~DS_manipulate_mouse_1 = [1,4,0,37, 9];
+~DS_manipulate_mouse_1 = [1,5,256,37, 9];
+~DS_win1_mouseEnter_1 = 1;
+DS_win3_Y2 is DS_win3_Y1;
+DS_win4_X1 is DS_win4_X2;
+DS_win3_Y1 is DS_win1_Y1 + 0.5*(DS_win1_Y2 - DS_win1_Y1);
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [57, 18];
+~DS_win1_mousePos_1 = [57, 19];
+~DS_win1_mousePos_1 = [57, 20];
+~DS_win1_mousePos_1 = [57, 21];
+~DS_win1_mouse_1 = [1,4,0,57, 21];
+~DS_win1_mousePos_1 = [57, 22];
+~DS_win1_mousePos_1 = [57, 23];
+~DS_win1_mousePos_1 = [57, 24];
+~DS_win1_mousePos_1 = [57, 25];
+~DS_win1_mousePos_1 = [57, 26];
+~DS_win1_mousePos_1 = [57, 27];
+~DS_win1_mousePos_1 = [57, 28];
+~DS_win1_mousePos_1 = [57, 30];
+~DS_win1_mousePos_1 = [57, 31];
+~DS_win1_mousePos_1 = [57, 32];
+~DS_win1_mousePos_1 = [57, 33];
+~DS_win1_mouse_1 = [1,5,256,57, 33];
+~DS_win1_mousePos_1 = [57, 34];
+~DS_win1_mouse_1 = [1,4,0,57, 22];
+~DS_win1_mousePos_1 = [57, 15];
+~DS_win1_mousePos_1 = [57, 14];
+~DS_win1_mousePos_1 = [57, 13];
+~DS_win1_mousePos_1 = [57, 12];
+~DS_win1_mousePos_1 = [57, 11];
+~DS_win1_mousePos_1 = [57, 10];
+~DS_win1_mousePos_1 = [57, 9];
+~DS_win1_mouse_1 = [1,5,256,57, 9];
+~DS_win1_mousePos_1 = [57, 21];
+~DS_win1_mousePos_1 = [57, 22];
+~DS_win1_mousePos_1 = [58, 23];
+~DS_win1_mousePos_1 = [59, 24];
+~DS_win1_mousePos_1 = [60, 27];
+~DS_win1_mousePos_1 = [61, 28];
+~DS_win1_mousePos_1 = [62, 29];
+~DS_win1_mousePos_1 = [63, 31];
+~DS_win1_mousePos_1 = [64, 32];
+~DS_win1_mousePos_1 = [65, 33];
+~DS_win1_mousePos_1 = [66, 34];
+~DS_win1_mousePos_1 = [67, 35];
+~DS_win1_mousePos_1 = [68, 35];
+~DS_win1_mousePos_1 = [69, 36];
+~DS_win1_mousePos_1 = [69, 37];
+~DS_win1_mousePos_1 = [69, 38];
+~DS_win1_mousePos_1 = [70, 38];
+~DS_win1_mousePos_1 = [70, 39];
+~DS_win1_mousePos_1 = [71, 39];
+~DS_win1_mousePos_1 = [71, 40];
+~DS_win1_mousePos_1 = [71, 43];
+~DS_win1_mousePos_1 = [74, 54];
+~DS_win1_mousePos_1 = [78, 64];
+~DS_win1_mousePos_1 = [87, 81];
+DS_win3_Y1 is DS_win1_Y1 + 0.5*(DS_win1_Y2 - DS_win1_Y1);
+DS_win3_X1 is DS_win1_X2;
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [71, 76];
+~DS_win1_mousePos_1 = [70, 75];
+~DS_win1_mousePos_1 = [70, 74];
+~DS_win1_mouse_1 = [1,4,0,70, 74];
+~DS_win1_mousePos_1 = [70, 75];
+~DS_win1_mousePos_1 = [70, 76];
+~DS_win1_mousePos_1 = [70, 77];
+~DS_win1_mousePos_1 = [70, 78];
+~DS_win1_mouse_1 = [1,5,256,70, 78];
+~DS_win1_mousePos_1 = [71, 77];
+~DS_win1_mousePos_1 = [74, 83];
+DS_win4_X2 is DS_win2_X1 + 0.5*(DS_win2_X2 - DS_win2_X1);
+DS_win4_Y2 is DS_win2_Y1;
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [67, 20];
+~DS_win2_mousePos_1 = [68, 19];
+~DS_win2_mousePos_1 = [68, 18];
+~DS_win2_mousePos_1 = [70, 17];
+~DS_win2_mouse_1 = [1,4,0,70, 17];
+~DS_win2_mousePos_1 = [71, 17];
+~DS_win2_mousePos_1 = [72, 17];
+~DS_win2_mousePos_1 = [73, 17];
+~DS_win2_mousePos_1 = [73, 18];
+~DS_win2_mousePos_1 = [74, 18];
+~DS_win2_mousePos_1 = [75, 18];
+~DS_win2_mousePos_1 = [76, 18];
+~DS_win2_mousePos_1 = [77, 18];
+~DS_win2_mousePos_1 = [78, 18];
+~DS_win2_mousePos_1 = [79, 18];
+~DS_win2_mousePos_1 = [80, 18];
+~DS_win2_mousePos_1 = [81, 18];
+~DS_win2_mousePos_1 = [82, 18];
+~DS_win2_mousePos_1 = [83, 18];
+~DS_win2_mousePos_1 = [84, 18];
+~DS_win2_mousePos_1 = [85, 18];
+~DS_win2_mouse_1 = [1,5,256,85, 18];
+~DS_win2_mousePos_1 = [70, 18];
+~DS_win2_mousePos_1 = [70, 19];
+~DS_win2_mousePos_1 = [70, 20];
+~DS_win2_mousePos_1 = [70, 21];
+~DS_win2_mousePos_1 = [70, 22];
+~DS_win2_mousePos_1 = [69, 24];
+~DS_win2_mousePos_1 = [69, 26];
+~DS_win2_mousePos_1 = [66, 30];
+~DS_win2_mousePos_1 = [64, 33];
+~DS_win2_mousePos_1 = [60, 39];
+~DS_win2_mousePos_1 = [56, 44];
+~DS_win2_mousePos_1 = [53, 51];
+~DS_win2_mousePos_1 = [49, 58];
+~DS_win2_mousePos_1 = [46, 65];
+~DS_win2_mousePos_1 = [44, 72];
+DS_win3_X2 is DS_win4_X1;
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [43, 39];
+~DS_win2_mousePos_1 = [44, 39];
+~DS_win2_mouse_1 = [1,4,0,44, 39];
+~DS_win2_mousePos_1 = [45, 39];
+~DS_win2_mousePos_1 = [46, 39];
+~DS_win2_mousePos_1 = [47, 39];
+~DS_win2_mousePos_1 = [48, 39];
+~DS_win2_mousePos_1 = [50, 38];
+~DS_win2_mousePos_1 = [51, 38];
+~DS_win2_mousePos_1 = [53, 38];
+~DS_win2_mousePos_1 = [53, 37];
+~DS_win2_mousePos_1 = [54, 37];
+~DS_win2_mousePos_1 = [56, 37];
+~DS_win2_mousePos_1 = [58, 37];
+~DS_win2_mousePos_1 = [60, 37];
+~DS_win2_mousePos_1 = [61, 37];
+~DS_win2_mousePos_1 = [63, 37];
+~DS_win2_mousePos_1 = [64, 37];
+~DS_win2_mousePos_1 = [65, 37];
+~DS_win2_mousePos_1 = [66, 37];
+~DS_win2_mousePos_1 = [68, 37];
+~DS_win2_mousePos_1 = [69, 37];
+~DS_win2_mousePos_1 = [70, 37];
+~DS_win2_mousePos_1 = [71, 37];
+~DS_win2_mousePos_1 = [72, 37];
+~DS_win2_mousePos_1 = [73, 37];
+~DS_win2_mousePos_1 = [74, 37];
+~DS_win2_mousePos_1 = [75, 37];
+~DS_win2_mouse_1 = [1,5,256,75, 37];
+~DS_win2_mousePos_1 = [45, 39];
+~DS_win2_mouse_1 = [1,4,0,45, 39];
+~DS_win2_mousePos_1 = [45, 40];
+~DS_win2_mousePos_1 = [45, 41];
+~DS_win2_mousePos_1 = [45, 42];
+~DS_win2_mousePos_1 = [45, 43];
+~DS_win2_mousePos_1 = [45, 44];
+~DS_win2_mousePos_1 = [44, 44];
+~DS_win2_mousePos_1 = [43, 45];
+~DS_win2_mousePos_1 = [43, 47];
+~DS_win2_mousePos_1 = [42, 47];
+~DS_win2_mousePos_1 = [42, 48];
+~DS_win2_mousePos_1 = [42, 50];
+~DS_win2_mousePos_1 = [41, 51];
+~DS_win2_mousePos_1 = [41, 52];
+~DS_win2_mousePos_1 = [40, 54];
+~DS_win2_mousePos_1 = [39, 56];
+~DS_win2_mousePos_1 = [37, 58];
+~DS_win2_mousePos_1 = [36, 60];
+~DS_win2_mousePos_1 = [35, 61];
+~DS_win2_mousePos_1 = [35, 63];
+~DS_win2_mousePos_1 = [35, 64];
+~DS_win2_mousePos_1 = [34, 64];
+~DS_win2_mousePos_1 = [34, 65];
+~DS_win2_mousePos_1 = [33, 65];
+~DS_win2_mousePos_1 = [33, 66];
+~DS_win2_mouse_1 = [1,5,256,33, 66];
+~DS_win2_mouse_1 = [1,4,0,45, 39];
+~DS_win2_mousePos_1 = [44, 46];
+~DS_win2_mousePos_1 = [43, 48];
+~DS_win2_mousePos_1 = [43, 50];
+~DS_win2_mousePos_1 = [43, 52];
+~DS_win2_mousePos_1 = [42, 54];
+~DS_win2_mousePos_1 = [42, 56];
+~DS_win2_mousePos_1 = [41, 58];
+~DS_win2_mousePos_1 = [41, 60];
+~DS_win2_mousePos_1 = [41, 62];
+~DS_win2_mousePos_1 = [40, 65];
+~DS_win2_mousePos_1 = [40, 66];
+~DS_win2_mousePos_1 = [39, 67];
+~DS_win2_mousePos_1 = [39, 68];
+~DS_win2_mousePos_1 = [39, 69];
+~DS_win2_mousePos_1 = [39, 70];
+~DS_win2_mousePos_1 = [39, 71];
+~DS_win2_mousePos_1 = [39, 72];
+~DS_win2_mousePos_1 = [39, 73];
+~DS_win2_mousePos_1 = [39, 74];
+~DS_win2_mousePos_1 = [38, 74];
+~DS_win2_mouse_1 = [1,5,256,38, 74];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [45, 41];
+~DS_win2_mousePos_1 = [44, 41];
+~DS_win2_mousePos_1 = [44, 42];
+~DS_win2_mouse_1 = [1,4,0,44, 42];
+~DS_win2_mousePos_1 = [40, 42];
+~DS_win2_mousePos_1 = [39, 42];
+~DS_win2_mousePos_1 = [38, 42];
+~DS_win2_mousePos_1 = [37, 42];
+~DS_win2_mousePos_1 = [36, 42];
+~DS_win2_mousePos_1 = [33, 42];
+~DS_win2_mousePos_1 = [31, 43];
+~DS_win2_mousePos_1 = [26, 44];
+~DS_win2_mousePos_1 = [21, 44];
+~DS_win2_mousePos_1 = [16, 45];
+~DS_win2_mousePos_1 = [11, 47];
+~DS_win2_mousePos_1 = [7, 48];
+~DS_win2_mousePos_1 = [2, 49];
+~DS_win2_mousePos_1 = [-7, 51];
+~DS_win2_mousePos_1 = [-17, 53];
+~DS_win2_mousePos_1 = [-28, 56];
+~DS_win2_mousePos_1 = [-35, 57];
+~DS_win2_mousePos_1 = [-42, 59];
+~DS_win2_mousePos_1 = [-50, 62];
+~DS_win2_mousePos_1 = [-62, 64];
+~DS_win2_mousePos_1 = [-69, 65];
+~DS_win2_mousePos_1 = [-73, 66];
+~DS_win2_mousePos_1 = [-78, 67];
+~DS_win2_mousePos_1 = [-81, 68];
+~DS_win2_mousePos_1 = [-83, 70];
+~DS_win2_mousePos_1 = [-86, 70];
+~DS_win2_mousePos_1 = [-89, 71];
+~DS_win2_mousePos_1 = [-92, 71];
+~DS_win2_mousePos_1 = [-94, 72];
+~DS_win2_mousePos_1 = [-96, 72];
+~DS_win2_mousePos_1 = [-97, 72];
+~DS_win2_mousePos_1 = [-97, 73];
+~DS_win2_mouse_1 = [1,5,256,-97, 73];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [44, 41];
+~DS_win2_mouse_1 = [1,4,0,44, 41];
+~DS_win2_mousePos_1 = [44, 40];
+~DS_win2_mousePos_1 = [44, 39];
+~DS_win2_mousePos_1 = [43, 38];
+~DS_win2_mousePos_1 = [43, 36];
+~DS_win2_mousePos_1 = [42, 34];
+~DS_win2_mousePos_1 = [40, 32];
+~DS_win2_mousePos_1 = [39, 28];
+~DS_win2_mousePos_1 = [37, 24];
+~DS_win2_mousePos_1 = [35, 19];
+~DS_win2_mousePos_1 = [33, 12];
+~DS_win2_mousePos_1 = [31, 7];
+~DS_win2_mousePos_1 = [28, -1];
+~DS_win2_mousePos_1 = [25, -6];
+~DS_win2_mousePos_1 = [22, -12];
+~DS_win2_mousePos_1 = [18, -23];
+~DS_win2_mousePos_1 = [14, -32];
+~DS_win2_mousePos_1 = [9, -39];
+~DS_win2_mousePos_1 = [7, -44];
+~DS_win2_mousePos_1 = [3, -49];
+~DS_win2_mousePos_1 = [2, -52];
+~DS_win2_mousePos_1 = [0, -55];
+~DS_win2_mousePos_1 = [-1, -57];
+~DS_win2_mousePos_1 = [-2, -59];
+~DS_win2_mousePos_1 = [-2, -60];
+~DS_win2_mousePos_1 = [-2, -61];
+~DS_win2_mouse_1 = [1,5,256,-2, -61];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [44, 42];
+~DS_win2_mousePos_1 = [44, 43];
+~DS_win2_mousePos_1 = [44, 44];
+~DS_win2_mousePos_1 = [44, 45];
+~DS_win2_mouse_1 = [1,4,0,44, 45];
+~DS_win2_mousePos_1 = [57, 46];
+~DS_win2_mousePos_1 = [60, 46];
+~DS_win2_mousePos_1 = [64, 46];
+~DS_win2_mousePos_1 = [69, 47];
+~DS_win2_mousePos_1 = [76, 48];
+~DS_win2_mousePos_1 = [83, 49];
+~DS_win2_mousePos_1 = [90, 50];
+~DS_win2_mousePos_1 = [98, 51];
+~DS_win2_mousePos_1 = [104, 52];
+~DS_win2_mousePos_1 = [108, 53];
+~DS_win2_mousePos_1 = [111, 53];
+~DS_win2_mousePos_1 = [117, 54];
+~DS_win2_mousePos_1 = [125, 55];
+~DS_win2_mousePos_1 = [132, 57];
+~DS_win2_mousePos_1 = [137, 58];
+~DS_win2_mousePos_1 = [143, 60];
+~DS_win2_mousePos_1 = [146, 61];
+~DS_win2_mousePos_1 = [152, 63];
+~DS_win2_mousePos_1 = [158, 64];
+~DS_win2_mousePos_1 = [166, 66];
+~DS_win2_mousePos_1 = [173, 69];
+~DS_win2_mousePos_1 = [178, 72];
+~DS_win2_mousePos_1 = [182, 74];
+~DS_win2_mousePos_1 = [187, 75];
+~DS_win2_mousePos_1 = [190, 77];
+~DS_win2_mousePos_1 = [193, 79];
+~DS_win2_mousePos_1 = [198, 80];
+~DS_win2_mousePos_1 = [202, 81];
+~DS_win2_mousePos_1 = [205, 82];
+~DS_win2_mousePos_1 = [209, 84];
+~DS_win2_mousePos_1 = [212, 85];
+~DS_win2_mousePos_1 = [214, 85];
+~DS_win2_mousePos_1 = [215, 86];
+~DS_win2_mousePos_1 = [216, 87];
+~DS_win2_mouse_1 = [1,5,256,216, 87];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [41, 44];
+~DS_win2_mousePos_1 = [31, 39];
+~DS_win2_mousePos_1 = [21, 32];
+~DS_win2_mousePos_1 = [0, 19];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [101, 56];
+~DS_win1_mousePos_1 = [100, 56];
+~DS_win1_mousePos_1 = [99, 56];
+~DS_win1_mouse_1 = [1,4,0,99, 56];
+~DS_win1_mousePos_1 = [99, 55];
+~DS_win1_mousePos_1 = [99, 53];
+~DS_win1_mousePos_1 = [99, 52];
+~DS_win1_mousePos_1 = [100, 49];
+~DS_win1_mousePos_1 = [102, 47];
+~DS_win1_mousePos_1 = [103, 44];
+~DS_win1_mousePos_1 = [105, 41];
+~DS_win1_mousePos_1 = [105, 40];
+~DS_win1_mousePos_1 = [107, 39];
+~DS_win1_mousePos_1 = [107, 38];
+~DS_win1_mousePos_1 = [107, 37];
+~DS_win1_mousePos_1 = [108, 37];
+~DS_win1_mousePos_1 = [108, 36];
+~DS_win1_mousePos_1 = [110, 34];
+~DS_win1_mousePos_1 = [111, 34];
+~DS_win1_mousePos_1 = [113, 32];
+~DS_win1_mousePos_1 = [114, 31];
+~DS_win1_mousePos_1 = [116, 29];
+~DS_win1_mousePos_1 = [118, 28];
+~DS_win1_mousePos_1 = [122, 27];
+~DS_win1_mousePos_1 = [125, 26];
+~DS_win1_mousePos_1 = [127, 24];
+~DS_win1_mousePos_1 = [130, 23];
+~DS_win1_mousePos_1 = [131, 23];
+~DS_win1_mousePos_1 = [133, 23];
+~DS_win1_mouse_1 = [1,5,256,133, 23];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mouse_1 = [1,4,0,99, 56];
+~DS_win1_mousePos_1 = [99, 59];
+~DS_win1_mousePos_1 = [97, 62];
+~DS_win1_mousePos_1 = [96, 65];
+~DS_win1_mousePos_1 = [94, 69];
+~DS_win1_mousePos_1 = [92, 73];
+~DS_win1_mousePos_1 = [90, 77];
+~DS_win1_mousePos_1 = [88, 80];
+~DS_win1_mousePos_1 = [87, 82];
+~DS_win1_mousePos_1 = [86, 83];
+~DS_win1_mousePos_1 = [86, 84];
+~DS_win1_mousePos_1 = [86, 85];
+~DS_win1_mousePos_1 = [85, 85];
+~DS_win1_mousePos_1 = [85, 86];
+~DS_win1_mouse_1 = [1,5,256,85, 86];
+~DS_win1_mousePos_1 = [84, 87];
+~DS_win1_mouse_1 = [1,4,0,98, 57];
+~DS_win1_mousePos_1 = [97, 59];
+~DS_win1_mousePos_1 = [97, 60];
+~DS_win1_mousePos_1 = [96, 62];
+~DS_win1_mousePos_1 = [95, 64];
+~DS_win1_mousePos_1 = [94, 65];
+~DS_win1_mousePos_1 = [92, 68];
+~DS_win1_mousePos_1 = [92, 70];
+~DS_win1_mousePos_1 = [91, 73];
+~DS_win1_mousePos_1 = [90, 75];
+~DS_win1_mousePos_1 = [88, 77];
+~DS_win1_mousePos_1 = [87, 79];
+~DS_win1_mousePos_1 = [87, 80];
+~DS_win1_mousePos_1 = [86, 83];
+~DS_win1_mousePos_1 = [85, 84];
+~DS_win1_mousePos_1 = [85, 85];
+~DS_win1_mousePos_1 = [85, 86];
+~DS_win1_mousePos_1 = [84, 86];
+~DS_win1_mousePos_1 = [83, 88];
+~DS_win1_mousePos_1 = [83, 89];
+~DS_win1_mouse_1 = [1,5,256,83, 89];
+~DS_win1_mouse_1 = [1,4,0,98, 57];
+~DS_win1_mousePos_1 = [97, 57];
+~DS_win1_mousePos_1 = [93, 58];
+~DS_win1_mousePos_1 = [88, 58];
+~DS_win1_mousePos_1 = [83, 59];
+~DS_win1_mousePos_1 = [79, 59];
+~DS_win1_mousePos_1 = [76, 59];
+~DS_win1_mousePos_1 = [73, 59];
+~DS_win1_mousePos_1 = [70, 59];
+~DS_win1_mousePos_1 = [66, 59];
+~DS_win1_mousePos_1 = [65, 59];
+~DS_win1_mousePos_1 = [62, 59];
+~DS_win1_mousePos_1 = [59, 59];
+~DS_win1_mousePos_1 = [57, 59];
+~DS_win1_mousePos_1 = [55, 59];
+~DS_win1_mousePos_1 = [54, 59];
+~DS_win1_mousePos_1 = [53, 59];
+~DS_win1_mouse_1 = [1,5,256,53, 59];
+~DS_win1_mouse_1 = [1,4,0,98, 57];
+~DS_win1_mousePos_1 = [100, 57];
+~DS_win1_mousePos_1 = [101, 57];
+~DS_win1_mousePos_1 = [102, 57];
+~DS_win1_mousePos_1 = [103, 57];
+~DS_win1_mousePos_1 = [105, 57];
+~DS_win1_mousePos_1 = [107, 57];
+~DS_win1_mousePos_1 = [109, 57];
+~DS_win1_mousePos_1 = [112, 58];
+~DS_win1_mousePos_1 = [116, 59];
+~DS_win1_mousePos_1 = [121, 60];
+~DS_win1_mousePos_1 = [126, 61];
+~DS_win1_mousePos_1 = [133, 62];
+~DS_win1_mousePos_1 = [140, 63];
+~DS_win1_mousePos_1 = [147, 64];
+~DS_win1_mousePos_1 = [151, 65];
+~DS_win1_mousePos_1 = [154, 67];
+~DS_win1_mousePos_1 = [156, 67];
+~DS_win1_mousePos_1 = [158, 68];
+~DS_win1_mousePos_1 = [161, 69];
+~DS_win1_mousePos_1 = [162, 70];
+~DS_win1_mousePos_1 = [163, 70];
+~DS_win1_mousePos_1 = [164, 70];
+~DS_win1_mousePos_1 = [165, 70];
+~DS_win1_mousePos_1 = [166, 70];
+~DS_win1_mousePos_1 = [167, 70];
+~DS_win1_mouse_1 = [1,5,256,167, 70];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mouse_1 = [1,4,0,98, 57];
+~DS_win1_mousePos_1 = [98, 49];
+~DS_win1_mousePos_1 = [98, 46];
+~DS_win1_mousePos_1 = [98, 42];
+~DS_win1_mousePos_1 = [98, 38];
+~DS_win1_mousePos_1 = [98, 33];
+~DS_win1_mousePos_1 = [98, 27];
+~DS_win1_mousePos_1 = [98, 23];
+~DS_win1_mousePos_1 = [98, 19];
+~DS_win1_mousePos_1 = [98, 15];
+~DS_win1_mousePos_1 = [98, 13];
+~DS_win1_mousePos_1 = [98, 11];
+~DS_win1_mousePos_1 = [98, 10];
+~DS_win1_mousePos_1 = [98, 9];
+~DS_win1_mouse_1 = [1,5,256,98, 9];
+~DS_win1_mouse_1 = [1,4,0,98, 57];
+~DS_win1_mousePos_1 = [98, 58];
+~DS_win1_mousePos_1 = [98, 59];
+~DS_win1_mousePos_1 = [98, 61];
+~DS_win1_mousePos_1 = [98, 62];
+~DS_win1_mousePos_1 = [98, 64];
+~DS_win1_mousePos_1 = [98, 66];
+~DS_win1_mousePos_1 = [98, 68];
+~DS_win1_mousePos_1 = [98, 70];
+~DS_win1_mousePos_1 = [98, 73];
+~DS_win1_mousePos_1 = [98, 75];
+~DS_win1_mousePos_1 = [98, 77];
+~DS_win1_mousePos_1 = [98, 79];
+~DS_win1_mousePos_1 = [98, 80];
+~DS_win1_mousePos_1 = [98, 81];
+~DS_win1_mousePos_1 = [98, 82];
+~DS_win1_mousePos_1 = [98, 83];
+~DS_win1_mousePos_1 = [98, 84];
+~DS_win1_mouse_1 = [1,5,256,98, 84];
+~DS_win1_mousePos_1 = [99, 84];
+~DS_win1_mousePos_1 = [101, 58];
+~DS_win1_mousePos_1 = [106, 60];
+~DS_win1_mousePos_1 = [113, 64];
+~DS_win1_mousePos_1 = [121, 70];
+DS_win4_Y1 is DS_win3_Y2;
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [117, 55];
+~DS_win1_mouse_1 = [1,4,0,117, 55];
+~DS_win1_mousePos_1 = [120, 55];
+~DS_win1_mousePos_1 = [124, 52];
+~DS_win1_mousePos_1 = [131, 49];
+~DS_win1_mousePos_1 = [137, 45];
+~DS_win1_mousePos_1 = [147, 37];
+~DS_win1_mousePos_1 = [153, 30];
+~DS_win1_mousePos_1 = [160, 21];
+~DS_win1_mousePos_1 = [170, 12];
+~DS_win1_mousePos_1 = [180, 4];
+~DS_win1_mousePos_1 = [189, -4];
+~DS_win1_mousePos_1 = [197, -13];
+~DS_win1_mousePos_1 = [203, -20];
+~DS_win1_mousePos_1 = [213, -28];
+~DS_win1_mousePos_1 = [222, -35];
+~DS_win1_mousePos_1 = [228, -40];
+~DS_win1_mousePos_1 = [234, -43];
+~DS_win1_mousePos_1 = [236, -45];
+~DS_win1_mousePos_1 = [238, -47];
+~DS_win1_mousePos_1 = [239, -49];
+~DS_win1_mousePos_1 = [241, -50];
+~DS_win1_mousePos_1 = [242, -51];
+~DS_win1_mousePos_1 = [244, -51];
+~DS_win1_mousePos_1 = [244, -52];
+~DS_win1_mouse_1 = [1,5,256,244, -52];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [119, 55];
+~DS_win1_mousePos_1 = [120, 55];
+~DS_win1_mousePos_1 = [121, 56];
+~DS_win1_mousePos_1 = [121, 58];
+~DS_win1_mousePos_1 = [122, 60];
+~DS_win1_mousePos_1 = [124, 65];
+~DS_win1_mousePos_1 = [127, 72];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [49, 26];
+~DS_win2_mousePos_1 = [51, 36];
+~DS_win2_mousePos_1 = [54, 44];
+~DS_win2_mousePos_1 = [57, 53];
+~DS_win2_mousePos_1 = [59, 62];
+~DS_win2_mousePos_1 = [61, 71];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [59, 70];
+~DS_win2_mousePos_1 = [58, 69];
+~DS_win2_mousePos_1 = [57, 66];
+~DS_win2_mousePos_1 = [57, 64];
+~DS_win2_mousePos_1 = [55, 62];
+~DS_win2_mousePos_1 = [55, 61];
+~DS_win2_mousePos_1 = [55, 60];
+~DS_win2_mousePos_1 = [55, 59];
+~DS_win2_mousePos_1 = [54, 58];
+~DS_win2_mousePos_1 = [53, 56];
+~DS_win2_mousePos_1 = [53, 55];
+~DS_win2_mousePos_1 = [53, 54];
+~DS_win2_mousePos_1 = [53, 53];
+~DS_win2_mousePos_1 = [53, 52];
+~DS_win2_mouse_1 = [1,4,0,53, 52];
+~DS_win2_mousePos_1 = [48, 50];
+~DS_win2_mousePos_1 = [41, 48];
+~DS_win2_mousePos_1 = [32, 44];
+~DS_win2_mousePos_1 = [23, 42];
+~DS_win2_mousePos_1 = [12, 39];
+~DS_win2_mousePos_1 = [-3, 38];
+~DS_win2_mousePos_1 = [-19, 38];
+~DS_win2_mousePos_1 = [-33, 38];
+~DS_win2_mousePos_1 = [-49, 38];
+~DS_win2_mousePos_1 = [-66, 38];
+~DS_win2_mousePos_1 = [-85, 38];
+~DS_win2_mousePos_1 = [-100, 39];
+~DS_win2_mousePos_1 = [-113, 40];
+~DS_win2_mousePos_1 = [-121, 40];
+~DS_win2_mousePos_1 = [-128, 41];
+~DS_win2_mousePos_1 = [-134, 42];
+~DS_win2_mousePos_1 = [-139, 44];
+~DS_win2_mousePos_1 = [-143, 44];
+~DS_win2_mousePos_1 = [-146, 44];
+~DS_win2_mousePos_1 = [-148, 44];
+~DS_win2_mouse_1 = [1,5,256,-148, 44];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [53, 53];
+~DS_win2_mouse_1 = [1,4,0,53, 53];
+~DS_win2_mousePos_1 = [73, 48];
+~DS_win2_mousePos_1 = [83, 47];
+~DS_win2_mousePos_1 = [96, 45];
+~DS_win2_mousePos_1 = [108, 44];
+~DS_win2_mousePos_1 = [122, 42];
+~DS_win2_mousePos_1 = [140, 39];
+~DS_win2_mousePos_1 = [158, 37];
+~DS_win2_mousePos_1 = [176, 34];
+~DS_win2_mousePos_1 = [207, 31];
+~DS_win2_mousePos_1 = [221, 31];
+~DS_win2_mousePos_1 = [229, 31];
+~DS_win2_mousePos_1 = [240, 31];
+~DS_win2_mousePos_1 = [251, 31];
+~DS_win2_mousePos_1 = [259, 30];
+~DS_win2_mousePos_1 = [263, 30];
+~DS_win2_mousePos_1 = [267, 30];
+~DS_win2_mousePos_1 = [269, 30];
+~DS_win2_mousePos_1 = [271, 30];
+~DS_win2_mousePos_1 = [272, 30];
+~DS_win2_mousePos_1 = [274, 30];
+~DS_win2_mouse_1 = [1,5,256,274, 30];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [53, 52];
+~DS_win2_mousePos_1 = [53, 51];
+~DS_win2_mouse_1 = [1,4,0,53, 51];
+~DS_win2_mousePos_1 = [53, 49];
+~DS_win2_mousePos_1 = [53, 47];
+~DS_win2_mousePos_1 = [55, 46];
+~DS_win2_mousePos_1 = [56, 45];
+~DS_win2_mousePos_1 = [57, 42];
+~DS_win2_mousePos_1 = [59, 40];
+~DS_win2_mousePos_1 = [61, 38];
+~DS_win2_mousePos_1 = [65, 33];
+~DS_win2_mousePos_1 = [68, 30];
+~DS_win2_mousePos_1 = [72, 25];
+~DS_win2_mousePos_1 = [74, 20];
+~DS_win2_mousePos_1 = [78, 15];
+~DS_win2_mousePos_1 = [82, 10];
+~DS_win2_mousePos_1 = [91, 4];
+~DS_win2_mousePos_1 = [97, -1];
+~DS_win2_mousePos_1 = [104, -5];
+~DS_win2_mousePos_1 = [110, -11];
+~DS_win2_mousePos_1 = [114, -18];
+~DS_win2_mousePos_1 = [119, -22];
+~DS_win2_mousePos_1 = [123, -27];
+~DS_win2_mousePos_1 = [129, -32];
+~DS_win2_mousePos_1 = [137, -38];
+~DS_win2_mousePos_1 = [144, -43];
+~DS_win2_mousePos_1 = [147, -46];
+~DS_win2_mousePos_1 = [150, -52];
+~DS_win2_mousePos_1 = [154, -58];
+~DS_win2_mousePos_1 = [156, -63];
+~DS_win2_mousePos_1 = [159, -69];
+~DS_win2_mousePos_1 = [161, -72];
+~DS_win2_mousePos_1 = [163, -75];
+~DS_win2_mousePos_1 = [164, -78];
+~DS_win2_mousePos_1 = [165, -79];
+~DS_win2_mousePos_1 = [166, -81];
+~DS_win2_mousePos_1 = [168, -83];
+~DS_win2_mousePos_1 = [169, -84];
+~DS_win2_mousePos_1 = [170, -85];
+~DS_win2_mousePos_1 = [171, -88];
+~DS_win2_mousePos_1 = [173, -89];
+~DS_win2_mousePos_1 = [173, -90];
+~DS_win2_mousePos_1 = [174, -91];
+~DS_win2_mouse_1 = [1,5,256,174, -91];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [51, 51];
+~DS_win2_mousePos_1 = [45, 51];
+~DS_win2_mousePos_1 = [35, 50];
+~DS_win2_mousePos_1 = [22, 46];
+~DS_win2_mousePos_1 = [4, 41];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [31, 72];
+~DS_win1_mousePos_1 = [31, 71];
+~DS_win1_mousePos_1 = [31, 70];
+~DS_win1_mousePos_1 = [31, 69];
+~DS_win1_mousePos_1 = [32, 68];
+~DS_win1_mousePos_1 = [33, 66];
+~DS_win1_mousePos_1 = [33, 65];
+~DS_win1_mousePos_1 = [33, 64];
+~DS_win1_mousePos_1 = [34, 63];
+~DS_win1_mouse_1 = [1,4,0,34, 63];
+~DS_win1_mousePos_1 = [35, 66];
+~DS_win1_mousePos_1 = [35, 67];
+~DS_win1_mousePos_1 = [34, 72];
+~DS_win1_mousePos_1 = [31, 79];
+~DS_win1_mousePos_1 = [28, 87];
+~DS_win1_mousePos_1 = [24, 98];
+~DS_win1_mousePos_1 = [17, 114];
+~DS_win1_mousePos_1 = [13, 128];
+~DS_win1_mousePos_1 = [6, 146];
+~DS_win1_mousePos_1 = [-1, 163];
+~DS_win1_mousePos_1 = [-8, 187];
+~DS_win1_mousePos_1 = [-13, 199];
+~DS_win1_mousePos_1 = [-19, 214];
+~DS_win1_mousePos_1 = [-24, 230];
+~DS_win1_mousePos_1 = [-27, 242];
+~DS_win1_mousePos_1 = [-31, 253];
+~DS_win1_mousePos_1 = [-33, 261];
+~DS_win1_mousePos_1 = [-36, 268];
+~DS_win1_mousePos_1 = [-37, 273];
+~DS_win1_mousePos_1 = [-38, 276];
+~DS_win1_mousePos_1 = [-40, 279];
+~DS_win1_mousePos_1 = [-40, 282];
+~DS_win1_mousePos_1 = [-40, 283];
+~DS_win1_mousePos_1 = [-41, 285];
+~DS_win1_mousePos_1 = [-42, 287];
+~DS_win1_mousePos_1 = [-42, 288];
+~DS_win1_mousePos_1 = [-42, 289];
+~DS_win1_mouse_1 = [1,5,256,-42, 289];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [35, 63];
+~DS_win1_mousePos_1 = [37, 63];
+~DS_win1_mousePos_1 = [39, 63];
+~DS_win1_mousePos_1 = [41, 63];
+~DS_win1_mousePos_1 = [46, 63];
+~DS_win1_mousePos_1 = [54, 63];
+~DS_win1_mousePos_1 = [61, 61];
+~DS_win1_mousePos_1 = [70, 60];
+~DS_win1_mousePos_1 = [79, 58];
+~DS_win1_mousePos_1 = [92, 55];
+~DS_win1_mousePos_1 = [107, 54];
+~DS_win1_mousePos_1 = [120, 51];
+~DS_win3_mouseEnter_1 = 1;
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [3, 8];
+~DS_win2_mousePos_1 = [5, 11];
+~DS_win2_mousePos_1 = [7, 14];
+~DS_win2_mousePos_1 = [8, 17];
+~DS_win2_mousePos_1 = [10, 18];
+~DS_win2_mousePos_1 = [11, 20];
+~DS_win2_mousePos_1 = [11, 21];
+~DS_win2_mousePos_1 = [12, 21];
+~DS_win2_mousePos_1 = [12, 22];
+~DS_win2_mousePos_1 = [12, 23];
+~DS_win2_mousePos_1 = [13, 23];
+~DS_win2_mousePos_1 = [14, 24];
+~DS_win2_mousePos_1 = [15, 24];
+~DS_win2_mousePos_1 = [15, 25];
+~DS_win2_mouse_1 = [1,4,0,15, 25];
+~DS_win2_mousePos_1 = [19, 55];
+~DS_win2_mousePos_1 = [19, 62];
+~DS_win2_mousePos_1 = [19, 66];
+~DS_win2_mousePos_1 = [17, 74];
+~DS_win2_mousePos_1 = [15, 85];
+~DS_win2_mousePos_1 = [15, 100];
+~DS_win2_mousePos_1 = [14, 109];
+~DS_win2_mousePos_1 = [14, 117];
+~DS_win2_mousePos_1 = [14, 122];
+~DS_win2_mousePos_1 = [14, 129];
+~DS_win2_mousePos_1 = [14, 133];
+~DS_win2_mousePos_1 = [14, 137];
+~DS_win2_mousePos_1 = [15, 143];
+~DS_win2_mousePos_1 = [16, 149];
+~DS_win2_mousePos_1 = [17, 152];
+~DS_win2_mousePos_1 = [17, 154];
+~DS_win2_mousePos_1 = [17, 156];
+~DS_win2_mousePos_1 = [17, 158];
+~DS_win2_mousePos_1 = [17, 161];
+~DS_win2_mousePos_1 = [17, 163];
+~DS_win2_mousePos_1 = [17, 164];
+~DS_win2_mousePos_1 = [16, 165];
+~DS_win2_mouse_1 = [1,5,256,16, 165];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mouse_1 = [1,4,0,15, 26];
+~DS_win2_mousePos_1 = [17, 44];
+~DS_win2_mousePos_1 = [17, 45];
+~DS_win2_mousePos_1 = [17, 46];
+~DS_win2_mousePos_1 = [17, 48];
+~DS_win2_mousePos_1 = [17, 49];
+~DS_win2_mousePos_1 = [17, 51];
+~DS_win2_mousePos_1 = [17, 52];
+~DS_win2_mousePos_1 = [17, 53];
+~DS_win2_mousePos_1 = [18, 55];
+~DS_win2_mousePos_1 = [18, 57];
+~DS_win2_mousePos_1 = [18, 58];
+~DS_win2_mousePos_1 = [18, 59];
+~DS_win2_mousePos_1 = [18, 61];
+~DS_win2_mousePos_1 = [18, 62];
+~DS_win2_mousePos_1 = [18, 64];
+~DS_win2_mousePos_1 = [18, 66];
+~DS_win2_mousePos_1 = [18, 68];
+~DS_win2_mousePos_1 = [18, 69];
+~DS_win2_mouse_1 = [1,5,256,18, 69];
+~DS_win2_mousePos_1 = [18, 70];
+~DS_win2_mousePos_1 = [18, 71];
+~DS_win2_mousePos_1 = [15, 29];
+~DS_win2_mouse_1 = [1,4,0,15, 29];
+~DS_win2_mousePos_1 = [16, 29];
+~DS_win2_mousePos_1 = [17, 28];
+~DS_win2_mousePos_1 = [19, 27];
+~DS_win2_mousePos_1 = [21, 26];
+~DS_win2_mousePos_1 = [25, 24];
+~DS_win2_mousePos_1 = [27, 24];
+~DS_win2_mousePos_1 = [30, 22];
+~DS_win2_mousePos_1 = [33, 22];
+~DS_win2_mousePos_1 = [37, 22];
+~DS_win2_mousePos_1 = [40, 22];
+~DS_win2_mousePos_1 = [45, 21];
+~DS_win2_mousePos_1 = [52, 20];
+~DS_win2_mousePos_1 = [59, 20];
+~DS_win2_mousePos_1 = [65, 19];
+~DS_win2_mousePos_1 = [69, 18];
+~DS_win2_mousePos_1 = [72, 18];
+~DS_win2_mousePos_1 = [74, 18];
+~DS_win2_mousePos_1 = [77, 18];
+~DS_win2_mousePos_1 = [80, 18];
+~DS_win2_mousePos_1 = [82, 18];
+~DS_win2_mousePos_1 = [84, 17];
+~DS_win2_mousePos_1 = [86, 17];
+~DS_win2_mousePos_1 = [88, 17];
+~DS_win2_mousePos_1 = [89, 17];
+~DS_win2_mouse_1 = [1,5,256,89, 17];
+~DS_win2_mousePos_1 = [13, 29];
+~DS_win2_mousePos_1 = [11, 29];
+~DS_win2_mousePos_1 = [7, 29];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [11, 62];
+~DS_win1_mousePos_1 = [11, 61];
+~DS_win1_mousePos_1 = [12, 61];
+~DS_win1_mousePos_1 = [12, 60];
+~DS_win1_mousePos_1 = [13, 60];
+~DS_win1_mousePos_1 = [14, 60];
+~DS_win1_mousePos_1 = [14, 59];
+~DS_win1_mouse_1 = [1,4,0,14, 59];
+~DS_win1_mousePos_1 = [15, 58];
+~DS_win1_mousePos_1 = [15, 57];
+~DS_win1_mousePos_1 = [15, 56];
+~DS_win1_mousePos_1 = [15, 54];
+~DS_win1_mousePos_1 = [15, 52];
+~DS_win1_mousePos_1 = [13, 47];
+~DS_win1_mousePos_1 = [10, 41];
+~DS_win1_mousePos_1 = [7, 34];
+~DS_win1_mousePos_1 = [4, 25];
+~DS_win1_mousePos_1 = [0, 17];
+~DS_win1_mousePos_1 = [-3, 10];
+~DS_win1_mousePos_1 = [-7, 1];
+~DS_win1_mousePos_1 = [-10, -5];
+~DS_win1_mousePos_1 = [-13, -12];
+~DS_win1_mousePos_1 = [-14, -16];
+~DS_win1_mousePos_1 = [-15, -19];
+~DS_win1_mousePos_1 = [-15, -21];
+~DS_win1_mousePos_1 = [-15, -23];
+~DS_win1_mousePos_1 = [-16, -24];
+~DS_win1_mousePos_1 = [-17, -26];
+~DS_win1_mousePos_1 = [-17, -28];
+~DS_win1_mousePos_1 = [-18, -30];
+~DS_win1_mousePos_1 = [-19, -33];
+~DS_win1_mousePos_1 = [-19, -35];
+~DS_win1_mousePos_1 = [-20, -38];
+~DS_win1_mousePos_1 = [-21, -40];
+~DS_win1_mousePos_1 = [-22, -43];
+~DS_win1_mousePos_1 = [-23, -45];
+~DS_win1_mousePos_1 = [-23, -47];
+~DS_win1_mousePos_1 = [-25, -49];
+~DS_win1_mousePos_1 = [-25, -51];
+~DS_win1_mousePos_1 = [-25, -50];
+~DS_win1_mouse_1 = [1,5,256,-25, -50];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [14, 61];
+~DS_win1_mousePos_1 = [14, 62];
+~DS_win1_mousePos_1 = [14, 63];
+~DS_win1_mousePos_1 = [15, 63];
+~DS_win1_mousePos_1 = [16, 64];
+~DS_win1_mousePos_1 = [17, 65];
+~DS_win1_mousePos_1 = [20, 66];
+~DS_win1_mousePos_1 = [26, 69];
+~DS_win1_mousePos_1 = [36, 71];
+~DS_win1_mousePos_1 = [46, 74];
+~DS_win1_mousePos_1 = [59, 79];
+~DS_win1_mousePos_1 = [80, 83];
+~DS_win1_mousePos_1 = [105, 89];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [32, 24];
+~DS_win2_mousePos_1 = [34, 23];
+~DS_win2_mousePos_1 = [36, 22];
+~DS_win2_mousePos_1 = [39, 21];
+~DS_win2_mousePos_1 = [41, 19];
+~DS_win2_mousePos_1 = [44, 19];
+~DS_win2_mousePos_1 = [46, 18];
+~DS_win2_mousePos_1 = [49, 18];
+~DS_win2_mousePos_1 = [53, 18];
+~DS_win2_mousePos_1 = [56, 17];
+~DS_win2_mousePos_1 = [58, 17];
+~DS_win2_mousePos_1 = [59, 17];
+~DS_win2_mousePos_1 = [60, 17];
+~DS_win2_mousePos_1 = [61, 17];
+~DS_win2_mouse_1 = [1,4,0,61, 17];
+~DS_win2_mousePos_1 = [3, 19];
+~DS_win2_mousePos_1 = [-29, 28];
+~DS_win2_mousePos_1 = [-72, 37];
+~DS_win2_mousePos_1 = [-115, 48];
+~DS_win2_mousePos_1 = [-159, 62];
+~DS_win2_mousePos_1 = [-213, 82];
+~DS_win2_mousePos_1 = [-250, 96];
+~DS_win2_mousePos_1 = [-278, 108];
+~DS_win2_mousePos_1 = [-303, 116];
+~DS_win2_mousePos_1 = [-322, 121];
+~DS_win2_mousePos_1 = [-329, 123];
+~DS_win2_mousePos_1 = [-339, 125];
+~DS_win2_mousePos_1 = [-345, 126];
+~DS_win2_mousePos_1 = [-350, 127];
+~DS_win2_mousePos_1 = [-352, 127];
+~DS_win2_mousePos_1 = [-353, 127];
+~DS_win2_mousePos_1 = [-354, 127];
+~DS_win2_mouse_1 = [1,5,256,-354, 127];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [61, 14];
+~DS_win2_mousePos_1 = [60, 14];
+~DS_win2_mousePos_1 = [60, 13];
+~DS_win2_mousePos_1 = [58, 11];
+~DS_win2_mousePos_1 = [54, 5];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [98, 48];
+~DS_win1_mousePos_1 = [98, 45];
+~DS_win1_mousePos_1 = [98, 40];
+~DS_win1_mousePos_1 = [98, 32];
+~DS_win1_mousePos_1 = [98, 24];
+~DS_win1_mousePos_1 = [98, 17];
+~DS_win1_mousePos_1 = [98, 12];
+~DS_win1_mousePos_1 = [98, 10];
+~DS_win1_mousePos_1 = [98, 9];
+~DS_win1_mousePos_1 = [98, 8];
+~DS_win1_mousePos_1 = [98, 9];
+~DS_win1_mousePos_1 = [98, 10];
+~DS_win1_mousePos_1 = [99, 11];
+~DS_win1_mousePos_1 = [99, 12];
+~DS_win1_mouse_1 = [1,4,0,99, 12];
+~DS_win1_mousePos_1 = [100, 14];
+~DS_win1_mousePos_1 = [102, 14];
+~DS_win1_mousePos_1 = [105, 15];
+~DS_win1_mousePos_1 = [109, 15];
+~DS_win1_mousePos_1 = [115, 15];
+~DS_win1_mousePos_1 = [123, 15];
+~DS_win1_mousePos_1 = [132, 15];
+~DS_win1_mousePos_1 = [144, 15];
+~DS_win1_mousePos_1 = [156, 14];
+~DS_win1_mousePos_1 = [167, 13];
+~DS_win1_mousePos_1 = [180, 13];
+~DS_win1_mousePos_1 = [195, 13];
+~DS_win1_mousePos_1 = [209, 13];
+~DS_win1_mousePos_1 = [217, 13];
+~DS_win1_mousePos_1 = [228, 13];
+~DS_win1_mousePos_1 = [240, 13];
+~DS_win1_mousePos_1 = [249, 12];
+~DS_win1_mousePos_1 = [258, 10];
+~DS_win1_mousePos_1 = [268, 9];
+~DS_win1_mousePos_1 = [280, 9];
+~DS_win1_mousePos_1 = [288, 9];
+~DS_win1_mousePos_1 = [294, 9];
+~DS_win1_mousePos_1 = [299, 9];
+~DS_win1_mousePos_1 = [303, 9];
+~DS_win1_mousePos_1 = [309, 9];
+~DS_win1_mousePos_1 = [317, 9];
+~DS_win1_mousePos_1 = [323, 9];
+~DS_win1_mousePos_1 = [327, 9];
+~DS_win1_mousePos_1 = [330, 9];
+~DS_win1_mousePos_1 = [333, 9];
+~DS_win1_mousePos_1 = [335, 9];
+~DS_win1_mousePos_1 = [336, 9];
+~DS_win1_mousePos_1 = [338, 9];
+~DS_win1_mousePos_1 = [340, 9];
+~DS_win1_mousePos_1 = [341, 9];
+~DS_win1_mousePos_1 = [343, 9];
+~DS_win1_mousePos_1 = [344, 9];
+~DS_win1_mousePos_1 = [345, 9];
+~DS_win1_mouse_1 = [1,5,256,345, 9];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [99, 13];
+~DS_win1_mousePos_1 = [99, 14];
+~DS_win1_mousePos_1 = [99, 15];
+~DS_win1_mousePos_1 = [99, 16];
+~DS_win1_mousePos_1 = [99, 17];
+~DS_win1_mousePos_1 = [99, 18];
+~DS_win1_mousePos_1 = [99, 19];
+~DS_win1_mousePos_1 = [100, 19];
+~DS_win1_mousePos_1 = [101, 19];
+~DS_win1_mouse_1 = [1,4,0,101, 19];
+~DS_win1_mousePos_1 = [100, 18];
+~DS_win1_mousePos_1 = [99, 18];
+~DS_win1_mousePos_1 = [98, 18];
+~DS_win1_mousePos_1 = [96, 16];
+~DS_win1_mousePos_1 = [93, 15];
+~DS_win1_mousePos_1 = [86, 14];
+~DS_win1_mousePos_1 = [79, 12];
+~DS_win1_mousePos_1 = [67, 9];
+~DS_win1_mousePos_1 = [53, 7];
+~DS_win1_mousePos_1 = [41, 2];
+~DS_win1_mousePos_1 = [26, 0];
+~DS_win1_mousePos_1 = [6, -3];
+~DS_win1_mousePos_1 = [-12, -4];
+~DS_win1_mousePos_1 = [-33, -4];
+~DS_win1_mousePos_1 = [-63, -4];
+~DS_win1_mousePos_1 = [-74, -4];
+~DS_win1_mousePos_1 = [-87, -5];
+~DS_win1_mousePos_1 = [-100, -5];
+~DS_win1_mousePos_1 = [-109, -5];
+~DS_win1_mousePos_1 = [-116, -5];
+~DS_win1_mousePos_1 = [-120, -5];
+~DS_win1_mousePos_1 = [-126, -5];
+~DS_win1_mousePos_1 = [-130, -5];
+~DS_win1_mousePos_1 = [-132, -5];
+~DS_win1_mousePos_1 = [-135, -5];
+~DS_win1_mousePos_1 = [-137, -5];
+~DS_win1_mousePos_1 = [-138, -5];
+~DS_win1_mousePos_1 = [-139, -5];
+~DS_win1_mousePos_1 = [-140, -5];
+~DS_win1_mousePos_1 = [-141, -4];
+~DS_win1_mouse_1 = [1,5,256,-141, -4];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [102, 19];
+~DS_win1_mousePos_1 = [102, 20];
+~DS_win1_mousePos_1 = [103, 20];
+~DS_win1_mousePos_1 = [103, 22];
+~DS_win1_mouse_1 = [1,4,0,103, 22];
+~DS_win1_mousePos_1 = [103, 26];
+~DS_win1_mousePos_1 = [103, 27];
+~DS_win1_mousePos_1 = [103, 28];
+~DS_win1_mousePos_1 = [103, 30];
+~DS_win1_mousePos_1 = [104, 33];
+~DS_win1_mousePos_1 = [105, 37];
+~DS_win1_mousePos_1 = [105, 42];
+~DS_win1_mousePos_1 = [105, 47];
+~DS_win1_mousePos_1 = [106, 51];
+~DS_win1_mousePos_1 = [106, 55];
+~DS_win1_mousePos_1 = [106, 60];
+~DS_win1_mousePos_1 = [106, 64];
+~DS_win1_mousePos_1 = [107, 68];
+~DS_win1_mousePos_1 = [107, 72];
+~DS_win1_mousePos_1 = [107, 75];
+~DS_win1_mousePos_1 = [107, 77];
+~DS_win1_mousePos_1 = [107, 79];
+~DS_win1_mousePos_1 = [107, 81];
+~DS_win1_mousePos_1 = [107, 83];
+~DS_win1_mousePos_1 = [107, 84];
+~DS_win1_mouse_1 = [1,5,256,107, 84];
+~DS_win1_mousePos_1 = [103, 23];
+~DS_win1_mousePos_1 = [103, 24];
+~DS_win1_mousePos_1 = [103, 25];
+~DS_win1_mousePos_1 = [103, 26];
+~DS_win1_mousePos_1 = [103, 27];
+~DS_win1_mousePos_1 = [103, 28];
+~DS_win1_mousePos_1 = [103, 29];
+~DS_win1_mousePos_1 = [102, 30];
+~DS_win1_mousePos_1 = [102, 32];
+~DS_win1_mousePos_1 = [101, 32];
+~DS_win1_mousePos_1 = [101, 33];
+~DS_win1_mouse_1 = [1,4,0,101, 33];
+~DS_win1_mousePos_1 = [99, 28];
+~DS_win1_mousePos_1 = [99, 25];
+~DS_win1_mousePos_1 = [99, 20];
+~DS_win1_mousePos_1 = [99, 13];
+~DS_win1_mousePos_1 = [100, 5];
+~DS_win1_mousePos_1 = [101, -5];
+~DS_win1_mousePos_1 = [103, -14];
+~DS_win1_mousePos_1 = [107, -24];
+~DS_win1_mousePos_1 = [109, -35];
+~DS_win1_mousePos_1 = [111, -43];
+~DS_win1_mousePos_1 = [113, -51];
+~DS_win1_mousePos_1 = [115, -57];
+~DS_win1_mousePos_1 = [117, -62];
+~DS_win1_mousePos_1 = [118, -67];
+~DS_win1_mousePos_1 = [118, -70];
+~DS_win1_mousePos_1 = [119, -72];
+~DS_win1_mousePos_1 = [119, -74];
+~DS_win1_mousePos_1 = [120, -74];
+~DS_win1_mouse_1 = [1,5,256,120, -74];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [101, 34];
+~DS_win1_mousePos_1 = [101, 35];
+~DS_win1_mousePos_1 = [101, 36];
+~DS_win1_mouse_1 = [1,4,0,101, 36];
+~DS_win1_mousePos_1 = [161, 36];
+~DS_win1_mousePos_1 = [169, 36];
+~DS_win1_mousePos_1 = [177, 36];
+~DS_win1_mousePos_1 = [182, 36];
+~DS_win1_mousePos_1 = [188, 37];
+~DS_win1_mousePos_1 = [197, 38];
+~DS_win1_mousePos_1 = [204, 38];
+~DS_win1_mousePos_1 = [211, 39];
+~DS_win1_mousePos_1 = [215, 39];
+~DS_win1_mousePos_1 = [219, 39];
+~DS_win1_mousePos_1 = [222, 39];
+~DS_win1_mousePos_1 = [224, 39];
+~DS_win1_mousePos_1 = [226, 40];
+~DS_win1_mousePos_1 = [227, 40];
+~DS_win1_mousePos_1 = [228, 40];
+~DS_win1_mouse_1 = [1,5,256,228, 40];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [102, 36];
+~DS_win1_mouse_1 = [1,4,0,102, 36];
+~DS_win1_mousePos_1 = [111, 35];
+~DS_win1_mousePos_1 = [113, 35];
+~DS_win1_mousePos_1 = [115, 34];
+~DS_win1_mousePos_1 = [116, 34];
+~DS_win1_mousePos_1 = [119, 34];
+~DS_win1_mousePos_1 = [121, 33];
+~DS_win1_mousePos_1 = [125, 32];
+~DS_win1_mousePos_1 = [130, 31];
+~DS_win1_mousePos_1 = [135, 30];
+~DS_win1_mousePos_1 = [142, 30];
+~DS_win1_mousePos_1 = [148, 30];
+~DS_win1_mousePos_1 = [151, 30];
+~DS_win1_mousePos_1 = [154, 29];
+~DS_win1_mousePos_1 = [156, 28];
+~DS_win1_mousePos_1 = [159, 28];
+~DS_win1_mousePos_1 = [161, 28];
+~DS_win1_mousePos_1 = [163, 28];
+~DS_win1_mousePos_1 = [166, 28];
+~DS_win1_mousePos_1 = [169, 28];
+~DS_win1_mousePos_1 = [171, 28];
+~DS_win1_mousePos_1 = [173, 28];
+~DS_win1_mousePos_1 = [175, 28];
+~DS_win1_mousePos_1 = [177, 28];
+~DS_win1_mousePos_1 = [178, 28];
+~DS_win1_mousePos_1 = [180, 28];
+~DS_win1_mouse_1 = [1,5,256,180, 28];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [105, 36];
+~DS_win1_mousePos_1 = [105, 37];
+~DS_win1_mousePos_1 = [104, 37];
+~DS_win1_mousePos_1 = [103, 37];
+~DS_win1_mouse_1 = [1,4,0,103, 37];
+~DS_win1_mousePos_1 = [102, 37];
+~DS_win1_mousePos_1 = [102, 38];
+~DS_win1_mousePos_1 = [102, 39];
+~DS_win1_mousePos_1 = [102, 42];
+~DS_win1_mousePos_1 = [101, 43];
+~DS_win1_mousePos_1 = [101, 46];
+~DS_win1_mousePos_1 = [101, 49];
+~DS_win1_mousePos_1 = [100, 52];
+~DS_win1_mousePos_1 = [99, 55];
+~DS_win1_mousePos_1 = [99, 60];
+~DS_win1_mousePos_1 = [97, 65];
+~DS_win1_mousePos_1 = [97, 71];
+~DS_win1_mousePos_1 = [96, 78];
+~DS_win1_mousePos_1 = [95, 83];
+~DS_win1_mousePos_1 = [95, 87];
+~DS_win1_mousePos_1 = [95, 92];
+~DS_win1_mousePos_1 = [95, 94];
+~DS_win1_mousePos_1 = [95, 97];
+~DS_win1_mousePos_1 = [95, 100];
+~DS_win1_mousePos_1 = [94, 103];
+~DS_win1_mousePos_1 = [94, 105];
+~DS_win1_mousePos_1 = [94, 107];
+~DS_win1_mousePos_1 = [94, 108];
+~DS_win1_mousePos_1 = [94, 109];
+~DS_win1_mousePos_1 = [94, 110];
+~DS_win1_mousePos_1 = [94, 111];
+~DS_win1_mouse_1 = [1,5,256,94, 111];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [103, 36];
+~DS_win1_mousePos_1 = [103, 35];
+~DS_win1_mouse_1 = [1,4,0,103, 35];
+~DS_win1_mousePos_1 = [107, 35];
+~DS_win1_mousePos_1 = [112, 34];
+~DS_win1_mousePos_1 = [119, 34];
+~DS_win1_mousePos_1 = [126, 34];
+~DS_win1_mousePos_1 = [132, 34];
+~DS_win1_mousePos_1 = [139, 35];
+~DS_win1_mousePos_1 = [147, 36];
+~DS_win1_mousePos_1 = [153, 38];
+~DS_win1_mousePos_1 = [157, 38];
+~DS_win1_mousePos_1 = [162, 40];
+~DS_win1_mousePos_1 = [164, 40];
+~DS_win1_mousePos_1 = [167, 41];
+~DS_win1_mousePos_1 = [169, 42];
+~DS_win1_mousePos_1 = [171, 42];
+~DS_win1_mousePos_1 = [173, 42];
+~DS_win1_mousePos_1 = [174, 43];
+~DS_win1_mousePos_1 = [175, 43];
+~DS_win1_mousePos_1 = [176, 43];
+~DS_win1_mousePos_1 = [177, 43];
+~DS_win1_mouse_1 = [1,5,256,177, 43];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [102, 36];
+~DS_win1_mousePos_1 = [101, 37];
+~DS_win1_mousePos_1 = [100, 38];
+~DS_win1_mousePos_1 = [99, 39];
+~DS_win1_mousePos_1 = [97, 40];
+~DS_win1_mousePos_1 = [97, 41];
+~DS_win1_mousePos_1 = [95, 42];
+~DS_win1_mousePos_1 = [94, 43];
+~DS_win1_mousePos_1 = [93, 43];
+~DS_win1_mousePos_1 = [90, 45];
+~DS_win1_mousePos_1 = [89, 45];
+~DS_win1_mousePos_1 = [88, 46];
+~DS_win1_mousePos_1 = [86, 47];
+~DS_win1_mousePos_1 = [85, 47];
+~DS_win1_mouse_1 = [1,4,0,85, 47];
+~DS_win1_mousePos_1 = [100, 46];
+~DS_win1_mousePos_1 = [106, 46];
+~DS_win1_mousePos_1 = [108, 46];
+~DS_win1_mousePos_1 = [111, 46];
+~DS_win1_mousePos_1 = [114, 46];
+~DS_win1_mousePos_1 = [117, 46];
+~DS_win1_mousePos_1 = [120, 46];
+~DS_win1_mousePos_1 = [122, 46];
+~DS_win1_mousePos_1 = [125, 46];
+~DS_win1_mousePos_1 = [128, 46];
+~DS_win1_mousePos_1 = [131, 46];
+~DS_win1_mousePos_1 = [134, 46];
+~DS_win1_mousePos_1 = [137, 46];
+~DS_win1_mousePos_1 = [138, 46];
+~DS_win1_mousePos_1 = [140, 46];
+~DS_win1_mousePos_1 = [141, 46];
+~DS_win1_mousePos_1 = [142, 46];
+~DS_win1_mousePos_1 = [143, 46];
+~DS_win1_mouse_1 = [1,5,256,143, 46];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [84, 46];
+~DS_win1_mousePos_1 = [83, 46];
+~DS_win1_mouse_1 = [1,4,0,83, 46];
+~DS_win1_mousePos_1 = [64, 13];
+~DS_win1_mousePos_1 = [61, 3];
+~DS_win1_mousePos_1 = [58, -8];
+~DS_win1_mousePos_1 = [57, -16];
+~DS_win1_mousePos_1 = [56, -23];
+~DS_win1_mousePos_1 = [55, -27];
+~DS_win1_mousePos_1 = [55, -31];
+~DS_win1_mousePos_1 = [54, -34];
+~DS_win1_mousePos_1 = [54, -36];
+~DS_win1_mousePos_1 = [54, -38];
+~DS_win1_mousePos_1 = [54, -39];
+~DS_win1_mouse_1 = [1,5,256,54, -39];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [82, 46];
+~DS_win1_mouse_1 = [1,4,0,82, 46];
+~DS_win1_mousePos_1 = [-141, 40];
+~DS_win1_mousePos_1 = [-177, 39];
+~DS_win1_mousePos_1 = [-211, 35];
+~DS_win1_mousePos_1 = [-239, 34];
+~DS_win1_mousePos_1 = [-255, 34];
+~DS_win1_mousePos_1 = [-265, 34];
+~DS_win1_mousePos_1 = [-279, 34];
+~DS_win1_mousePos_1 = [-289, 34];
+~DS_win1_mousePos_1 = [-295, 35];
+~DS_win1_mousePos_1 = [-299, 35];
+~DS_win1_mousePos_1 = [-302, 35];
+~DS_win1_mousePos_1 = [-305, 35];
+~DS_win1_mouse_1 = [1,5,256,-305, 35];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [83, 46];
+~DS_win1_mousePos_1 = [83, 47];
+~DS_win1_mouse_1 = [1,4,0,83, 47];
+~DS_win1_mousePos_1 = [88, 105];
+~DS_win1_mousePos_1 = [89, 111];
+~DS_win1_mousePos_1 = [90, 117];
+~DS_win1_mousePos_1 = [90, 120];
+~DS_win1_mousePos_1 = [90, 123];
+~DS_win1_mousePos_1 = [90, 125];
+~DS_win1_mousePos_1 = [90, 128];
+~DS_win1_mousePos_1 = [90, 130];
+~DS_win1_mousePos_1 = [91, 132];
+~DS_win1_mousePos_1 = [91, 133];
+~DS_win1_mousePos_1 = [91, 134];
+~DS_win1_mouse_1 = [1,5,256,91, 134];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [84, 47];
+~DS_win1_mousePos_1 = [84, 48];
+~DS_win1_mousePos_1 = [84, 49];
+~DS_win1_mousePos_1 = [84, 50];
+~DS_win1_mousePos_1 = [84, 51];
+~DS_win1_mousePos_1 = [84, 52];
+~DS_win1_mousePos_1 = [84, 53];
+~DS_win1_mousePos_1 = [84, 54];
+~DS_win1_mousePos_1 = [84, 55];
+~DS_win1_mouse_1 = [1,4,0,84, 55];
+~DS_win1_mousePos_1 = [84, 75];
+~DS_win1_mousePos_1 = [83, 76];
+~DS_win1_mousePos_1 = [83, 78];
+~DS_win1_mousePos_1 = [83, 79];
+~DS_win1_mousePos_1 = [82, 81];
+~DS_win1_mousePos_1 = [82, 82];
+~DS_win1_mousePos_1 = [82, 83];
+~DS_win1_mousePos_1 = [82, 85];
+~DS_win1_mousePos_1 = [82, 87];
+~DS_win1_mousePos_1 = [81, 89];
+~DS_win1_mousePos_1 = [81, 90];
+~DS_win1_mousePos_1 = [80, 91];
+~DS_win1_mousePos_1 = [80, 93];
+~DS_win1_mousePos_1 = [80, 94];
+~DS_win1_mouse_1 = [1,5,256,80, 94];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [84, 56];
+~DS_win1_mouse_1 = [1,4,0,84, 56];
+~DS_win1_mousePos_1 = [82, 56];
+~DS_win1_mousePos_1 = [77, 56];
+~DS_win1_mousePos_1 = [70, 56];
+~DS_win1_mousePos_1 = [63, 56];
+~DS_win1_mousePos_1 = [59, 56];
+~DS_win1_mousePos_1 = [55, 56];
+~DS_win1_mousePos_1 = [52, 55];
+~DS_win1_mousePos_1 = [50, 55];
+~DS_win1_mousePos_1 = [47, 54];
+~DS_win1_mousePos_1 = [45, 54];
+~DS_win1_mousePos_1 = [42, 54];
+~DS_win1_mousePos_1 = [39, 54];
+~DS_win1_mousePos_1 = [38, 54];
+~DS_win1_mousePos_1 = [36, 54];
+~DS_win1_mousePos_1 = [35, 54];
+~DS_win1_mousePos_1 = [34, 54];
+~DS_win1_mouse_1 = [1,5,256,34, 54];
+~DS_win1_mouse_1 = [1,4,0,84, 56];
+~DS_win1_mousePos_1 = [122, 12];
+~DS_win1_mousePos_1 = [133, -5];
+~DS_win1_mousePos_1 = [146, -20];
+~DS_win1_mousePos_1 = [157, -32];
+~DS_win1_mousePos_1 = [169, -47];
+~DS_win1_mousePos_1 = [170, -48];
+~DS_win1_mousePos_1 = [172, -52];
+~DS_win1_mousePos_1 = [173, -56];
+~DS_win1_mousePos_1 = [174, -57];
+~DS_win1_mousePos_1 = [175, -57];
+~DS_win1_mouse_1 = [1,5,256,175, -57];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mouse_1 = [1,4,0,84, 56];
+~DS_win1_mousePos_1 = [83, 69];
+~DS_win1_mousePos_1 = [83, 72];
+~DS_win1_mousePos_1 = [83, 76];
+~DS_win1_mousePos_1 = [83, 79];
+~DS_win1_mousePos_1 = [82, 82];
+~DS_win1_mousePos_1 = [82, 86];
+~DS_win1_mousePos_1 = [80, 91];
+~DS_win1_mousePos_1 = [79, 96];
+~DS_win1_mousePos_1 = [77, 101];
+~DS_win1_mousePos_1 = [77, 105];
+~DS_win1_mousePos_1 = [75, 109];
+~DS_win1_mousePos_1 = [75, 112];
+~DS_win1_mousePos_1 = [75, 115];
+~DS_win1_mousePos_1 = [75, 116];
+~DS_win1_mousePos_1 = [75, 117];
+~DS_win1_mousePos_1 = [75, 118];
+~DS_win1_mousePos_1 = [74, 118];
+~DS_win1_mouse_1 = [1,5,256,74, 118];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [85, 59];
+~DS_win1_mousePos_1 = [88, 65];
+~DS_win1_mousePos_1 = [92, 71];
+~DS_win1_mousePos_1 = [95, 79];
+~DS_win1_mousePos_1 = [99, 85];
+~DS_win4_mouseEnter_1 = 1;
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [62, 8];
+~DS_win2_mousePos_1 = [62, 10];
+~DS_win2_mousePos_1 = [61, 11];
+~DS_win2_mouse_1 = [1,4,0,61, 11];
+~DS_win2_mousePos_1 = [64, 6];
+~DS_win2_mousePos_1 = [68, 3];
+~DS_win2_mousePos_1 = [76, -4];
+~DS_win2_mousePos_1 = [84, -11];
+~DS_win2_mousePos_1 = [94, -20];
+~DS_win2_mousePos_1 = [102, -29];
+~DS_win2_mousePos_1 = [115, -39];
+~DS_win2_mousePos_1 = [128, -51];
+~DS_win2_mousePos_1 = [140, -62];
+~DS_win2_mousePos_1 = [152, -72];
+~DS_win2_mousePos_1 = [171, -87];
+~DS_win2_mousePos_1 = [199, -108];
+~DS_win2_mousePos_1 = [207, -115];
+~DS_win2_mousePos_1 = [214, -121];
+~DS_win2_mousePos_1 = [223, -126];
+~DS_win2_mousePos_1 = [233, -131];
+~DS_win2_mousePos_1 = [241, -134];
+~DS_win2_mousePos_1 = [247, -138];
+~DS_win2_mousePos_1 = [252, -142];
+~DS_win2_mousePos_1 = [257, -144];
+~DS_win2_mousePos_1 = [260, -146];
+~DS_win2_mousePos_1 = [264, -149];
+~DS_win2_mousePos_1 = [269, -153];
+~DS_win2_mouse_1 = [1,5,256,269, -153];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mouse_1 = [1,4,0,67, 9];
+~DS_win2_mousePos_1 = [49, 6];
+~DS_win2_mousePos_1 = [42, 6];
+~DS_win2_mousePos_1 = [33, 6];
+~DS_win2_mousePos_1 = [21, 5];
+~DS_win2_mousePos_1 = [12, 4];
+~DS_win2_mousePos_1 = [6, 4];
+~DS_win2_mousePos_1 = [-2, 3];
+~DS_win2_mousePos_1 = [-12, 2];
+~DS_win2_mousePos_1 = [-20, 2];
+~DS_win2_mousePos_1 = [-28, 1];
+~DS_win2_mousePos_1 = [-31, 1];
+~DS_win2_mousePos_1 = [-34, 1];
+~DS_win2_mousePos_1 = [-35, 1];
+~DS_win2_mousePos_1 = [-37, 1];
+~DS_win2_mouse_1 = [1,5,256,-37, 1];
+~DS_win2_mouseEnter_1 = 1;
+~DS_win2_mousePos_1 = [66, 9];
+~DS_win2_mousePos_1 = [65, 10];
+~DS_win2_mousePos_1 = [65, 11];
+~DS_win2_mousePos_1 = [62, 12];
+~DS_win2_mousePos_1 = [60, 13];
+~DS_win2_mousePos_1 = [57, 14];
+~DS_win2_mousePos_1 = [54, 14];
+~DS_win2_mousePos_1 = [51, 15];
+~DS_win2_mousePos_1 = [49, 15];
+~DS_win2_mousePos_1 = [48, 17];
+~DS_win2_mousePos_1 = [46, 17];
+~DS_win2_mousePos_1 = [44, 18];
+~DS_win2_mousePos_1 = [43, 19];
+~DS_win2_mousePos_1 = [42, 20];
+~DS_win2_mousePos_1 = [40, 21];
+~DS_win2_mousePos_1 = [37, 22];
+~DS_win2_mousePos_1 = [35, 23];
+~DS_win2_mousePos_1 = [31, 25];
+~DS_win2_mousePos_1 = [25, 26];
+~DS_win2_mousePos_1 = [21, 28];
+~DS_win2_mousePos_1 = [15, 30];
+~DS_win2_mousePos_1 = [13, 30];
+~DS_win2_mousePos_1 = [10, 31];
+~DS_win2_mousePos_1 = [5, 32];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [77, 80];
+~DS_win1_mousePos_1 = [76, 77];
+~DS_win1_mousePos_1 = [76, 74];
+~DS_win1_mousePos_1 = [75, 71];
+~DS_win1_mousePos_1 = [74, 69];
+~DS_win1_mousePos_1 = [74, 68];
+~DS_win1_mousePos_1 = [73, 65];
+~DS_win1_mousePos_1 = [72, 63];
+~DS_win1_mousePos_1 = [72, 60];
+~DS_win1_mousePos_1 = [71, 58];
+~DS_win1_mousePos_1 = [71, 56];
+~DS_win1_mousePos_1 = [71, 55];
+~DS_win1_mousePos_1 = [71, 54];
+~DS_win1_mouse_1 = [1,4,0,71, 54];
+~DS_win1_mousePos_1 = [75, 50];
+~DS_win1_mousePos_1 = [78, 48];
+~DS_win1_mousePos_1 = [83, 44];
+~DS_win1_mousePos_1 = [87, 39];
+~DS_win1_mousePos_1 = [93, 33];
+~DS_win1_mousePos_1 = [98, 28];
+~DS_win1_mousePos_1 = [103, 23];
+~DS_win1_mousePos_1 = [109, 17];
+~DS_win1_mousePos_1 = [117, 10];
+~DS_win1_mousePos_1 = [120, 8];
+~DS_win1_mousePos_1 = [126, 2];
+~DS_win1_mousePos_1 = [130, -3];
+~DS_win1_mousePos_1 = [132, -5];
+~DS_win1_mousePos_1 = [133, -5];
+~DS_win1_mousePos_1 = [134, -6];
+~DS_win1_mousePos_1 = [135, -7];
+~DS_win1_mousePos_1 = [135, -8];
+~DS_win1_mouse_1 = [1,5,256,135, -8];
+~DS_win1_mouseEnter_1 = 1;
+~DS_win1_mousePos_1 = [72, 54];
+~DS_win1_mousePos_1 = [73, 54];
+~DS_win1_mousePos_1 = [74, 54];
+~DS_win1_mousePos_1 = [75, 55];
+~DS_win1_mousePos_1 = [75, 56];
+~DS_win1_mousePos_1 = [75, 57];
+~DS_win1_mousePos_1 = [75, 58];
+~DS_win1_mousePos_1 = [75, 59];
+~DS_win1_mousePos_1 = [75, 60];
+~DS_win1_mousePos_1 = [74, 60];
+~DS_win1_mousePos_1 = [73, 60];
+~DS_win1_mousePos_1 = [73, 61];
+~DS_win1_mousePos_1 = [73, 62];
+~DS_win1_mousePos_1 = [73, 64];
+~DS_win1_mousePos_1 = [72, 66];
+~DS_win1_mousePos_1 = [72, 70];
+~DS_win1_mousePos_1 = [72, 77];
+~DS_win1_mousePos_1 = [72, 87];
+

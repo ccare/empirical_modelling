@@ -1,0 +1,85 @@
+installeddi();
+%eddi
+bibliography (key CHAR,type CHAR);
+books (key CHAR,author CHAR,editor CHAR,title CHAR,pub CHAR,year CHAR,volume CHAR,number CHAR,series CHAR,address CHAR, edition CHAR,month CHAR,note CHAR);
+%aop
+block cbras = "{" to "}" contains [bras,cbras];
+notation %bibliography = <bib> split on "\n" : ignore [cbras];
+
+<bib> = "@" <bib2> : do {addToDB($p1[2],$p1[1],$p1[3]);writeln($p1);} later;
+
+%eden
+proc addToDB {
+	para key,type,attributes;
+	execute("%eddi\nbibliography << [\""//key//"\",\""//type//"\"];\n%eden");
+	if (type == "BOOK") addBook(key,attributes);
+	
+	execute(macro(bibitem_macro,key));
+	
+	execute("bibitem_"//key//"_title is  \""//key//"\";");
+	execute("bibitem_"//key//"_text is  \""//regreplace("\"","\\\"",str(attributes))//"\";");
+}
+proc addBook {
+	para key,attributes;
+	auto author,editor,title,publisher,year;
+	auto volume,number,series,address,edition,month,note;
+	auto i;
+	author = "";
+	editor = "";
+	title = "";
+	publisher = "";
+	year = "";
+	volume = "";
+	number = "";
+	series = "";
+	address = "";
+	edition = "";
+	month = "";
+	note = "";
+	for (i=1;i<=attributes#;i++) {
+		if (attributes[i][1] == "AUTHOR") author = attributes[i][2];
+		else	if (attributes[i][1] == "EDITOR") editor = attributes[i][2];
+		else	if (attributes[i][1] == "TITLE") title = attributes[i][2];
+		else	if (attributes[i][1] == "PUBLISHER") publisher = attributes[i][2];
+		else	if (attributes[i][1] == "YEAR") year = attributes[i][2];
+		else	if (attributes[i][1] == "VOLUME") volume = attributes[i][2];
+		else	if (attributes[i][1] == "NUMBER") number = attributes[i][2];
+		else	if (attributes[i][1] == "SERIES") series = attributes[i][2];
+		else	if (attributes[i][1] == "ADDRESS") address = attributes[i][2];
+		else	if (attributes[i][1] == "EDITION") edition = attributes[i][2];
+		else	if (attributes[i][1] == "MONTH") month = attributes[i][2];
+		else	if (attributes[i][1] == "NOTE") note = attributes[i][2];
+	}
+	execute("%eddi\nbooks << [\""// key //"\",\"" //author//"\",\"" //editor//"\",\"" //title//"\",\""//
+							publisher//"\",\""//year//"\",\""//volume//"\",\""//number//"\",\""//series//"\",\""//
+							address//"\",\""//edition//"\",\""//month//"\",\""//note//"\"];\n%eden");
+}
+
+
+%aop
+
+
+<bib2> = <bibType> "{" <bib2a> : do {$v is [$p1] // $p2;} now;
+<bibType> = * : do {$v = $j;} now;
+<bib2a> = <bib2b> "}" : do {$v is $p1;} now;
+<bib2b> = <key> "," <attributeList> : do {$v is [$p1,$p2];} now;
+<key> = * : do {$v = $j;} now;
+<attributeList> = <attribute> "," <attributeList>
+								: do {$v is $p1 // $p2;} now
+								: ignore [string]
+								| <attribute>;
+<attribute> = <key> "=" <value> : do {$v is [[$p1,$p2]];} now;
+%eden
+stringChar = "\"";
+%aop
+<value> = `stringChar` <value2> : do {$v is $p1;} now | <value3>;
+<value2> = <bib4> `stringChar` : do {$v is $p1;} now;
+<value3> = "{" <value4> : do {$v is $p1;} now | <bib4>;
+<value4> = <bib4> "}" : do {$v is $p1;} now;
+<bib3> = <bib4> "}" : do {$v is $j;} now;
+<bib4> = * : do {$v = regreplace("\n","",$j);} now;
+
+
+
+
+

@@ -1,0 +1,182 @@
+
+%eden
+cd("aop_v204");
+include("Run.e");
+cd("..");
+
+PH_notationName="%physical";
+
+##------------------------------------------------------------------------------
+## Top-Level Rules
+##------------------------------------------------------------------------------
+
+## Initial Rule (split by newline) 
+PHparse_init = ["\n", "PHparse_stm", []];
+
+## Split statements by ";" 
+PHparse_stm = ["suffix", ";", "PHparse_depend", [ "fail", "ANparse_error"] ];
+
+## General Error Case
+PHparse_error = [ "read_all", [], 
+		["action",
+			["now", "error(\"Not a valid " // PH_notationName 
+				// " definition or command.\n\n\");"]]];
+##------------------------------------------------------------------------------
+## VALUES
+##------------------------------------------------------------------------------
+
+
+
+PHparse_quot = [ "pivot", "/", ["PHparse_name", "PHparse_name"],
+                        ["fail", "PHparse_mult"],
+                        ["action",
+                          ["later","$v=PHparse_makeQuot($p1,$p2);"]]];
+
+func PHparse_makeQuot {
+	para a,b;
+	auto value,dimenion;
+	value = "PH_val_"// a //" / PH_val_"// b;
+	dimension = "PH_dim_"// a //" - PH_dim_"// b;
+	return [value,dimension];
+}
+
+
+PHparse_mult = [ "pivot", "*", ["PHparse_name", "PHparse_name"],
+                        ["fail", "PHparse_sum"],
+                        ["action",
+                          ["later","$v=PHparse_makeMult($p1,$p2);"]]];
+
+func PHparse_makeMult {
+        para a,b;
+        auto value,dimenion;
+        value = "PH_val_"// a //" * PH_val_"// b;
+        dimension = "PH_dim_"// a //" + PH_dim_"// b;
+        return [value,dimension];
+}
+
+PHparse_sum = [ "pivot", "+", ["PHparse_name", "PHparse_name"],
+                        ["fail", "PHparse_diff"],
+                        ["action",
+                          ["later","$v=PHparse_makeSum($p1,$p2);"]]];
+
+func PHparse_makeSum {
+        para a,b;
+        auto value,dimenion;
+        value = "PH_val_"// a //" + PH_val_"// b;
+        dimension = "(PH_dim_"// a //" == PH_dim_"// b //") ? PH_dim_"// a //" : @";
+        return [value,dimension];
+}
+
+PHparse_diff = [ "pivot", "-", ["PHparse_name", "PHparse_name"],
+                        ["fail", "PHparse_literal"],
+                        ["action",
+                          ["later","$v=PHparse_makeDiff($p1,$p2);"]]];
+
+func PHparse_makeDiff {
+        para a,b;
+        auto value,dimenion;
+        value = "PH_val_"// a //" - PH_val_"// b;
+        dimension = "(PH_dim_"// a //" == PH_dim_"// b //") ? PH_dim_"// a //" : @";
+        return [value,dimension];
+}
+
+PHparse_literal = [ "pivot", " ", ["PHparse_value", "PHparse_unit"],
+			["fail", "PHparse_name"],
+			["action", 
+			  ["later","$v=[$p1,PHparse_unitVec];
+					PH_unitVec_reset();"]]];
+
+PHparse_value = [ "literal_re", "[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=$t;"]] ];
+
+##------------------------------------------------------------------------------
+## NAMES
+##------------------------------------------------------------------------------
+
+## NAMES: lowercase and uppercase, can't begin with digit or underscore.
+PHparse_name = [ "literal_re", "[a-z,A-Z]+[a-z,A-Z,0-9,_]*", 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=\"$t\";"]] ];
+
+##------------------------------------------------------------------------------
+## UNITS
+##------------------------------------------------------------------------------
+
+## UNITS: lowercase and uppercase
+PHparse_unit = [ "prefix","mol","PHparse_unit", ["fail","PHparse_unit2"], 
+			["action",["now","PHparse_unitVec_ammount++;"]]];
+
+PHparse_unit2 = [ "prefix","kg","PHparse_unit", ["fail","PHparse_unit3"], 
+			["action",["now","PHparse_unitVec_mass++;"]]];
+
+PHparse_unit3 = [ "prefix","s","PHparse_unit", ["fail","PHparse_unit4"], 
+			["action",["now","PHparse_unitVec_time++;"]]];
+
+PHparse_unit4 = [ "prefix","A","PHparse_unit", ["fail","PHparse_unit5"], 
+			["action",["now","PHparse_unitVec_current++;"]]];
+
+PHparse_unit5 = [ "prefix","K","PHparse_unit", ["fail","PHparse_unit6"], 
+			["action",["now","PHparse_unitVec_temperature;"]]];
+
+PHparse_unit6 = [ "prefix","m","PHparse_unit", ["fail","PHparse_unit7"], 
+			["action",["now","PHparse_unitVec_length++;"]]];
+
+PHparse_unit7 = [ "prefix","cd","PHparse_unit", ["fail","PHparse_unit8"], 
+			["action",["now","PHparse_unitVec_luminous++;"]]];
+
+PHparse_unit8 = [ "literal", "", ["fail", "PHparse_error"]];
+
+##------------------------------------------------------------------------------
+## DEFINITIONS
+##------------------------------------------------------------------------------
+
+## Dependency: literal
+PHparse_depend = [ "pivot", "=", ["PHparse_name", "PHparse_literal"], 
+			[ "fail", "PHparse_error"], 
+			[ "action", 
+			 ["later","PHparse_setVal($p1,$p2[1],$p2[2]);"]]];
+
+
+
+proc PHparse_setVal {
+	para name,val,dim;
+	execute("PH_val_"//name//" is (PH_dim_"// 
+			name //" != @) ? "// str(val) //" : @;");
+	execute("PH_dim_"//name//" is "//str(dim)//";");
+}
+
+
+##------------------------------------------------------------------------------
+## Add the notation to eden
+##------------------------------------------------------------------------------
+
+installAOP(PH_notationName, "PHparse_init");
+
+
+
+
+##------------------------------------------------------------------------------
+## The unit vector `object'
+##------------------------------------------------------------------------------
+
+PHparse_unitVec is [PHparse_unitVec_length,
+			PHparse_unitVec_mass,
+			PHparse_unitVec_time,
+			PHparse_unitVec_current,
+			PHparse_unitVec_temperature,
+			PHparse_unitVec_ammount,
+			PHparse_unitVec_luminous];
+
+proc PH_unitVec_reset {
+	PHparse_unitVec_length=0;
+	PHparse_unitVec_mass=0;
+	PHparse_unitVec_time=0;
+	PHparse_unitVec_current=0;
+	PHparse_unitVec_temperature=0;
+	PHparse_unitVec_ammount=0;
+	PHparse_unitVec_luminous=0;
+}
+
+PH_unitVec_reset();
+

@@ -1,0 +1,21 @@
+Agent-oriented Parser
+---------------------
+
+[10/03/2003][v204]
+ - Last minute bug fixes that have been recently introduced due to performance
+   enhancements.
+
+[26/02/2003][v203]
+ - Added a procedure that is called when an agent completes, allowing
+   components to watch the parse process (i.e. visualisation).
+ - Generalised the format for agents.
+ - Added more warnings to the parse process.
+
+[03/01/2003][v202]
+ - Fixed bug that didn't accept a list of children agents for some agent types.
+
+[29/12/2002][V201]
+ - Added a new variable to the scripting actions ($j).
+
+[18/11/2002][v200]
+ - New AOP. See readme for more information.

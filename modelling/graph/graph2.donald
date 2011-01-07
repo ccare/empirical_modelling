@@ -1,0 +1,19 @@
+%donald
+viewport viewGraph
+int angle, w
+arc a2, a1
+circle C, B, A
+point c, b, a
+
+angle = 90
+w = 5
+a2 = [a, c, angle]
+a1 = [a, b, angle]
+C = circle(c, w)
+B = circle(b, w)
+A = circle(a, w)
+c = {200, 10}
+b = {100, 10}
+a = {10, 10}
+
+

@@ -1,0 +1,793 @@
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;
+
+%donald
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,100}
+b = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,100}
+b = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,100}
+c = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,100}
+c = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_B = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,100}
+c = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,10}
+c = {100,200}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,10}
+c = {200,10}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+
+angle=30
+angle=45
+angle=60
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,10}
+c = {200,10}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,-angle]
+
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,10}
+c = {200,10}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+
+viewport viewGraph
+%donald
+point a
+point b
+point c
+circle A
+circle B
+circle C
+
+arc a1,a2
+
+int w,angle
+
+w=5
+angle=90
+
+a = {10,10}
+b = {100,10}
+c = {200,10}
+A = circle(a,w)
+B = circle(b,w)
+C = circle(c,w)
+?A_A = "fill=solid,outlinecolor=black,color=green";
+?A_B = "fill=solid,outlinecolor=black,color=red";
+?A_C = "fill=solid,outlinecolor=black,color=blue";
+
+
+a1 = [a,b,angle]
+a2 = [a,c,angle]
+
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+		sensitive: ON
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;
+
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+		sensitive: ON
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;
+
+%scout
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+		sensitive: ON
+};
+display screen = <graphWindow>;
+integer screen_height = 431;
+integer screen_width = 525;
+
+~graphWindow_mouse = [1,4,0,122.744323574, 147.692356821];
+~graphWindow_mouse = [1,5,256,122.744323574, 147.692356821];
+~graphWindow_mouse = [1,4,0,8.98129196883, 5.98752797922];
+~graphWindow_mouse = [1,5,256,8.98129196883, 1.99584265974];
+~graphWindow_mouse = [1,4,0,8.98129196883, 10.9771346286];
+~graphWindow_mouse = [1,5,256,8.98129196883, 11.9750559584];
+~graphWindow_mouse = [1,4,0,94.8025263376, 245.488647148];
+~graphWindow_mouse = [1,5,256,-46.9023025039, 465.031339719];
+~graphWindow_mouse = [1,4,0,10.9771346286, 8.98129196883];
+~graphWindow_mouse = [1,5,256,10.9771346286, 8.98129196883];
+~graphWindow_mouse = [1,4,0,105.779660966, 9.9792132987];
+~graphWindow_mouse = [1,5,256,105.779660966, 9.9792132987];
+~graphWindow_mouse = [1,4,0,71.8503357506, 361.247521413];
+~graphWindow_mouse = [1,5,256,71.8503357506, 361.247521413];
+~graphWindow_mouse = [1,4,0,199.584265974, 255.467860447];
+~graphWindow_mouse = [1,5,256,199.584265974, 255.467860447];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,9.9792132987, 9.9792132987];
+~graphWindow_mouse = [1,5,256,9.9792132987, 9.9792132987];
+~graphWindow_mouse = [1,4,0,9.9792132987, 9.9792132987];
+~graphWindow_mouse = [1,5,256,9.9792132987, 9.9792132987];
+~graphWindow_mouse = [1,4,0,9.9792132987, 7.98337063896];
+~graphWindow_mouse = [1,5,256,9.9792132987, 7.98337063896];
+~graphWindow_mouse = [1,4,0,5.98752797922, 7.98337063896];
+~graphWindow_mouse = [1,5,256,5.98752797922, 7.98337063896];
+~graphWindow_mouse = [1,4,0,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,5,256,9.9792132987, 4.98960664935];
+%eden
+proc graphClick : graphWindow_mouse {
+	auto x,y
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[y]);
+	writeln(str(x)//" , "//str(y));
+}
+## ERROR number 1: redeclare local variable:x while executing string near l...
+proc graphClick : graphWindow_mouse {
+	auto x,y
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+}
+## ERROR number 2: redeclare local variable:x while executing string near l...
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,8.98129196883, 5.98752797922];
+~graphWindow_mouse = [1,5,256,8.98129196883, 5.98752797922];
+~graphWindow_mouse = [1,4,0,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,5,256,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,4,0,7.98337063896, 10.9771346286];
+~graphWindow_mouse = [1,5,256,7.98337063896, 10.9771346286];
+~graphWindow_mouse = [1,4,0,5.98752797922, 10.9771346286];
+~graphWindow_mouse = [1,5,256,5.98752797922, 10.9771346286];
+~graphWindow_mouse = [1,4,0,15.9667412779, 10.9771346286];
+~graphWindow_mouse = [1,5,256,15.9667412779, 9.9792132987];
+~graphWindow_mouse = [1,4,0,15.9667412779, 9.9792132987];
+~graphWindow_mouse = [1,5,256,15.9667412779, 9.9792132987];
+~graphWindow_mouse = [1,4,0,12.9729772883, 5.98752797922];
+~graphWindow_mouse = [1,5,256,12.9729772883, 5.98752797922];
+~graphWindow_mouse = [1,4,0,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,5,256,8.98129196883, 4.98960664935];
+~graphWindow_mouse = [1,4,0,6.98544930909, 7.98337063896];
+~graphWindow_mouse = [1,5,256,6.98544930909, 9.9792132987];
+~graphWindow_mouse = [1,4,0,4.98960664935, 16.9646626078];
+~graphWindow_mouse = [1,5,256,4.98960664935, 16.9646626078];
+~graphWindow_mouse = [1,4,0,6.98544930909, 12.9729772883];
+~graphWindow_mouse = [1,5,256,6.98544930909, 12.9729772883];
+~graphWindow_mouse = [1,4,0,7.98337063896, 13.9708986182];
+~graphWindow_mouse = [1,5,256,7.98337063896, 13.9708986182];
+~graphWindow_mouse = [1,4,0,7.98337063896, 9.9792132987];
+~graphWindow_mouse = [1,5,256,7.98337063896, 9.9792132987];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,5,256,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,5,256,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,5,256,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 8.98129196883];
+~graphWindow_mouse = [1,5,256,11.9750559584, 8.98129196883];
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]/10)*10;
+	y = int(graphWindow_mouse[5]/10)*10;
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,18.9605052675, 38.9189318649];
+~graphWindow_mouse = [1,5,256,19.9584265974, 39.9168531948];
+~graphWindow_mouse = [1,4,0,10.9771346286, 10.9771346286];
+~graphWindow_mouse = [1,5,256,10.9771346286, 10.9771346286];
+~graphWindow_mouse = [1,4,0,10.9771346286, 5.98752797922];
+~graphWindow_mouse = [1,5,256,10.9771346286, 5.98752797922];
+~graphWindow_mouse = [1,4,0,10.9771346286, 3.99168531948];
+~graphWindow_mouse = [1,5,256,10.9771346286, 3.99168531948];
+~graphWindow_mouse = [1,4,0,9.9792132987, 3.99168531948];
+~graphWindow_mouse = [1,5,256,8.98129196883, 4.98960664935];
+~graphWindow_mouse = [1,4,0,7.98337063896, 5.98752797922];
+~graphWindow_mouse = [1,5,256,7.98337063896, 7.98337063896];
+~graphWindow_mouse = [1,4,0,7.98337063896, 7.98337063896];
+~graphWindow_mouse = [1,5,256,6.98544930909, 8.98129196883];
+~graphWindow_mouse = [1,4,0,6.98544930909, 9.9792132987];
+~graphWindow_mouse = [1,5,256,5.98752797922, 10.9771346286];
+~graphWindow_mouse = [1,4,0,5.98752797922, 11.9750559584];
+~graphWindow_mouse = [1,5,256,5.98752797922, 11.9750559584];
+~graphWindow_mouse = [1,4,0,5.98752797922, 12.9729772883];
+~graphWindow_mouse = [1,5,256,7.98337063896, 15.9667412779];
+~graphWindow_mouse = [1,4,0,9.9792132987, 16.9646626078];
+~graphWindow_mouse = [1,5,256,9.9792132987, 17.9625839377];
+~graphWindow_mouse = [1,4,0,11.9750559584, 19.9584265974];
+~graphWindow_mouse = [1,5,256,11.9750559584, 19.9584265974];
+~graphWindow_mouse = [1,4,0,11.9750559584, 17.9625839377];
+~graphWindow_mouse = [1,5,256,11.9750559584, 16.9646626078];
+~graphWindow_mouse = [1,4,0,11.9750559584, 15.9667412779];
+~graphWindow_mouse = [1,5,256,11.9750559584, 12.9729772883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 11.9750559584];
+~graphWindow_mouse = [1,5,256,11.9750559584, 9.9792132987];
+~graphWindow_mouse = [1,4,0,11.9750559584, 7.98337063896];
+~graphWindow_mouse = [1,5,256,11.9750559584, 7.98337063896];
+~graphWindow_mouse = [1,4,0,11.9750559584, 3.99168531948];
+~graphWindow_mouse = [1,5,256,11.9750559584, 1.99584265974];
+~graphWindow_mouse = [1,4,0,11.9750559584, 5.98752797922];
+~graphWindow_mouse = [1,5,256,11.9750559584, 5.98752797922];
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,5.98752797922, 20.9563479273];
+~graphWindow_mouse = [1,5,256,5.98752797922, 19.9584265974];
+~graphWindow_mouse = [1,4,0,10.9771346286, 7.98337063896];
+~graphWindow_mouse = [1,5,256,10.9771346286, 7.98337063896];
+~graphWindow_mouse = [1,4,0,10.9771346286, 4.98960664935];
+~graphWindow_mouse = [1,5,256,10.9771346286, 3.99168531948];
+~graphWindow_mouse = [1,4,0,8.98129196883, 3.99168531948];
+~graphWindow_mouse = [1,5,256,8.98129196883, 3.99168531948];
+~graphWindow_mouse = [1,4,0,9.9792132987, 5.98752797922];
+~graphWindow_mouse = [1,5,256,9.9792132987, 6.98544930909];
+~graphWindow_mouse = [1,4,0,11.9750559584, 7.98337063896];
+~graphWindow_mouse = [1,5,256,12.9729772883, 9.9792132987];
+~graphWindow_mouse = [1,4,0,13.9708986182, 13.9708986182];
+~graphWindow_mouse = [1,5,256,13.9708986182, 13.9708986182];
+~graphWindow_mouse = [1,4,0,8.98129196883, 12.9729772883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 12.9729772883];
+~graphWindow_mouse = [1,4,0,7.98337063896, 13.9708986182];
+~graphWindow_mouse = [1,5,256,7.98337063896, 13.9708986182];
+~graphWindow_mouse = [1,4,0,8.98129196883, 13.9708986182];
+~graphWindow_mouse = [1,5,256,8.98129196883, 13.9708986182];
+~graphWindow_mouse = [1,4,0,8.98129196883, 13.9708986182];
+~graphWindow_mouse = [1,5,256,8.98129196883, 13.9708986182];
+~graphWindow_mouse = [1,4,0,9.9792132987, 13.9708986182];
+~graphWindow_mouse = [1,5,256,9.9792132987, 13.9708986182];
+~graphWindow_mouse = [1,4,0,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,5,256,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,4,0,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,5,256,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,4,0,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,5,256,9.9792132987, 14.968819948];
+~graphWindow_mouse = [1,4,0,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,5,256,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,4,0,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,5,256,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,4,0,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,5,256,9.9792132987, 4.98960664935];
+~graphWindow_mouse = [1,4,0,9.9792132987, 5.98752797922];
+~graphWindow_mouse = [1,5,256,9.9792132987, 6.98544930909];
+~graphWindow_mouse = [1,4,0,9.9792132987, 9.9792132987];
+~graphWindow_mouse = [1,5,256,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,4,0,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,5,256,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,4,0,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,5,256,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [1,4,0,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,5,256,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,4,0,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,5,256,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,4,0,8.98129196883, 10.9771346286];
+~graphWindow_mouse = [1,5,256,8.98129196883, 9.9792132987];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 10.9771346286];
+~graphWindow_mouse = [1,5,256,8.98129196883, 11.9750559584];
+~graphWindow_mouse = [1,4,0,12.9729772883, 9.9792132987];
+~graphWindow_mouse = [1,5,256,12.9729772883, 9.9792132987];
+~graphWindow_mouse = [1,4,0,104.781739636, 7.98337063896];
+~graphWindow_mouse = [1,5,256,105.779660966, 7.98337063896];
+~graphWindow_mouse = [1,4,0,104.781739636, 9.9792132987];
+~graphWindow_mouse = [1,5,256,104.781739636, 9.9792132987];
+~graphWindow_mouse = [1,4,0,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,4,0,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,4,0,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,4,0,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,4,0,102.785896977, 9.9792132987];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+	x = int(real(x)/10);
+	y = int(real(y)/10);
+	writeln(str(x)//" , "//str(y));
+}
+## ERROR number 3: func/proc/procmacro 'real' needed in action graphClick w...
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+	x = int(float(x)/10);
+	y = int(float(y)/10);
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,8.98129196883, 11.9750559584];
+~graphWindow_mouse = [1,5,256,8.98129196883, 11.9750559584];
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+	x = (float(x)/10);
+	y = (float(y)/10);
+	writeln(str(x)//" , "//str(y));
+}
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = int(graphWindow_mouse[4]);
+	y = int(graphWindow_mouse[5]);
+	writeln(str(x)//" , "//str(y));
+	x = round(float(x)/10);
+	y = round(float(y)/10);
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,9.9792132987, 8.98129196883];
+~graphWindow_mouse = [1,5,256,8.98129196883, 8.98129196883];
+~graphWindow_mouse = [1,4,0,7.98337063896, 8.98129196883];
+~graphWindow_mouse = [1,5,256,7.98337063896, 8.98129196883];
+~graphWindow_mouse = [1,4,0,7.98337063896, 8.98129196883];
+~graphWindow_mouse = [1,5,256,7.98337063896, 8.98129196883];
+~graphWindow_mouse = [1,4,0,8.98129196883, 14.968819948];
+~graphWindow_mouse = [1,5,256,8.98129196883, 15.9667412779];
+~graphWindow_mouse = [1,4,0,8.98129196883, 21.9542692571];
+~graphWindow_mouse = [1,5,256,8.98129196883, 22.952190587];
+~graphWindow_mouse = [1,4,0,10.9771346286, 29.9376398961];
+~graphWindow_mouse = [1,5,256,10.9771346286, 29.9376398961];
+~graphWindow_mouse = [1,4,0,11.9750559584, 28.9397185662];
+~graphWindow_mouse = [1,5,256,11.9750559584, 27.9417972364];
+~graphWindow_mouse = [1,4,0,18.9605052675, 21.9542692571];
+~graphWindow_mouse = [1,5,256,20.9563479273, 19.9584265974];
+~graphWindow_mouse = [1,4,0,23.9501119169, 15.9667412779];
+~graphWindow_mouse = [1,5,256,24.9480332467, 11.9750559584];
+~graphWindow_mouse = [1,4,0,102.785896977, 10.9771346286];
+~graphWindow_mouse = [1,5,256,102.785896977, 11.9750559584];
+~graphWindow_mouse = [1,4,0,101.787975647, 11.9750559584];
+~graphWindow_mouse = [1,5,256,101.787975647, 11.9750559584];
+~graphWindow_mouse = [1,4,0,100.790054317, 10.9771346286];
+~graphWindow_mouse = [1,5,256,99.792132987, 9.9792132987];
+~graphWindow_mouse = [1,4,0,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,5,256,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,4,0,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,5,256,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,4,0,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,5,256,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,4,0,98.7942116571, 9.9792132987];
+~graphWindow_mouse = [1,5,256,97.7962903272, 9.9792132987];
+~graphWindow_mouse = [1,4,0,1.99584265974, 5.98752797922];
+~graphWindow_mouse = [1,5,256,0.99792132987, 6.98544930909];
+~graphWindow_mouse = [1,4,0,1.99584265974, 6.98544930909];
+~graphWindow_mouse = [1,5,256,3.99168531948, 6.98544930909];
+~graphWindow_mouse = [1,4,0,5.98752797922, 6.98544930909];
+~graphWindow_mouse = [1,5,256,6.98544930909, 6.98544930909];
+~graphWindow_mouse = [1,4,0,9.9792132987, 6.98544930909];
+~graphWindow_mouse = [1,5,256,10.9771346286, 7.98337063896];
+~graphWindow_mouse = [1,4,0,13.9708986182, 9.9792132987];
+~graphWindow_mouse = [1,5,256,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,4,0,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,5,256,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,4,0,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,5,256,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,4,0,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,5,256,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,4,0,14.968819948, 10.9771346286];
+~graphWindow_mouse = [1,5,256,-32.9314038857, 196.590501984];
+proc graphClick : graphWindow_mouse {
+	auto x,y;
+	x = 10*round(graphWindow_mouse[4]/10);
+	y = 10*round(graphWindow_mouse[5]/10);
+	writeln(str(x)//" , "//str(y));
+}
+~graphWindow_mouse = [1,4,0,10.9771346286, 7.98337063896];
+~graphWindow_mouse = [1,5,256,10.9771346286, 7.98337063896];
+~graphWindow_mouse = [1,4,0,50.8939878234, 5.98752797922];
+~graphWindow_mouse = [1,5,256,50.8939878234, 6.98544930909];
+~graphWindow_mouse = [1,4,0,101.787975647, 10.9771346286];
+~graphWindow_mouse = [1,5,256,102.785896977, 10.9771346286];
+~graphWindow_mouse = [1,4,0,119.750559584, 12.9729772883];
+~graphWindow_mouse = [1,5,256,119.750559584, 12.9729772883];
+~graphWindow_mouse = [1,4,0,110.769267616, 14.968819948];
+~graphWindow_mouse = [1,5,256,108.773424956, 13.9708986182];
+~graphWindow_mouse = [1,4,0,103.783818306, 11.9750559584];
+~graphWindow_mouse = [1,5,256,99.792132987, 9.9792132987];
+~graphWindow_mouse = [1,4,0,98.7942116571, 8.98129196883];
+~graphWindow_mouse = [1,5,256,97.7962903272, 7.98337063896];
+~graphWindow_mouse = [1,4,0,95.8004476675, 5.98752797922];
+~graphWindow_mouse = [1,5,256,93.8046050078, 4.98960664935];
+~graphWindow_mouse = [1,4,0,95.8004476675, 8.98129196883];
+~graphWindow_mouse = [1,5,256,96.7983689974, 8.98129196883];
+~graphWindow_mouse = [1,4,0,203.575951293, 11.9750559584];
+~graphWindow_mouse = [1,5,256,203.575951293, 11.9750559584];
+~graphWindow_mouse = [1,4,0,4.98960664935, 9.9792132987];
+~graphWindow_mouse = [1,5,256,5.98752797922, 9.9792132987];
+~graphWindow_mouse = [1,4,0,7.98337063896, 7.98337063896];
+~graphWindow_mouse = [1,5,256,8.98129196883, 7.98337063896];
+~graphWindow_mouse = [1,4,0,9.9792132987, 7.98337063896];
+~graphWindow_mouse = [1,5,256,9.9792132987, 7.98337063896];
+~graphWindow_mouse = [1,4,0,8.98129196883, 6.98544930909];
+~graphWindow_mouse = [1,5,256,8.98129196883, 6.98544930909];
+~graphWindow_mouse = [1,4,0,5.98752797922, 6.98544930909];
+~graphWindow_mouse = [1,5,256,4.98960664935, 6.98544930909];
+~graphWindow_mouse = [1,4,0,3.99168531948, 6.98544930909];
+~graphWindow_mouse = [1,5,256,3.99168531948, 6.98544930909];
+~graphWindow_mouse = [1,4,0,5.98752797922, 8.98129196883];
+~graphWindow_mouse = [1,5,256,6.98544930909, 9.9792132987];
+~graphWindow_mouse = [1,4,0,8.98129196883, 9.9792132987];
+~graphWindow_mouse = [1,5,256,8.98129196883, 9.9792132987];
+~graphWindow_mouse = [1,4,0,8.98129196883, 9.9792132987];
+~graphWindow_mouse = [1,5,256,8.98129196883, 9.9792132987];
+~graphWindow_mouse = [1,4,0,8.98129196883, 7.98337063896];
+~graphWindow_mouse = [1,5,256,8.98129196883, 7.98337063896];
+~graphWindow_mouse = [1,4,0,94.8025263376, 8.98129196883];
+~graphWindow_mouse = [1,5,256,94.8025263376, 8.98129196883];
+~graphWindow_mouse = [1,4,0,98.7942116571, 7.98337063896];
+~graphWindow_mouse = [1,5,256,98.7942116571, 7.98337063896];
+~graphWindow_mouse = [1,4,0,98.7942116571, 7.98337063896];
+~graphWindow_mouse = [1,5,256,98.7942116571, 7.98337063896];
+~graphWindow_mouse = [1,4,0,199.584265974, 10.9771346286];
+~graphWindow_mouse = [1,5,256,199.584265974, 10.9771346286];
+~graphWindow_mouse = [1,4,0,199.584265974, 9.9792132987];
+~graphWindow_mouse = [1,5,256,199.584265974, 9.9792132987];
+~graphWindow_mouse = [1,4,0,99.792132987, 9.9792132987];
+~graphWindow_mouse = [1,5,256,99.792132987, 9.9792132987];
+~graphWindow_mouse = [1,4,0,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,5,256,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,4,0,9.9792132987, 11.9750559584];
+~graphWindow_mouse = [1,5,256,63.8669651117, 119.750559584];
+~graphWindow_mouse = [1,4,0,7.98337063896, 11.9750559584];
+~graphWindow_mouse = [1,5,256,166.652862088, 222.536456561];
+~graphWindow_mouse = [3,4,0,92.8066836779, 223.534377891];
+~graphWindow_mouse = [3,5,1024,217.546849912, 390.187239979];
+~graphWindow_mouse = [2,4,0,48.8981451636, 141.704828842];
+~graphWindow_mouse = [2,5,512,48.8981451636, 141.704828842];
+~graphWindow_mouse = [1,4,0,48.8981451636, 141.704828842];
+~graphWindow_mouse = [1,5,256,48.8981451636, 141.704828842];
+~graphWindow_mouse = [3,4,0,48.8981451636, 141.704828842];
+~graphWindow_mouse = [3,5,1024,48.8981451636, 142.702750171];
+~graphWindow_mouse = [2,4,0,48.8981451636, 142.702750171];
+~graphWindow_mouse = [2,5,512,48.8981451636, 142.702750171];
+~graphWindow_mouse = [1,4,0,6.98544930909, 8.98129196883];
+~graphWindow_mouse = [1,5,256,102.785896977, 9.9792132987];
+~graphWindow_mouse = [3,4,0,9.9792132987, 10.9771346286];
+~graphWindow_mouse = [3,5,1024,201.580108634, 12.9729772883];
+~graphWindow_mouse = [1,4,0,11.9750559584, 10.9771346286];
+~graphWindow_mouse = [1,5,256,97.7962903272, 12.9729772883];
+~graphWindow_mouse = [1,4,0,124.740166234, 207.567636613];
+~graphWindow_mouse = [1,5,256,124.740166234, 207.567636613];
+~graphWindow_mouse = [1,4,0,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,5,256,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,4,0,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,5,256,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,4,0,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,5,256,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,4,0,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,5,256,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,4,0,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,5,256,123.742244904, 209.563479273];
+~graphWindow_mouse = [1,4,0,167.650783418, 166.652862088];
+~graphWindow_mouse = [1,5,256,167.650783418, 166.652862088];
+~graphWindow_mouse = [3,4,0,167.650783418, 166.652862088];
+~graphWindow_mouse = [3,5,1024,167.650783418, 166.652862088];
+

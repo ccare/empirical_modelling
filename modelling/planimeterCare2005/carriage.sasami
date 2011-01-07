@@ -1,0 +1,45 @@
+## The carriage ##
+
+%sasami
+
+## The new object
+object carriage
+
+## Define Vertices
+vertex carriageFronta 4 -1 2
+vertex carriageFrontb 6 -1 2
+vertex carriageFrontc 6 6 2
+vertex carriageFrontd 4 6 2
+vertex carriageBacka -2 -1 -10
+vertex carriageBackb 6 -1 -10
+vertex carriageBackc 6 6 -10
+vertex carriageBackd -2 6 -10
+
+## Define Polygons
+polygon carriageBase1 
+polygon carriageBase2
+polygon carriageFront1 
+polygon carriageFront2
+polygon carriageBack1
+polygon carriageBack2
+
+## Attach vertices to polygons
+poly_geom_vertex carriageBase1 carriageFronta carriageFrontb carriageBackb carriageBacka
+poly_geom_vertex carriageBase2 carriageBacka carriageBackb carriageFrontb carriageFronta
+poly_geom_vertex carriageFront1 carriageFronta carriageFrontb carriageFrontc carriageFrontd
+poly_geom_vertex carriageFront2 carriageFrontd carriageFrontc carriageFrontb carriageFronta
+poly_geom_vertex carriageBack1 carriageBacka carriageBackb carriageBackc carriageBackd
+poly_geom_vertex carriageBack2 carriageBackd carriageBackc carriageBackb carriageBacka
+
+## Attach Material to the polygons 
+poly_material carriageBase1 m_carriage_frame
+poly_material carriageBase2 m_carriage_frame
+poly_material carriageFront1 m_carriage_frame
+poly_material carriageFront2 m_carriage_frame
+poly_material carriageBack1 m_carriage_frame
+poly_material carriageBack2 m_carriage_frame
+
+## Attach polygons to the object
+object_poly carriage carriageBack1 carriageBack2
+object_poly carriage carriageFront1 carriageFront2
+object_poly carriage carriageBase1 carriageBase2

@@ -1,0 +1,52 @@
+%angel
+
+radiowindow = window {
+   title = "Radio Button Example";
+   background = mycolour;
+   content = [choose,radio1,radio2,radio3,radio4,radio5,radio6] };
+
+radio1 = radiobutton {
+   text = "Red";
+   variable = "mycolour";
+	side="left";
+	background = radiowindow_background;
+   value = "red" };
+
+radio2 = radiobutton {
+   text = "Blue";
+   variable = "mycolour";
+	side="left";
+	background = radiowindow_background;
+   value = "blue" };
+
+radio3 = radiobutton {
+   text = "Yellow";
+   variable = "mycolour";
+	side="left";
+	background = radiowindow_background;
+   value = "yellow" };
+
+radio4 = radiobutton {
+   text = "Black";
+   variable = "mycolour";
+	side="left";
+	background = radiowindow_background;
+   value = "black" };
+
+radio5 = radiobutton {
+   text = "White";
+   variable = "mycolour";	
+	side="left";
+	background = radiowindow_background;
+   value = "white" };
+
+radio6 = radiobutton {
+   text = "green";
+   variable = "mycolour";
+	side="left";
+	background = radiowindow_background;
+   value = "green" };
+
+choose = label { text="Choose:";
+	side="left";
+	background = radiowindow_background };

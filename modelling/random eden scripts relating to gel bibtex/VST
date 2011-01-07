@@ -1,0 +1,540 @@
+
+/* declare width and height (to be used for the background) to keep scout happy */ 
+%scout
+integer VST_background_X1;
+integer VST_background_X2;
+integer VST_background_Y1;
+integer VST_background_Y2;
+string VST_default_font;
+%eden
+/* initialise width and height */
+VST_background_X1=0;
+VST_background_X2=1200;
+VST_background_Y1=0;
+VST_background_height=800;
+VST_background_Y2 is VST_background_Y1+VST_background_height;
+
+DFfont="{courier 9}";
+
+OpenDisplay("vst", DFwidth, DFheight);
+
+func VST_max {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]>result) {result = data[i];}
+  }
+  return result;
+}
+
+func VST_min {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]<result) {result = data[i];}
+  }
+  return result;
+}
+
+/* define the default colours to be used for the scout windows created */
+VST_default_bgcolour="#E3E369";
+VST_default_fgcolour="black";
+VST_default_bdcolour="black";
+
+VST_default_font is DFfont;
+VST_default_relief="flat";
+VST_default_border=1;
+VST_default_alignment="LEFT";
+
+VST_background_bgcolour="#585880";	
+
+%eden
+tcl("bind .vst <Configure> { " //
+    "eden {~HandleDisplayResizeEvent(\"%W\", \"vst\", %w, %h);}" //
+    " }");
+HandleDisplayResizeEvent(".vst", "vst", 200, 500);
+execute("%scout\ndisplay ~vst;\n%eden\n");
+
+proc vst_display_screen : vst {
+
+	DisplayScreen(&vst, "vst"); 
+}
+
+## tcl("bind .vstwordsearch <Configure> { " //
+##     "eden {~HandleDisplayResizeEvent(\"%W\", \"vstwordsearch\", %w, %h);}" //
+##     " }");
+HandleDisplayResizeEvent(".vstwordsearch", "vstwordsearch", 500, 500);
+execute("%scout\ndisplay ~vstwordsearch;\n%eden\n");
+
+proc vstwordsearch_display_screen : vstwordsearch {
+
+	DisplayScreen(&vstwordsearch, "vstwordsearch"); 
+}
+/* create the background and put it in the vst display window */
+%scout 
+string VST_background_bgcolour;
+
+window VST_background = {
+    type: TEXT
+    frame: ([{VST_background_X1,VST_background_Y1}, {VST_background_X2,VST_background_Y2}])
+    string: ""
+    sensitive: ON
+    bgcolour: VST_background_bgcolour
+};
+
+display vst=<VST_background>;
+
+
+%eden
+proc VST_background_clicking : VST_background_mouse_1 {
+
+	if(VST_background_mouse_1[1]==4&&VST_background_mouse_1[2]==4&&VST_scroll_Y1>12)
+		VST_scroll_Y1=VST_scroll_Y1-12;
+	if(VST_background_mouse_1[1]==4&&VST_background_mouse_1[2]==4&&VST_scroll_Y1<=12&&VST_scroll_Y1>0)
+		VST_scroll_Y1=0;
+	if(VST_background_mouse_1[1]==5&&VST_background_mouse_1[2]==4&&VST_scroll_Y2<vst_height-12)
+		VST_scroll_Y1=VST_scroll_Y1+12;
+	if(VST_background_mouse_1[1]==5&&VST_background_mouse_1[2]==4&&VST_scroll_Y2>=vst_height-12&&VST_scroll_Y2<vst_height)
+		VST_scroll_Y1=VST_scroll_Y1+(vst_height-VST_scroll_Y2);
+}
+
+
+func VST_StringWidth {
+        para win, font, string;
+
+        if ((win == @) || (font == @) || (string == @)) return @;
+
+        return int(tcl("font measure " // font //
+                " -displayof ." // win // " " // "{" // string // "}"));
+}
+func VST_FontWidth {
+        para win, font;
+        /* Measuring the width of the (wide) character 'W' */
+        return VST_StringWidth(win, font, "W");
+}
+
+func VST_FontHeight {
+        para win, font;
+        return int(tcl("font metrics " // font //
+                " -displayof ." // win // " -linespace"));
+}
+
+
+VST_myWindowList=["VST_background"];
+
+%eden
+tcl(".menu.show invoke 6");
+
+vst_width=500;
+vst_height=200;
+
+VST_background_X2 is vst_width;
+/*
+%scout
+integer VST_wordsearch_X1=5;
+integer VST_wordsearch_Y1=5;
+integer VST_wordsearch_lines=1;
+integer VST_wordsearch_characters=50;
+string VST_wordsearch_bgcolour="white";
+string VST_wordsearch_font="{courier 14}";
+
+integer VST_go_X1=500;
+integer VST_go_Y1=5;
+integer VST_go_X2=530;
+integer VST_go_Y2=25;
+string VST_go_bgcolour="grey";
+string VST_go_font="{courier 14}";
+
+
+window VST_wordsearch = {
+    type: TEXTBOX
+    frame: ([{VST_wordsearch_X1,VST_wordsearch_Y1}, {VST_wordsearch_characters,VST_wordsearch_lines}])
+    font: VST_wordsearch_font
+    sensitive: ON
+    bgcolour: VST_wordsearch_bgcolour
+};
+
+window VST_go = {
+    type: TEXT
+    frame: ([{VST_go_X1,VST_go_Y1}, {VST_go_X2,VST_go_Y2}])
+    string: "GO!"
+    font: VST_go_font
+    sensitive: ON
+    alignment: CENTRE
+    bgcolour: VST_go_bgcolour
+};
+
+display vstwordsearch=<VST_wordsearch/VST_go>;
+*/
+%eden
+proc watch_for_GO_clicks : VST_go_mouse_1 {
+
+	if(VST_go_mouse_1[2]==4)
+	{
+		execute("VST_background_Y1=0-DW_"//substr(VST_wordsearch_TEXT_1,1,(VST_wordsearch_TEXT_1#-1))//"_Y1_absolute;");
+	}
+
+
+}
+
+
+VST_spacer=2;
+
+trigger=1;
+
+func VST_insertEscapes {
+
+	para string;
+	
+	auto i,result;
+
+	result="";
+
+	for(i=1;i<string#+1;i++)
+	{
+		if(string[i]=='"')
+		{
+			result=result//'\\';
+		}
+		
+		result=result//string[i];
+
+	}
+
+	return result;
+
+}
+
+func VST_removeEscapes {
+
+	para string;
+
+	auto i,result;
+
+	result="";
+
+	for(i=1;i<string#+1;i++)
+	{
+
+		if(string[i]!='\\')
+			result=result//string[i];
+
+	}	
+
+	return result;
+
+}
+func VST_escape_tcl_chars {
+  para str_in;
+  auto i, str_out;
+  str_out = "";
+  for (i=1; i<=str_in#; i++) {
+    switch (str_in[i]) {
+      case '\\':
+        str_out = str_out // "\\\\";
+        break;
+      case '"':
+      case '$':
+      case ';':
+      case '{':
+      case '}':
+      case '[':
+      case ']':
+        str_out = str_out // '\\';
+      default:
+        str_out = str_out // str_in[i];
+    }
+  }
+  return str_out;
+}
+
+%scout
+string VST_scroll_background_bgcolour;
+integer VST_scroll_background_X1;
+integer VST_scroll_background_X2;
+integer VST_scroll_background_Y1;
+integer VST_scroll_background_Y2;
+
+string VST_scroll_bgcolour;
+integer VST_scroll_X1;
+integer VST_scroll_X2;
+integer VST_scroll_Y1;
+integer VST_scroll_Y2;
+
+
+%eden
+VST_scroll_background_width=20;
+VST_scroll_background_bgcolour="grey60";
+VST_scroll_background_X1 is int(vst_width)-VST_scroll_background_width;
+VST_scroll_background_X2 is int(vst_width);
+VST_scroll_background_Y1=0;
+VST_scroll_background_Y2 is int(vst_height);
+
+VST_scroll_width=10;
+VST_scroll_bgcolour="grey70";
+VST_scroll_X1 is VST_scroll_background_X1+int(VST_scroll_width/2);
+VST_scroll_X2 is VST_scroll_background_X2-int(VST_scroll_width/2);
+VST_scroll_Y1=0;
+VST_scroll_Y2 is VST_scroll_Y1+int(vst_height/(float(VST_background_height)/(float(vst_height))));
+
+
+VST_clicked=0;
+
+VST_scroll_mouse_1=[0,0,0,0,0];
+
+proc VST_scrollbar_click : VST_scroll_mousePos_1 {
+
+	if(VST_scroll_mouse_1[1]==1&&VST_scroll_mouse_1[2]==4)
+		VST_clicked=1;
+	if(VST_scroll_mouse_1[1]==1&&VST_scroll_mouse_1[2]==5)
+		VST_clicked=0;
+
+}
+
+
+proc VST_scrollbar_clicking : VST_clicked {
+
+	auto scroll_Y1copy,scroll_Y2copy,scroll_heightcopy;
+
+	if(VST_clicked==1)
+	{
+		VST_scroll_startpos=VST_scroll_mouse_1[5];
+	
+		scroll_Y1copy=VST_scroll_Y1;
+		scroll_Y2copy=VST_scroll_Y2;
+
+		scroll_heightcopy=scroll_Y2copy-scroll_Y1copy;
+
+		VST_scroll_mousePos=[VST_scroll_mouse_1[4],VST_scroll_startpos];
+
+		execute("%eden\n
+			if("//str(scroll_Y1copy)//"-(VST_scroll_startpos-VST_scroll_mousePos_1[2])<0)\n	
+				VST_scroll_Y1=0;;\n
+			if(("//str(scroll_Y1copy)//"-(VST_scroll_startpos-VST_scroll_mousePos_1[2]))>(vst_height-"//str(scroll_heightcopy)//"))\n	
+				VST_scroll_Y1=vst_height-"//str(scroll_heightcopy)//";;\n
+			if(("//str(scroll_Y1copy)//"-(VST_scroll_startpos-VST_scroll_mousePos_1[2])<(vst_height-"//str(scroll_heightcopy)//"))&&("//str(scroll_Y1copy)//"-(VST_scroll_startpos-VST_scroll_mousePos_1[2])>0))\n
+				VST_scroll_Y1=int("//str(scroll_Y1copy)//"-(VST_scroll_startpos-VST_scroll_mousePos_1[2]));;\n");
+			eager();
+			eager();
+	}
+	if(VST_clicked==0)
+	{
+		scroll_Y1copy=VST_scroll_Y1;
+
+		execute("VST_scroll_Y1="//str(scroll_Y1copy)//";");
+	}
+
+}
+
+
+%scout
+window VST_scroll_background = {
+	type: TEXT
+	frame: ([{VST_scroll_background_X1,VST_scroll_background_Y1},{VST_scroll_background_X2,VST_scroll_background_Y2}])
+	string: ""
+	bgcolour: VST_scroll_background_bgcolour
+};
+
+window VST_scroll = {
+	type: TEXT
+	frame: ([{VST_scroll_X1,VST_scroll_Y1},{VST_scroll_X2,VST_scroll_Y2}])
+	string: ""
+	bgcolour: VST_scroll_bgcolour
+	border: 1
+	bdcolour: "black"
+	sensitive: ON+MOTION
+};
+
+%eden
+VST_visible_definitions=0;
+
+VST_mywindowList=[];
+
+func VST_createWin {
+
+	para name;
+
+	auto windowList,window_height,definition_string,char_height,counter,window_name,i;
+	auto newWindow,contentScout,contentEden;
+	
+	VST_scroll_Y1=0;
+
+	char_height=VST_FontHeight("vst",VST_default_font);
+	
+	definition_string=symboldefinition(VST_insertEscapes(name));
+		
+	counter=int(((char_height*definition_string#)/vst_width))+1;
+
+	for(i=1;i<definition_string#+1;i++)
+	{
+			if(definition_string[i]=='\n')
+				counter++;
+	}
+		
+	window_height=counter;
+	
+	window_name="DW_"//name;
+	
+	windowList=VST_mywindowList;
+
+	newWindow = "%scout\n" //"window "//window_name//" = {
+				type: TEXT\n
+				frame: ([ {"//window_name//"_X1,"//window_name//"_Y1},{"//window_name//"_X2,"//window_name//"_Y2} ])\n 
+				string: "//window_name//"_string\n
+				bgcolour: "//window_name//"_bgcolour\n
+				font: VST_default_font\n
+				sensitive: ON\n};";
+		
+				
+
+	contentScout="%scout\n string "//window_name//"_string; 
+				integer "//window_name//"_X1,"//window_name//"_X2,"//window_name//"_Y1,"//window_name//"_Y2; 
+				string "//window_name//"_bgcolour;";
+
+	VST_visible_definitions++;
+
+	if(VST_visible_definitions==1)
+	{	
+		contentEden="%eden\n "//window_name//"_string=\""//definition_string//"\"; 
+						"//window_name//"_X1=0; 
+						"//window_name//"_Y1 is VST_background_Y1;
+						"//window_name//"_Y1_absolute=VST_background_Y1;
+						"//window_name//"_height is VST_FontHeight(\"vst\",VST_default_font)*"//str(window_height)//"; 
+						"//window_name//"_X2 is vst_width;
+						"//window_name//"_Y2 is "//window_name//"_Y1+"//window_name//"_height; 
+						"//window_name//"_bgcolour is symboldetail(\""//name//"\")[2]==\"var\"||symboldetail(\""//name//"\")[2]==\"formula\"?VST_default_bgcolour:\"LightBlue\";
+						proc VST_clicks_"//window_name//" : "//window_name//"_mouse_1 {
+							
+							auto this_window_string;
+
+							this_window_string=\".text insert end \"//'\"'//VST_escape_tcl_chars("//window_name//"_string)//'\n'//'\"';
+							
+							if("//window_name//"_mouse_1[1]==1&&"//window_name//"_mouse_1[2]==4)
+								tcl(this_window_string);	
+							if("//window_name//"_mouse_1[1]==4&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y1>12)
+								VST_scroll_Y1=VST_scroll_Y1-12;
+							if("//window_name//"_mouse_1[1]==4&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y1<=12&&VST_scroll_Y1>0)
+								VST_scroll_Y1=0;
+							if("//window_name//"_mouse_1[1]==5&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y2<vst_height-12)
+								VST_scroll_Y1=VST_scroll_Y1+12;
+							if("//window_name//"_mouse_1[1]==5&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y2>=vst_height-12&&VST_scroll_Y2<vst_height)
+								VST_scroll_Y1=VST_scroll_Y1+(vst_height-VST_scroll_Y2);
+
+						}
+						proc VST_update_"//window_name//" : "//name//" {
+						
+							"//window_name//"_string=symboldefinition(\""//name//"\");
+						}";
+	
+		VST_prev_window_Y2=window_name//"_Y2";
+
+	}
+	else
+	{
+		contentEden="%eden\n "//window_name//"_string=\""//definition_string//"\"; 
+						"//window_name//"_X1=0; 
+						"//window_name//"_Y1 is "//VST_prev_window_Y2//"+VST_spacer;
+						"//window_name//"_Y1_absolute="//VST_prev_window_Y2//"+VST_spacer;
+						"//window_name//"_height is VST_FontHeight(\"vst\",VST_default_font)*"//str(window_height)//";
+						"//window_name//"_X2 is vst_width;
+						"//window_name//"_Y2 is "//window_name//"_Y1+"//window_name//"_height; 
+						"//window_name//"_bgcolour is symboldetail(\""//name//"\")[2]==\"var\"||symboldetail(\""//name//"\")[2]==\"formula\"?VST_default_bgcolour:\"LightBlue\";
+						proc VST_clicks_"//window_name//" : "//window_name//"_mouse_1 {
+							
+							auto this_window_string;
+							
+							this_window_string=\".text insert end \"//'\"'//VST_escape_tcl_chars("//window_name//"_string)//'\n'//'\"';
+							
+							
+							if("//window_name//"_mouse_1[1]==1&&"//window_name//"_mouse_1[2]==4)
+								tcl(this_window_string);
+							if("//window_name//"_mouse_1[1]==4&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y1>12)
+								VST_scroll_Y1=VST_scroll_Y1-12;
+							if("//window_name//"_mouse_1[1]==4&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y1<=12&&VST_scroll_Y1>0)
+								VST_scroll_Y1=0;
+							if("//window_name//"_mouse_1[1]==5&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y2<vst_height-12)
+								VST_scroll_Y1=VST_scroll_Y1+12;
+							if("//window_name//"_mouse_1[1]==5&&"//window_name//"_mouse_1[2]==4&&VST_scroll_Y2>=vst_height-12&&VST_scroll_Y2<vst_height)
+								VST_scroll_Y1=VST_scroll_Y1+(vst_height-VST_scroll_Y2);
+
+						}	
+						proc VST_update_"//window_name//" : "//name//" {
+						
+							"//window_name//"_string=symboldefinition(\""//name//"\");
+						}";
+						
+			VST_prev_window_Y2=window_name//"_Y2";
+	}
+	
+	execute(contentScout);
+	execute(contentEden);
+	execute(newWindow);
+	
+	append windowList,window_name;
+
+	VST_mywindowList=windowList;
+	
+	if(VST_mywindowList#>=1)
+	{
+		execute("VST_background_height is max(vst_height,("//VST_mywindowList[VST_mywindowList#]//"_Y1_absolute+"//VST_mywindowList[VST_mywindowList#]//"_height));");
+	}
+}
+
+proc VST_create_scout_definition : VST_mywindowList {
+
+	para VST_windowList;
+	auto result,i;
+
+	if(VST_mywindowList#==0)
+	{
+		result="<VST_scroll/VST_scroll_background/VST_background>";
+		execute("%scout\n vst="//result//";");
+
+	}
+	else
+	{	
+
+		result=""//VST_mywindowList[1]//"";
+
+		for(i=1;i<VST_mywindowList#+1;i++)
+		{
+			result=VST_mywindowList[i]//"/"//result;	
+		}
+
+		result="<VST_scroll/VST_scroll_background/"//result//"/VST_background>";
+
+		execute("%scout\n vst="//result//";");	
+	}
+
+}
+
+vst_width=int(tcl("winfo width ."));
+
+func VST_scale {
+
+	para scroll_pos;
+
+	auto result;
+
+	result=int((VST_background_height/vst_height)*scroll_pos)+1;
+
+	return result;
+
+}
+
+
+proc VST_maintain_view : VST_scroll_Y1 {
+
+	VST_background_Y1=0-VST_scale(VST_scroll_Y1);
+
+}
+
+_tkeden_showxoutput=0;

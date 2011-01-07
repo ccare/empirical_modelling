@@ -1,0 +1,34 @@
+Regular Expression Extensions in AOP
+====================================
+
+[Ant][10/11/2002]
+
+The current implementation of the AOP allows regular expressions that match a
+number of occurences of a set of characters. For example,
+
+  number = [ "read_all", [["0"-"9"]] ];
+
+will match any string that contains only numeric characters.
+
+Regular expressions of this format are very limited. Some bugs exist in the
+built-in agent templates that allow incorrect inputs to pass through the parser
+(e.g. number and ident). One major limitation is that if you use 'read_prefix'
+together with 'read_all' then you allow whitespace to occur between the two
+regular expressions.
+
+Eden (1.43 onwards) includes functions to handle Perl Compatible Regular
+Expressions. The scripts in this package add extra operations to make use of
+this. These operations are: "literal_re", "prefix_re" and "suffix_re". All
+require a second argument that is the PCRE as string. For example:
+
+  number = [ "literal_re", "[0-9]+" ];
+
+The "prefix_re" and "suffix_re" have a third argument which is the name of the
+agent to apply to the remaining string (the child agent). The following example
+matches any number of lowercase letters at the start of the string, and passes
+the remaining string to the "anything" agent:
+
+  lowercase = [ "prefix_re", "[a-z]*", "anything" ];
+
+These new operations all have a similar behaviour to their non-RE siblings. For
+more information on "literal", "prefix", and "suffix", see documentation.

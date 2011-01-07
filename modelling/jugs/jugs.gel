@@ -1,0 +1,89 @@
+%eden
+include("Run.e");
+%angel
+jugDisplay = scout {
+   display = "jugs";
+   width = 500;
+   height = 500;
+   fill = "both" };
+
+messageLabel = label {
+	side = "left";
+	text = targ // totstat };
+
+message = frame {
+	side = "bottom";
+	content = [messageLabel] };
+
+b1 = button {
+	text = menu[1];
+	side = "left";
+	expand = 1;
+	foreground = valid1 ? valid_fg : invalid_fg;
+	background = valid1 ? valid_bg : invalid_bg };
+b2 = button {
+	text = menu[2];
+	side = "left";
+	expand = 1;
+	foreground = valid2 ? valid_fg : invalid_fg;
+	background = valid2 ? valid_bg : invalid_bg };
+b3 = button {
+	text = menu[3];
+	side = "left";
+	expand = 1;
+	foreground = valid3 ? valid_fg : invalid_fg;
+	background = valid3 ? valid_bg : invalid_bg };
+b4 = button {
+	text = menu[4];
+	side = "left";
+	expand = 1;
+	foreground = valid4 ? valid_fg : invalid_fg;
+	background = valid4 ? valid_bg : invalid_bg };
+b5 = button {
+	text = menu[5];
+	side = "left";
+	expand = 1;
+	foreground = valid5 ? valid_fg : invalid_fg;
+	background = valid5 ? valid_bg : invalid_bg };
+	
+buttons = frame {
+	side = "top";
+	content = [b1,b2,b3,b4,b5];
+	fill = "x" };
+ 
+controlPanel = frame {
+	side = "bottom";
+	content = [buttons,message];
+	fill = "x" };
+
+win = window {
+   title = "Jugs";
+   content = [jugDisplay,controlPanel] };
+
+%eden
+/* mouse actions associated with the menu selections in jugs.s */
+
+proc wmenu1_button : b1_mouseclick {
+	if (b1_mouseclick == 1)
+		input = 1;
+}
+
+proc wmenu2_button : b2_mouseclick {
+	if (b2_mouseclick == 1)
+		input = 2;
+}
+
+proc wmenu3_button : b3_mouseclick {
+	if (b3_mouseclick == 1)
+		input = 3;
+}
+
+proc wmenu4_button : b4_mouseclick {
+	if (b4_mouseclick == 1)
+		input = 4;
+}
+
+proc wmenu5_button : b5_mouseclick {
+	if (b5_mouseclick == 1)
+		input = 5;
+}

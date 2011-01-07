@@ -1,0 +1,120 @@
+%eden
+proc attachDisplayToFrame {
+	para display,frame;
+	auto frameTrans; 
+	## replace . with _
+	frameTrans = regreplace("[.]","_",frame);
+	execute("gelScoutDisplay_"//frameTrans//" = \"" // display // "\";");
+	execute("proc updateGelScoutDisplay_"//display//" : "//display//" {\n"
+		// "DisplayScreen(&"//display//",\""//frame//"\");\n}");
+}
+
+proc scout_show_canvas {
+    para screen, winNo, boxName;
+    auto win, box, frame, string;
+    auto i, var, command;
+    auto width, height, thickness, bdwidth;
+    auto currstr, new_string;
+    auto bordercolour;
+    auto scoutScreenName;
+
+    ## Now we're adding scout into gel, the name of 
+    ##  the tcl frame that scout uses as a canvas might
+    ##  not be exactly the same as the eden/scout 
+    ##  display variable. Here subsitute . for _
+    ##  then look-up the variable that contains the
+    ##  name of the scout display. This string needs
+    ##  to be backtick-ed twice.
+    scoutScreenName = regreplace("[.]","_",screen);
+    scoutScreenName = "gelScoutDisplay_"//scoutScreenName;
+    win = ``scoutScreenName``[winNo];
+    frame = win[2];
+    string = win[3];
+    new_string = "";    /* fix a bug of which a string cannot
+                           contain {}[] -sun */
+
+    /*
+    for (i = 1; i <= string#; i++) {
+      currstr = substr(string, i, i);
+      if (currstr == "{" || currstr == "}" ||
+          currstr == "[" || currstr == "]") {
+        new_string = strcat(new_string, "\\", currstr);
+      } else {
+        new_string = strcat(new_string, currstr);
+      }
+    }
+    */
+    new_string = string; /* [Ash] */
+
+    box = win[4];
+    thickness = (win[14] != 0) ? DFhighlight : 0;
+    bdwidth = win[12] + thickness;
+    /* display boxes */
+    for (i = 1; i <= frame#; i++) {
+      var = boxName//"_"//str(i);
+      command = "."//screen//"."//var;
+      width = box_width(frame[i]);
+      height = box_height(frame[i]);
+      xoutput("place", command,
+          "-x", int(frame[i][1]-bdwidth),
+          "-y", int(frame[i][2]-bdwidth));
+      xoutput(command, "configure",
+          "-width", width,
+          "-height", height,
+          "-bg", win[10],
+          ##"-bd", int(win[12]),
+          "-relief", win[17],
+          ##"-highlightthickness", thickness,
+          "-bd", (bordercolour == "black") ? int(win[12]) : 0,
+        "-highlightbackground", win[15],
+        "-highlightcolor", win[15],
+        "-highlightthickness",
+               (bordercolour == "black") ? thickness : int(win[12])
+      );
+      xoutput(command, "delete text");
+      xoutput(command, "delete image");
+      xoutput(command, "create text",
+          Position(bdwidth, box_width(frame[i]), win[13]),
+          "-fill", win[11],
+          /* "-text \"" //new_string//"\"", */  /*  -sun */
+          "-text {" //new_string//"}",   /* [Ash] */
+          "-width", box_width(frame[i]),
+          "-font", win[16],
+          "-tags text"
+     );
+
+      if (win# >= 18) {
+      xoutput("set", var//"_name", win[18]);
+      xoutput("set", var//"_box", i);
+      }
+
+      xoutput("refresh", command);
+
+      dobinding(win[14], command, win[18], var, i);
+    }
+}
+
+
+
+
+
+
+
+%angel
+f = frame {
+	width = 200;
+	height = 200 };
+w = window {
+	content = [f] };
+%scout
+display a;
+%eden
+attachDisplayToFrame("a","w.f");
+%scout
+window ash = {
+  type: TEXT
+  string: "Ash"
+  frame: ([{10, 10}, {100, 100}])
+  sensitive: MOTION
+};
+a = <ash>;

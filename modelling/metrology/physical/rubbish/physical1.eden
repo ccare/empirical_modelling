@@ -1,0 +1,273 @@
+%eden
+cd("aop_v204");
+include("Run.e");
+cd("..");
+
+PH_notationName="%physical";
+
+##------------------------------------------------------------------------------
+## Top-Level Rules
+##------------------------------------------------------------------------------
+
+## Initial Rule (split by newline) 
+PHparse_init = ["\n", "PHparse_stm", []];
+
+## Split statements by ";" 
+PHparse_stm = ["suffix", ";", "PHparse_stm2", ["fail", "PHparse_error"] ];
+PHparse_stm2 = ["pivot",";",["PHparse_defn","PHparse_defn"],
+					["fail","PHparse_defn"]];
+
+## General Error Case
+PHparse_error = [ "read_all", [], 
+		["action",
+			["now", "error(\"Not a valid " // PH_notationName 
+				// " definition or command.\n\n\");"]]];
+			 	
+##------------------------------------------------------------------------------
+## Definiton
+##------------------------------------------------------------------------------
+
+PHparse_defn = [ "pivot", "=", ["PHparse_name", "PHparse_expr"], 
+			[ "fail", "PHparse_error"], 
+			[ "action", 
+			 ["later",
+			 "PH_makeRedefiniton($p1[1],$p1[2],$p2[1],$p2[2]);"]]];
+
+proc PH_makeRedefiniton {
+	para lhsVal,lhsDim,rhsVal,rhsDim;
+	auto observableName;
+	## name of top-level eden string
+	obsName=substr(lhsVal,lhsVal#,lhsVal#);
+	
+	## predicate to check that a dimension is not defined
+	##  -- protects against providing a meaningless value
+	dimensionPred = "(" // lhsDim // " != @)";
+	
+	## set value of top-level eden string
+	writeln(obsName// " is " // dimensionPred // " ? strcat(str(" 
+			// lhsVal // "),\" \",str(" //lhsDim// ")) : @;");
+	## formula for value
+	writeln(lhsVal// " is " // dimensionPred // " ? " //rhsVal// " : @;");
+
+	## formula for value
+	writeln(lhsDim// " is " //rhsDim// ";");
+}
+
+
+	 
+
+
+##------------------------------------------------------------------------------
+## Names and Literals
+##------------------------------------------------------------------------------
+
+PHparse_name = [ "literal_re", "[a-z,A-Z]+[a-z,A-Z,0-9,_]*", 
+			["fail","PHparse_error"],
+			["action",["now","$v=[\"PH_val_$t\",\"PH_dim_$t\"];"]]];
+			
+PHparse_literal = [ "pivot", " ", ["PHparse_value", "PHparse_unit"],
+			["fail", "PHparse_dimensionless"],
+			["action", 
+			  ["later","$v=[str($p1),str(PH_determineDimension($p2))];"]]];
+
+PHparse_dimensionless = [ "literal_re", "[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_name"],
+			["action", ["now","$v=[\"$t\",\"[0,0,0,0,0,0,0]\"];"]] ];
+					
+PHparse_value = [ "literal_re", "[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=$t;"]] ];
+
+			
+##------------------------------------------------------------------------------
+## Expr
+##------------------------------------------------------------------------------
+
+## 
+bras = [ ["(", ")"], ["bras"] ];
+addblocks("bras");
+
+			  		  
+PHparse_null = [ "literal", "", ["fail", "PHparse_expr"], 
+			[ "ignore", ["bras"] ],
+			["action",["now",""]]];
+
+
+PHparse_expr = [ "pivot", "!", ["PHparse_null", "PHparse_expr"],
+			[ "ignore", ["bras"] ],
+                        ["fail", "PHparse_exprAdd"],
+                        ["action",
+                          ["later","if ($p1 != @) {$v=[$p1[1] // \" - \" // $p2[1],
+			  \"PH_dimensionComp(\" // $p1[2] // \",\" // $p2[2] // 
+			  \")\" ];} else {$v=[\"-\" // $p2[1],$p2[2]];};"]]];
+
+PHparse_exprAdd = [ "pivot", "+", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras"] ],,
+                        ["fail", "PHparse_exprMult"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" + \" // $p2[1],
+			  \"PH_dimensionComp(\" // $p1[2] // \",\" // $p2[2] // 
+			  \")\" ];"]]];
+			  
+PHparse_exprMult = [ "pivot", "*", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras"] ],
+			[ "ignore", ["cbraces"] ],
+                        ["fail", "PHparse_exprDiv"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" * \" // $p2[1],
+			  \"PH_vectorAdd(\"// $p1[2] // \",\"// $p2[2] 
+			  // \")\"];"]]];
+
+PHparse_exprDiv = [ "pivot", "/", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras"] ],
+                        ["fail", "PHparse_paren"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" / \" // $p2[1],
+			  \"PH_vectorMinus(\"// $p1[2] // \",\"// $p2[2] 
+			  // \")\"];"]]];
+			  
+			  
+PHparse_paren = [ "prefix","(","PHparse_paren2", ["fail","PHparse_literal"], 
+			["action",["later","$v = [\"(\" // $p1[1] // \")\",
+						\"(\" // $p1[2] // \")\"];"]]];
+			  
+PHparse_paren2 = [ "suffix",")","PHparse_expr", ["fail","PHparse_error"], 
+			["action",["later","$v = $p1;"]]];			  
+
+
+
+##------------------------------------------------------------------------------
+## UNITS
+##------------------------------------------------------------------------------
+
+## UNITS: lowercase and uppercase
+PHparse_unit = [ "prefix","mol{","PHparse_exponent", ["fail","PHparse_unit2"], 
+			["action",["later","$v=[\"mol_\"]//$p1;"]]];
+
+PHparse_unit2 = [ "prefix","kg{","PHparse_exponent", ["fail","PHparse_unit3"], 
+			["action",["later","$v=[\"kg_\"]//$p1;"]]];
+
+PHparse_unit3 = [ "prefix","s{","PHparse_exponent", ["fail","PHparse_unit4"], 
+			["action",["later","$v=[\"s_\"]//$p1;"]]];
+
+PHparse_unit4 = [ "prefix","A{","PHparse_exponent", ["fail","PHparse_unit5"], 
+			["action",["later","$v=[\"A_\"]//$p1;"]]];
+
+PHparse_unit5 = [ "prefix","K{","PHparse_exponent", ["fail","PHparse_unit6"], 
+			["action",["later","$v=[\"K_\"]//$p1;"]]];
+
+PHparse_unit6 = [ "prefix","m{","PHparse_exponent", ["fail","PHparse_unit7"], 
+			["action",["later","$v=[\"m_\"]//$p1;"]]];
+
+PHparse_unit7 = [ "prefix","cd{","PHparse_exponent", ["fail","PHparse_unit8"], 
+			["action",["later","$v=[\"cd_\"]//$p1;"]]]; 
+
+PHparse_unit8 = [ "prefix","mol","PHparse_unit", ["fail","PHparse_unit9"], 
+			["action",["later","$v=[\"mol\"]//$p1;"]]];
+
+PHparse_unit9 = [ "prefix","kg","PHparse_unit", ["fail","PHparse_unit10"], 
+			["action",["later","$v=[\"kg\"]//$p1;"]]];
+
+PHparse_unit10 = [ "prefix","s","PHparse_unit", ["fail","PHparse_unit11"], 
+			["action",["later","$v=[\"s\"]//$p1;"]]];
+
+PHparse_unit11 = [ "prefix","A","PHparse_unit", ["fail","PHparse_unit12"], 
+			["action",["later","$v=[\"A\"]//$p1;"]]];
+
+PHparse_unit12 = [ "prefix","K","PHparse_unit", ["fail","PHparse_unit13"], 
+			["action",["later","$v=[\"K\"]//$p1;"]]];
+
+PHparse_unit13 = [ "prefix","m","PHparse_unit", ["fail","PHparse_unit14"], 
+			["action",["later","$v=[\"m\"]//$p1;"]]];
+
+PHparse_unit14 = [ "prefix","cd","PHparse_unit", ["fail","PHparse_unit15"], 
+			["action",["later","$v=[\"cd\"]//$p1;"]]];
+
+PHparse_unit15 = [ "literal", "", ["fail", "PHparse_error"], 
+			["action",["now","$v=[];"]]];
+
+PHparse_exponent = [ "pivot", "}", ["PHparse_exponent2", "PHparse_unit"],
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=[$p1]//$p2;"]]];
+			  
+PHparse_exponent2 = [ "literal_re", "(-)?[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=$t;"]] ];
+
+##------------------------------------------------------------------------------
+## Add the notation to eden
+##------------------------------------------------------------------------------
+
+installAOP(PH_notationName, "PHparse_init");
+
+##------------------------------------------------------------------------------
+## Useful function to determine the dimension from the
+##   token list produced by the parser.
+##------------------------------------------------------------------------------
+
+
+func PH_determineDimension {
+	para unitList;
+	auto length,mass,time,current,temperature,ammount,luminous,i;
+
+	length=0;
+	mass=0;
+	time=0;
+	current=0;
+	temperature=0;
+	ammount=0;
+	luminous=0;
+	
+	for(i=1;i<=unitList#;i++) {
+		if (unitList[i] == "m") {length++;}
+		else if (unitList[i] == "m_") {i++;length += unitList[i];}
+		else if (unitList[i] == "kg") {mass++;}
+		else if (unitList[i] == "kg_") {i++;mass += unitList[i];}
+		else if (unitList[i] == "s") {time++;}
+		else if (unitList[i] == "s_") {i++;time += unitList[i];}
+		else if (unitList[i] == "A") {current++;}
+		else if (unitList[i] == "A_") {i++;current += unitList[i];}
+		else if (unitList[i] == "K") {temperature++;}
+		else if (unitList[i] == "K_") {i++;temperature += unitList[i];}
+		else if (unitList[i] == "mol") {ammount++;}
+		else if (unitList[i] == "mol_") {i++;ammount += unitList[i];}
+		else if (unitList[i] == "cd") {luminous++;}
+		else if (unitList[i] == "cd_") {i++;luminous += unitList[i];}
+	}
+	return [length,mass,time,current,temperature,ammount,luminous];
+}
+
+
+##------------------------------------------------------------------------------
+## Vector Arithmetic
+##------------------------------------------------------------------------------
+
+
+func PH_vectorAdd {
+	para v1,v2;
+	auto i;
+	
+	if (v1# != v2#) {return @;}
+	
+	for(i=1;i<=v1#;i++) {
+		v1[i] += v2[i];
+	}
+	return v1;
+}
+func PH_vectorMinus {
+	para v1,v2;
+	auto i;
+	
+	if (v1# != v2#) {return @;}
+	
+	for(i=1;i<=v1#;i++) {
+		v1[i] += -1*v2[i];
+	}
+	return v1;
+}
+func PH_dimensionComp {
+	para v1,v2;
+	if (v1 == v2) {return v1;}
+	else {return @;}
+}

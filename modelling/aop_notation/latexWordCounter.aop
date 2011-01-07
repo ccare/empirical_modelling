@@ -1,0 +1,564 @@
+%eden
+include("d:/ccare/aop_notation/v1.1/aop_notation.eden");
+%eden
+%aop
+<a> = "\" <b>;
+<b> = *;
+notation a = split on "\n";
+
+
+## ERROR number 1: parse error, encountered `';'', expecting `CONSTANT' or ...
+## ERROR number 2: unexpected end-of-file in string constant while executin...
+## ERROR number 3: unexpected end-of-file in string constant while executin...
+## ERROR number 4: unexpected end-of-file in string constant while executin...
+## ERROR number 5: unexpected end-of-file in string constant while executin...
+## ERROR number 6: unexpected end-of-file in string constant while executin...
+## ERROR number 7: unexpected end-of-file in string constant while executin...
+## ERROR number 8: unexpected end-of-file in string constant while executin...
+<a> = "\\" <b>;
+<b> = *;
+notation a = split on "\n";
+
+
+## ERROR number 9: parse error, encountered `FORMULA', expecting `']'' whil...
+<a> = "\\" <b>;
+<b> = *;
+notation a = split on "\n";
+
+
+## ERROR number 10: parse error, encountered `FORMULA', expecting `']'' whil...
+<a> = "\\\\" <b>;
+<b> = *;
+notation a = split on "\n";
+
+
+%a
+12
+\as
+as
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+<c> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+asd
+%a
+## ERROR number 11: %aop error: See terminal output
+
+ in error called by rep...
+asd
+\asd
+asd
+%aop
+%eden
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> " " <word> | <word>
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+## ERROR number 12: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 13: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 14: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 15: %aop error: See terminal output
+
+ in error called by rep...
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> " " <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+## ERROR number 16: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 17: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 18: %aop error: See terminal output
+
+ in error called by rep...
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> "a" <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> " " <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+## ERROR number 19: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 20: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 21: %aop error: See terminal output
+
+ in error called by rep...
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> "\ " <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+## ERROR number 22: unexpected end-of-file in string constant while executin...
+## ERROR number 23: unexpected end-of-file in string constant while executin...
+## ERROR number 24: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 25: %aop error: See terminal output
+
+ in error called by rep...
+## ERROR number 26: %aop error: See terminal output
+
+ in error called by rep...
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> "" <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%eden
+state = "text"
+
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> `x` <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%a
+asd asd
+%eden
+%eden
+state = "text"
+x = " ";
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> `x` <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+## ERROR number 27: parse error, encountered `VAR', expecting `'?'' or `OR' ...
+%eden
+state = "text";
+x = " ";
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <word> `x` <word> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%a
+12 123
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+state = "text";
+x = " ";
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <a> `x` <a> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+%eden
+state = "text";
+x = " ";
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <a> `x` <a> | <stm>;
+<stm> = "\\\\" <stm2> | <word>;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%aop
+%eden
+state = "text";
+x = " ";
+%aop
+<a> = "\\\\" <b> | <c>;
+<b> = *;
+
+<a> = <a> `x` <a> | <stm>;
+<stm> = "\\\\" <stm2> | <word>;
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+<word> = * : do {writeln($j);} now;
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+x = " ";
+wordcount = 0;
+%aop
+
+<a> = <a> `x` <a>
+    : do {writeln("word count is " // wordcount);} later
+    | <stm>;
+
+<stm> = "\\\\" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {writeln($j);} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+## ERROR number 28: type clash on concatenation: expecting strings or lists ...
+## ERROR number 29: type clash on concatenation: expecting strings or lists ...
+## ERROR number 30: type clash on concatenation: expecting strings or lists ...
+## ERROR number 31: type clash on concatenation: expecting strings or lists ...
+## ERROR number 32: type clash on concatenation: expecting strings or lists ...
+## ERROR number 33: type clash on concatenation: expecting strings or lists ...
+## ERROR number 34: type clash on concatenation: expecting strings or lists ...
+## ERROR number 35: type clash on concatenation: expecting strings or lists ...
+## ERROR number 36: type clash on concatenation: expecting strings or lists ...
+## ERROR number 37: type clash on concatenation: expecting strings or lists ...
+## ERROR number 38: type clash on concatenation: expecting strings or lists ...
+## ERROR number 39: type clash on concatenation: expecting strings or lists ...
+## ERROR number 40: type clash on concatenation: expecting strings or lists ...
+## ERROR number 41: type clash on concatenation: expecting strings or lists ...
+## ERROR number 42: type clash on concatenation: expecting strings or lists ...
+## ERROR number 43: type clash on concatenation: expecting strings or lists ...
+## ERROR number 44: type clash on concatenation: expecting strings or lists ...
+## ERROR number 45: type clash on concatenation: expecting strings or lists ...
+## ERROR number 46: type clash on concatenation: expecting strings or lists ...
+## ERROR number 47: type clash on concatenation: expecting strings or lists ...
+## ERROR number 48: type clash on concatenation: expecting strings or lists ...
+## ERROR number 49: type clash on concatenation: expecting strings or lists ...
+## ERROR number 50: type clash on concatenation: expecting strings or lists ...
+## ERROR number 51: type clash on concatenation: expecting strings or lists ...
+## ERROR number 52: type clash on concatenation: expecting strings or lists ...
+## ERROR number 53: type clash on concatenation: expecting strings or lists ...
+## ERROR number 54: type clash on concatenation: expecting strings or lists ...
+## ERROR number 55: type clash on concatenation: expecting strings or lists ...
+## ERROR number 56: type clash on concatenation: expecting strings or lists ...
+## ERROR number 57: type clash on concatenation: expecting strings or lists ...
+## ERROR number 58: type clash on concatenation: expecting strings or lists ...
+## ERROR number 59: type clash on concatenation: expecting strings or lists ...
+## ERROR number 60: type clash on concatenation: expecting strings or lists ...
+## ERROR number 61: type clash on concatenation: expecting strings or lists ...
+## ERROR number 62: type clash on concatenation: expecting strings or lists ...
+## ERROR number 63: type clash on concatenation: expecting strings or lists ...
+## ERROR number 64: type clash on concatenation: expecting strings or lists ...
+## ERROR number 65: type clash on concatenation: expecting strings or lists ...
+## ERROR number 66: type clash on concatenation: expecting strings or lists ...
+## ERROR number 67: type clash on concatenation: expecting strings or lists ...
+## ERROR number 68: type clash on concatenation: expecting strings or lists ...
+## ERROR number 69: type clash on concatenation: expecting strings or lists ...
+## ERROR number 70: type clash on concatenation: expecting strings or lists ...
+## ERROR number 71: type clash on concatenation: expecting strings or lists ...
+## ERROR number 72: type clash on concatenation: expecting strings or lists ...
+## ERROR number 73: type clash on concatenation: expecting strings or lists ...
+## ERROR number 74: type clash on concatenation: expecting strings or lists ...
+## ERROR number 75: type clash on concatenation: expecting strings or lists ...
+## ERROR number 76: type clash on concatenation: expecting strings or lists ...
+## ERROR number 77: type clash on concatenation: expecting strings or lists ...
+## ERROR number 78: type clash on concatenation: expecting strings or lists ...
+## ERROR number 79: type clash on concatenation: expecting strings or lists ...
+## ERROR number 80: type clash on concatenation: expecting strings or lists ...
+## ERROR number 81: type clash on concatenation: expecting strings or lists ...
+## ERROR number 82: type clash on concatenation: expecting strings or lists ...
+## ERROR number 83: type clash on concatenation: expecting strings or lists ...
+## ERROR number 84: type clash on concatenation: expecting strings or lists ...
+## ERROR number 85: type clash on concatenation: expecting strings or lists ...
+## ERROR number 86: type clash on concatenation: expecting strings or lists ...
+## ERROR number 87: type clash on concatenation: expecting strings or lists ...
+## ERROR number 88: type clash on concatenation: expecting strings or lists ...
+## ERROR number 89: type clash on concatenation: expecting strings or lists ...
+## ERROR number 90: type clash on concatenation: expecting strings or lists ...
+## ERROR number 91: type clash on concatenation: expecting strings or lists ...
+## ERROR number 92: type clash on concatenation: expecting strings or lists ...
+## ERROR number 93: type clash on concatenation: expecting strings or lists ...
+## ERROR number 94: type clash on concatenation: expecting strings or lists ...
+## ERROR number 95: type clash on concatenation: expecting strings or lists ...
+## ERROR number 96: type clash on concatenation: expecting strings or lists ...
+## ERROR number 97: type clash on concatenation: expecting strings or lists ...
+## ERROR number 98: type clash on concatenation: expecting strings or lists ...
+## ERROR number 99: type clash on concatenation: expecting strings or lists ...
+## ERROR number 100: type clash on concatenation: expecting strings or lists ...
+## ERROR number 101: type clash on concatenation: expecting strings or lists ...
+## ERROR number 102: type clash on concatenation: expecting strings or lists ...
+## ERROR number 103: type clash on concatenation: expecting strings or lists ...
+%eden
+x = " ";
+wordcount = 0;
+%aop
+
+<a> = <a> `x` <a>
+    : do {writeln("word count is " // str(wordcount));} later
+    | <stm>;
+
+<stm> = "\\\\" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {writeln($j);} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+x = " ";
+wordcount = 0;
+%aop
+
+<a> = <a> `x` <a>
+    : do {writeln("word count is " // str(wordcount));} later
+    | <stm>;
+
+<stm> = "\\\\" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {wordcount++;} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+x = " ";
+wordcount = 0;
+%aop
+
+<a> = <a> `x` <a>
+    : do {writeln("word count is " // str(wordcount));} later
+    | <stm>;
+
+<stm> = "\\\\" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {wordcount++; writeln($j);} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+x = " ";
+wordcount = 0;
+
+proc show_wordcount: wordcount {
+	writeln("wordcount is " // str(wordcount));
+}
+
+%aop
+
+<a> = <a> `x` <a>
+    | <stm>;
+
+<stm> = "\\\\" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {wordcount++;} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+%eden
+%eden
+x = " ";
+wordcount = 0;
+
+proc show_wordcount: wordcount {
+	writeln("wordcount is " // str(wordcount));
+}
+
+%aop
+
+<a> = <a> `x` <a>
+    | <stm>;
+
+<stm> = "\\\\begin" <stm2> | <word>;
+
+<stm2> = * : do {writeln("Latex STM: "//$j);} now;
+
+<word> = * : do {wordcount++;} now;
+
+
+
+
+notation a = split on "\n";
+
+
+%a
+%a
+In \cite{INS_ihde} Ihde introduces ``Hermenutic Technics'' in which he 
+sees technology as something that can be read and interpreted like a text.
+This applies to instruments in particular because they are generally used
+in conjuction with interpretive skills that allow the user of an instrument
+to see through the medium of the instrument. Using the example of a
+thermometer, Ihde shows that the interpretation following the
+\emph{reading} of an instrument, which is thought of as a `text', 
+``hermeneutically [delivers] its world reference, the cold''.
+

@@ -1,0 +1,50 @@
+\documentclass[a4paper,landscape]{slides}
+\usepackage{color}
+\usepackage{slidesec}
+\usepackage{enumerate}
+\usepackage{footnote}
+\usepackage[pdftex]{graphicx}
+
+
+\input{defns.tex}
+
+\definecolor{bgColour}{rgb}{0.33,0.46,0.63}
+\definecolor{textColour}{rgb}{0,0,0}
+\definecolor{titleColour}{rgb}{0,0,0}
+\definecolor{highlight}{rgb}{1,1,1}
+
+\newcommand{\highlight}[1]{\textcolor{highlight}{#1}}
+
+\newcommand{\slideTitle}[1]{\begin{center}\sffamily \LARGE
+\textcolor{titleColour}{#1}\end{center}\vspace{1cm}}
+
+\newcommand{\heading}[1]{\begin{flushleft}\sffamily \Large
+\textcolor{titleColour}{#1}\end{flushleft}\vspace{0.2cm}}
+
+\newenvironment{myslide}[1]{\begin{slide}\slideTitle{#1}}{
+\vspace{\fill}\end{slide}}
+
+\title{\itshape
+   A definitive notation for modelling \\ with physical quantities}
+
+\author{Charles Care}
+\date{September 2004}
+\pagestyle{empty}
+
+\begin{document}
+\pagecolor{bgColour}
+\color{textColour}
+
+% Title Slide
+\begin{slide}
+\maketitle
+\end{slide}
+
+
+
+
+% Title Slide
+\begin{slide}
+\maketitle
+\end{slide}
+\end{document}

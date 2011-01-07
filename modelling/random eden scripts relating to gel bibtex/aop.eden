@@ -1,0 +1,5 @@
+%eden
+cd("/cygdrive/d/ccare/aop_notation/v2.01/");
+include("d:/ccare/aop_notation/v2.01/aop_notation.eden");
+%eden
+

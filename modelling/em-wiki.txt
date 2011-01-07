@@ -1,0 +1,17 @@
+Empirical Modelling (EM), spelt with capitials to denote a particular 
+approach and to distinguish it from ''any'' [[modelling]] done 
+[[empirically]], is a novel approach to computer-based modelling 
+that developed from research initiated in the early [[1980s]] by 
+Meurig Beynon of the Department of [[Computer Science]] at the 
+[[University of Warwick]], [[England]].
+Early research within the group lead to the development of a new 
+[[language]] called Eden - an Evaluator for Definitive Notations. The 
+first implementation of Eden was by Simon Yung in was in [[1983]] and 
+a number of [[contributers]] have been leading the development of this 
+tool ever since.
+
+The approach of [[modelling]] offered by Empirical Modelling (or EM as 
+it is often known) centres on the principles of Observation, 
+Dependency and Agency. The importance of dependency has been 
+particulary well researched with a number of software tools that 
+exploit it as a native concept being developed.

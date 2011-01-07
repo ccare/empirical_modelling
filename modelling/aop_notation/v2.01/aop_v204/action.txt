@@ -1,0 +1,64 @@
+Agent "action" model. [Ant][29/12/2002]
+
+An agents observable behaviour is the action (or script) that it outputs. The
+new model for writing agent scripts removes the complexities of the existing
+technique.
+
+Each agent is passed a single variable (unlike the existing scripts which could
+pass any number of variables). An agent generates sub-agents (its children),
+and for each child passes an input, a template and a unique variable. An agent
+can perform actions before and after its children.
+
+A new style script is specified with a new tag called "action". The template for
+an agent with this new script is:
+
+myagent = [ ...
+            [ "action",
+              [ "now", "somecommand" ],
+              [ "later", "anothercommand" ],
+              ...
+            ]
+          ];
+
+The script part is a list with the head being the string "action" and the
+proceeding elements are the commands. Each command is a tuple, with its first
+element being either "now" or "later" indicating when the command should be
+executed. The second element in the tuple is the command string. A command
+string may contain the following variables to be substituted into the string:
+
+    $i = the input string to the agent
+    $j = the name of a variable containing the input string
+    $t = the token/string that was matched by the agent
+    $v = the variable name that was passed to the agent
+    $s1 = the first substring of the input
+    $s2 = the second substring of the input (and so on for 3rd, 4th, etc)
+    $p1 = the variable name to be passed to the first child agent
+    $p2 = the variable name to be passed to the second child agent (etc)
+
+This is model is much simpler than the old style scripting as you no longer
+need concern yourself with multiple parameters, variable names or the famous
+"$$/%%"! You can still achieve everything that was possible with the old style
+scripts.
+
+An example of a very simple expression calculator using agent "actions":
+
+  init_calc =
+    [ "\n", "calc", [] ];
+  calc =
+    [ "read_prefix", [[], 0], "expr",
+      [ "action",
+        [ "later", "writeln('=',$p1);" ] ] ];
+  expr =
+    [ "pivot", "+", [ "expr", "expr" ],
+      [ "ignore", ["bras"] ],
+      [ "action",
+        [ "now", "$v is $p1 + $p2;" ] ],
+      [ "fail", "term" ] ];
+  term =
+    [ "read_all", [["0","9"]],
+      [ "action",
+        [ "now", "$v = $i;" ] ] ];
+
+See example.e for a comparison to the old style scripts.
+
+Comments/suggestions to csvcx@dcs.

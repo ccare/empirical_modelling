@@ -1,0 +1,1072 @@
+
+/* declare width and height (to be used for the drawingboard) to keep scout happy */ 
+%scout
+integer DS_width;
+integer DS_height;
+string DS_infobarcontent;
+
+%eden
+/* initialise width and height */
+DS_width=1024;
+DS_height=800;
+DS_infobarcontent="Starting.....";
+
+/* setup modes to create, manipulate and use the tool (NB each mode requires a different value) */
+DS_createMode=1;
+DS_manipulateMode=2;
+DS_useMode=3;
+
+/* initialise the type of windows to be created */
+DS_windowtype="TEXT";
+
+func DS_max {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]>result) {result = data[i];}
+  }
+  return result;
+}
+
+func DS_min {
+  auto result,i,data;
+
+  if (type($[1])=="list") {data= $[1];} else {data = $;}
+
+  result = data[1];
+  for (i=1; i<=data#; i++)
+  {
+    if (data[i]<result) {result = data[i];}
+  }
+  return result;
+}
+
+
+/* define the default colours to be used for the scout windows created */
+DS_default_bgcolour="#E3E369";
+DS_default_fgcolour="black";
+DS_default_bdcolour="black";
+
+DS_default_font=DFfont;
+DS_default_relief="flat";
+DS_default_border=1;
+
+DS_drawingboard_bgcolour="#585880";	
+
+DS_currentSlideNumber=1;
+
+/* create the sensitive drawingboard and put it in the drawingBoard display window */
+%scout 
+string DS_drawingboard_bgcolour;
+
+window DS_drawingboard = {
+    type: TEXT
+    frame: ([{0, 0}, {DS_width, DS_height}])
+    string: ""
+    sensitive: ON
+    bgcolour: DS_drawingboard_bgcolour
+};
+
+window DS_infobar = {
+	type: TEXT
+	frame:  ([{0, DS_height}, {DS_width, DS_height+1.r}])
+    	string: DS_infobarcontent
+    	sensitive: OFF
+	bgcolour: "grey"
+};
+
+window DS_welcome = {
+	type: TEXT
+	frame:  ([{0, DS_height}, {DS_width, DS_height+1.r}])
+    	string: "DrawScout version 1 | Enjoy!"
+    	sensitive: OFF
+	bgcolour: "grey"
+};
+
+display drawingBoard=<DS_welcome/DS_drawingboard>;
+
+%eden
+/* initialise the mouse, clearing all values */
+DS_drawingboard_mouse_1=[0,0,0,0,0];
+
+/* these are the mouse positions on the drawingboard, defined by dependency so that they are dynamic */
+DS_mouseposX is DS_drawingboard_mousePos_1[1];
+DS_mouseposY is DS_drawingboard_mousePos_1[2];
+
+/* when a click occurs the value of DS_drawingboard_mouse_1[2] changes. DS_mouseclick is used by the tool to sense clicks */
+DS_mouseclick is DS_drawingboard_mouse_1[2];
+
+/* these variables store the mouse position on clicks */
+DS_mouseclickposX is DS_drawingboard_mouse_1[4];
+DS_mouseclickposY is DS_drawingboard_mouse_1[5];
+
+/* variables to be used in tracing click and release mouse actions */
+DS_clicked=0;
+DS_clicked1=0;
+
+/* this ensures that EDEN does not make certain changes, defined in parts of this script, when drawScout is first loaded*/
+DS_go=0;
+
+/* set current mode to manipulate */
+DS_mode=DS_manipulate;
+DS_currentWindowNumber=0;
+DS_currentWindowNumber1=0;
+
+DS_startpos=[0,0];
+DS_endpos=[0,0];
+
+/* open a new display to use to draw Scout windows. This should enable integrated use of drawScout with existing models */
+OpenDisplay("drawingBoard", DS_width, DS_height+fontHeight);
+proc drawingBoard_display_screen : drawingBoard { DisplayScreen(&drawingBoard, "drawingBoard"); }
+
+
+func DS_entry {
+	
+	para mouse,i;
+
+	DS_whereIsMyMouse=str(i);
+
+	return DS_whereIsMyMouse;
+
+}
+
+DS_whereIsMyMouse=0;
+
+DS_win0_string is "This is the drawing board";
+
+DS_lookup is "DS_win"//str(DS_whereIsMyMouse)//"_string";
+
+DS_infobarcontent is DS_whereIsMyMouse=="0"?"Window: Drawing Board | In create mode, click and drag to draw scout windows!":"Window: DS_win"//str(DS_whereIsMyMouse)//" | DS_win"//str(DS_whereIsMyMouse)//"_string:"//symboltext(DS_lookup);
+
+DS_senseEntry0 is DS_entry(DS_drawingboard_mousePos_1,0);
+
+%eden
+/* function used when clicks occur to trace clicks and releases of the mouse*/
+
+
+func DS_clicking {
+
+	para mouse,i;
+	auto j;
+
+	/* writeln("sensing click window"//str(i)); */
+
+	if(mouse[1]==1&&DS_mode==DS_createMode)
+	{
+		DS_clicked=1-DS_clicked; 
+		DS_setwindownumber="%eden\n DS_currentWindowNumber1="//str(i)//";";
+		execute(DS_setwindownumber);
+		DS_go=1;
+	};		
+
+	if(mouse[1]==1&&DS_mode==DS_manipulateMode)
+	{
+		DS_clicked1=1-DS_clicked1; 
+		DS_go=2; 
+		DS_setwindownumber="%eden\n DS_currentWindowNumber="//str(i)//";";
+		execute(DS_setwindownumber);
+
+		if(DS_clicked1==1&&DS_currentWindowNumber>0&&DS_myWindowList#>1)
+		{
+			/*
+			DS_currentForegroundWindow=DS_myWindowList[DS_myWindowList#];
+			
+			DS_removeFromList="%eden\n delete DS_myWindowList, DS_win"//str(i)//"listpos; DS_thisWindowlistpos=DS_win"//str(i)//"listpos;";
+			
+			DS_appendToList="%eden\n append DS_myWindowList,\"DS_win"//str(i)//"\";";
+			execute(DS_removeFromList);
+			execute(DS_appendToList);
+
+			for(j=1;j<DS_myWindowList#;j++)
+			{
+				DS_getWindowPos="DS_windowpos=DS_win"//str(j)//"listpos;";
+				execute(DS_getWindowPos);
+
+				if(i!=j&&DS_windowpos>DS_thisWindowlistpos)
+				{
+					DS_newlistpos="DS_win"//str(j)//"listpos=DS_win"//str(j)//"listpos-1;";
+					execute(DS_newlistpos);
+				}
+			}
+			
+			DS_newWindowListPos="DS_win"//str(i)//"listpos="//str(DS_myWindowList#)//";";
+			execute(DS_newWindowListPos);
+
+			DS_updateScreen="%scout\n display drawingBoard=" // DS_windowManager//";";
+
+			execute(DS_updateScreen);
+
+			*/
+
+			/* NEW STUFF FOR SLIDES (INSTEAD OF A SINGLE DRAWINGBOARD)*/
+		
+			DS_currentSlideForegroundWindow=DS_currentSlideList[DS_currentSlideList#];
+			
+			DS_removeFromList="%eden\n delete DS_slide"//str(DS_currentSlideNumber)//"List, DS_win"//str(i)//"slidelistpos; 
+					   DS_thisSlidelistpos=DS_win"//str(i)//"slidelistpos;";
+			
+			DS_appendToList="%eden\n append DS_slide"//str(DS_currentSlideNumber)//"List,\"DS_win"//str(i)//"\";";
+			execute(DS_removeFromList);
+			execute(DS_appendToList);
+
+			execute("DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");
+			
+			for(j=2;j<DS_currentSlideList#+1;j++)
+			{
+				DS_newslidelistpos=str(DS_currentSlideList[j])//"slidelistpos="//str(j)//";";
+				/* writeln(DS_newslidelistpos);*/
+				execute(DS_newslidelistpos);
+
+			}
+		
+			DS_updateScreen="%scout\n display drawingBoard=" // DS_windowManager//";";
+
+			execute(DS_updateScreen);
+		}
+	};
+}
+
+
+DS_go=0;
+
+/* whenever a click occurs, DS_drawingboard_mouse_1 changes and DS_senseclicks ensures that the appropriate variables are changed using the DS_clicking function*/
+DS_senseclicks is DS_clicking(DS_drawingboard_mouse_1,0);
+
+/* declaration of integers to be used for click and release positions to keep scout happy */
+%scout
+integer DS_posX1,DS_posX2,DS_posY1,DS_posY2;
+
+%eden
+/* dependencies to set the click and release positions, taking into accout the fact that the user can drag the mouse from bottom right to top left in window creation*/
+DS_posX1 is DS_min(DS_startpos[1],DS_endpos[1]);
+DS_posY1 is DS_min(DS_startpos[2],DS_endpos[2]);
+DS_posX2 is DS_max(DS_startpos[1],DS_endpos[1]);
+DS_posY2 is DS_max(DS_startpos[2],DS_endpos[2]);
+
+
+func DS_FontWidth {
+        para win, font;
+        /* Measuring the width of the (wide) character 'W' */
+        return DS_StringWidth(win, font, "W");
+}
+
+func DS_StringWidth {
+        para win, font, string;
+
+        if ((win == @) || (font == @) || (string == @)) return @;
+
+        return int(tcl("font measure " // font //
+                " -displayof ." // win // " " // "{" // string // "}"));
+}
+
+func DS_FontHeight {
+        para win, font;
+        return int(tcl("font metrics " // font //
+                " -displayof ." // win // " -linespace"));
+}
+
+
+
+
+/* this function "draws" the windows on to the drawingboard */
+func DS_windowSetup {
+	para DS_clicked,i,DS_myWindowList;
+	
+		if(DS_clicked==1&&DS_mode==DS_createMode&&DS_go==1&&DS_currentWindowNumber1==0)
+		{
+			DS_startpos[1]=DS_mouseclickposX;
+			DS_startpos[2]=DS_mouseclickposY;
+		};
+	
+		if(DS_clicked==0&&DS_mode==DS_createMode&&DS_go==1&&DS_currentWindowNumber1==0)
+		{
+			DS_endpos[1]=DS_mouseclickposX;
+			DS_endpos[2]=DS_mouseclickposY;
+		
+			
+			if(DS_windowtype=="TEXT")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: TEXT\n
+					string: DS_win"//str(i)//"_string\n
+					sensitive: ON+MOTION+ENTER\n
+					frame: ([ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2} ])\n 
+					font: DS_win"//str(i)//"_font\n
+					border: DS_win"//str(i)//"_border\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					alignment: LEFT\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					bgcolour: DS_win"//str(i)//"_bgcolour\n};";
+
+				DS_contentScout="%scout\n string DS_win"//str(i)//"_string;
+							  string DS_win"//str(i)//"_font;
+							  integer DS_win"//str(i)//"_border; 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_relief;
+							  string DS_win"//str(i)//"_bdcolour;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is window DS_win"//str(i)//"\"; 
+						DS_win"//str(i)//"_font=DS_default_font;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2="//str(DS_posX2)//"; 
+						DS_win"//str(i)//"_Y2="//str(DS_posY2)//"; 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+			
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse_1,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter_1,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+
+			}
+			
+			if(DS_windowtype=="IMAGE"||DS_windowtype=="DONALD")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: "//DS_windowtype//"\n
+					sensitive: ON+MOTION+ENTER\n
+					box: [ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2}]\n 
+					bgcolour: DS_win"//str(i)//"_bgcolour\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					border: DS_win"//str(i)//"_border\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					pict: \"DS_win"//str(i)//"_pict\"\n};";
+
+				DS_contentScout="%scout\n image DS_win"//str(i)//"_pict;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bdcolour;
+							  integer DS_win"//str(i)//"_border;
+						      	  string DS_win"//str(i)//"_relief;	 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is image window DS_win"//str(i)//"\";
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2="//str(DS_posX2)//"; 
+						DS_win"//str(i)//"_Y2="//str(DS_posY2)//";
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour; 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+			
+			}
+			
+			if(DS_windowtype=="TEXTBOX")
+			{
+				DS_newWindow = "%scout\n" //"window DS_win" // str(i) //" = {
+					type: TEXTBOX\n
+					string: DS_win"//str(i)//"_string\n
+					sensitive: ON+MOTION+ENTER\n
+					frame: ([ {DS_win"//str(i)//"_X1,DS_win"//str(i)//"_Y1}, {DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y2} ])\n 
+					font: DS_win"//str(i)//"_font\n
+					border: DS_win"//str(i)//"_border\n
+					fgcolour: DS_win"//str(i)//"_fgcolour\n
+					alignment: LEFT\n
+					bdcolour: DS_win"//str(i)//"_bdcolour\n
+					relief: DS_win"//str(i)//"_relief\n
+					bgcolour: DS_win"//str(i)//"_bgcolour\n};";
+
+				DS_contentScout="%scout\n string DS_win"//str(i)//"_string;
+							  string DS_win"//str(i)//"_font;
+							  integer DS_win"//str(i)//"_border; 
+							  integer DS_win"//str(i)//"_X1, DS_win"//str(i)//"_X2, DS_win"//str(i)//"_Y1, DS_win"//str(i)//"_Y2; 
+							  string DS_win"//str(i)//"_relief;
+							  string DS_win"//str(i)//"_bdcolour;
+							  string DS_win"//str(i)//"_fgcolour;
+							  string DS_win"//str(i)//"_bgcolour;";
+										
+					
+				DS_contentEden="%eden\n DS_win"//str(i)//"_string=\"This is window DS_win"//str(i)//"\"; 
+						DS_win"//str(i)//"_font=DS_default_font;
+						DS_win"//str(i)//"_border=DS_default_border;
+						DS_win"//str(i)//"_type=\""//DS_windowtype//"\";
+						DS_win"//str(i)//"_X1="//str(DS_posX1)//"; 
+						DS_win"//str(i)//"_Y1="//str(DS_posY1)//"; 
+						DS_win"//str(i)//"_X2=("//str(DS_posX2)//"-"//
+								      str(DS_posX1)//")/(DS_FontWidth(\"drawingBoard\",DS_win"//str(i)//"_font)); 
+						DS_win"//str(i)//"_Y2=("//str(DS_posY2)//"-"//
+								      str(DS_posY1)//")/(DS_FontHeight(\"drawingBoard\",DS_win"//str(i)//"_font)); 
+						DS_win"//str(i)//"_bgcolour=DS_default_bgcolour;
+						DS_win"//str(i)//"_fgcolour=DS_default_fgcolour;
+						DS_win"//str(i)//"_bdcolour=DS_default_bdcolour;
+						DS_win"//str(i)//"_relief=DS_default_relief;
+						DS_win"//str(i)//"slidelistpos="//str(DS_currentSlideList#+1)//";
+						DS_win"//str(i)//"listpos="//str(DS_myWindowList#+1)//";";
+			
+			execute(DS_contentScout);
+			execute(DS_contentEden);
+			execute(DS_newWindow);
+			
+			
+			DS_clicks="%eden\n" // "DS_senseclicks"//str(i)//" is DS_clicking(DS_win"//str(i)//"_mouse_1,"//str(i)//");";
+			
+			DS_enter="%eden\n DS_senseEntry"//str(i)//" is DS_entry(DS_win"//str(i)//"_mouseEnter_1,"//str(i)//");";
+			
+			execute(DS_clicks);
+			execute(DS_enter);
+
+			}
+		
+			DS_listUpdate= "%eden\n append DS_myWindowList,\"DS_win"//str(i)//"\";"; 
+			
+			execute(DS_listUpdate);
+			
+			
+			DS_slideUpdate="%eden\n append DS_slide"//str(DS_currentSlideNumber)//"List,\"DS_win"//str(i)//"\";";
+			execute(DS_slideUpdate);
+			
+			DS_windowNumber=DS_windowNumber+1;
+			
+			DS_screenUpdate = "%scout\n display drawingBoard=" // DS_windowManager//";";
+			
+			execute(DS_screenUpdate);
+		};
+	
+}
+
+DS_windowNumber=1;
+
+DS_myWindowList=["DS_drawingboard","DS_infobar"];
+
+DS_slide1List=["DS_drawingboard"];
+DS_numberOfSlides=1;
+
+DS_setWindow is DS_windowSetup(DS_clicked,DS_windowNumber,DS_myWindowList);
+
+%eden
+func DS_windows {
+
+	para DS_windowList,DS_windowNumber,DS_currentWindowNumber,DS_currentSlideNumber;
+	auto result;
+	result=""//DS_windowList[1]//"";
+	
+	execute("%eden\n DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");
+
+	for(i=2;i<DS_currentSlideList#+1;i++)
+	{
+		result=DS_currentSlideList[i]//"/"//result;	
+	}
+
+	/* writeln(result); */
+
+	result="<"//result//">";
+
+	return result;
+}
+
+DS_windowManager is DS_windows(DS_myWindowList,DS_windowNumber,DS_currentWindowNumber,DS_currentSlideNumber);
+
+DS_MovingWindows is DS_windowMove(DS_currentWindowNumber);
+
+
+proc DS_slideManager : DS_currentSlideNumber {
+
+		DS_screenUpdate="%scout\n display drawingBoard=" // DS_windowManager//";";
+		execute("%eden\n DS_currentSlideList=DS_slide"//str(DS_currentSlideNumber)//"List;");	
+		execute(DS_screenUpdate);
+	
+}
+
+
+%eden
+/* function used in moving created windows */
+func DS_windowMove {
+
+	para DS_windownumber;
+
+	execute("DS_thisWindowType=DS_win"//str(DS_currentWindowNumber)//"_type;");
+
+	if(DS_currentWindowNumber>0&&DS_clicked1==1&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+		if(DS_thisWindowType=="TEXT" || DS_thisWindowType=="TEXTBOX")
+		{
+			DS_mouseDown="%eden\n DS_startpos[1]=DS_win"//str(DS_windownumber)//"_mouse_1[4]; 
+					      DS_startpos[2]=DS_win"//str(DS_windownumber)//"_mouse_1[5];";
+		}
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseDown="%eden\n DS_startpos[1]=DS_win"//str(DS_windownumber)//"_mouse[4]; 
+					      DS_startpos[2]=DS_win"//str(DS_windownumber)//"_mouse[5];";	
+
+		}
+		execute(DS_mouseDown);
+	};
+	
+	if(DS_currentWindowNumber>0&&DS_clicked1==0&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+		if(DS_thisWindowType=="TEXT" || DS_thisWindowType=="TEXTBOX")
+		{
+			DS_mouseUp="%eden\n DS_endpos[1]=DS_win"//str(DS_windownumber)//"_mouse_1[4]; 
+					    DS_endpos[2]=DS_win"//str(DS_windownumber)//"_mouse_1[5];";
+		}
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseUp="%eden\n DS_endpos[1]=DS_win"//str(DS_windownumber)//"_mouse[4]; 
+					    DS_endpos[2]=DS_win"//str(DS_windownumber)//"_mouse[5];";
+			
+		}
+		execute(DS_mouseUp);
+			
+	};
+	
+	if(DS_currentWindowNumber>0&&DS_clicked1==0&&DS_mode==DS_manipulateMode&&DS_go==2)
+	{
+	
+		if(DS_thisWindowType=="TEXT")
+		{
+			DS_relativeX=DS_endpos[1]-DS_startpos[1];
+			DS_relativeY=DS_endpos[2]-DS_startpos[2];
+		
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[2][1][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[2][1][2];";
+			execute(DS_currentYstart);
+		
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_win"//str(DS_windownumber)//"[2][1][3];";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_win"//str(DS_windownumber)//"[2][1][4];";
+			execute(DS_currentYfinish);
+		
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart; 
+		        DS_newposXstart=DS_oldposXstart+DS_relativeX;
+		
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart; 
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;
+			
+			DS_newposXfinish=DS_newposXstart+DS_dimensionX;
+			DS_newposYfinish=DS_newposYstart+DS_dimensionY;
+
+		}
+
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+			DS_mouseMovementX=DS_endpos[1]-DS_startpos[1];
+			DS_mouseMovementY=DS_endpos[2]-DS_startpos[2];
+				
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[4][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[4][2];";
+			execute(DS_currentYstart);
+		
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_win"//str(DS_windownumber)//"[4][3];";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_win"//str(DS_windownumber)//"[4][4];";
+			execute(DS_currentYfinish);
+
+
+			DS_unitX=float(DS_oldposXfinish-DS_oldposXstart)/1000; 
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart;
+		
+			DS_unitY=float(DS_oldposYfinish-DS_oldposYstart)/1000; 
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart;
+			
+			DS_relativeX=DS_mouseMovementX*DS_unitX;
+			DS_relativeY=DS_mouseMovementY*DS_unitY*-1;
+		
+			DS_newposXstart=DS_oldposXstart+DS_relativeX;
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;
+		
+			DS_newposXfinish=DS_newposXstart+DS_dimensionX;
+			DS_newposYfinish=DS_newposYstart+DS_dimensionY;	
+	
+		}
+			
+
+		if(DS_thisWindowType=="TEXTBOX")
+		{
+			DS_relativeX=DS_endpos[1]-DS_startpos[1];
+			DS_relativeY=DS_endpos[2]-DS_startpos[2];
+		
+			DS_currentXstart="%eden\n DS_oldposXstart=DS_win"//str(DS_windownumber)//"[2][1][1];";
+			execute(DS_currentXstart);
+		
+			DS_currentYstart="%eden\n DS_oldposYstart=DS_win"//str(DS_windownumber)//"[2][1][2];";
+			execute(DS_currentYstart);
+		
+			execute("%eden\n DS_windowWidth=DS_win"//str(DS_windownumber)//"[2][1][3];");
+			execute("%eden\n DS_windowHeight=DS_win"//str(DS_windownumber)//"[2][1][4];");
+
+			execute("%eden\n DS_thisFontWidth=DS_FontWidth(\"drawingBoard\",DS_win"//str(DS_windownumber)//"_font);");
+			execute("%eden\n DS_thisFontHeight=DS_FontHeight(\"drawingBoard\",DS_win"//str(DS_windownumber)//"_font);");
+
+			DS_currentXfinish="%eden\n DS_oldposXfinish=DS_oldposXstart+((DS_win"//str(DS_windownumber)//
+						   "[2][1][3])*DS_thisFontWidth);";
+			execute(DS_currentXfinish);
+		
+			DS_currentYfinish="%eden\n DS_oldposYfinish=DS_oldposYstart+((DS_win"//str(DS_windownumber)//
+						   "[2][1][4])*DS_thisFontHeight);";
+			execute(DS_currentYfinish);
+		
+			DS_dimensionX=DS_oldposXfinish-DS_oldposXstart; 
+			DS_dimensionY=DS_oldposYfinish-DS_oldposYstart; 
+			
+			DS_newposXstart=DS_oldposXstart+DS_relativeX;
+		
+			DS_newposYstart=DS_oldposYstart+DS_relativeY;	
+	
+
+		}
+		
+
+
+		if(DS_thisWindowType=="TEXT")
+		{
+
+			if(DS_startpos[1]>(DS_dimensionX-5) && DS_startpos[2]>(DS_dimensionY-5))
+			{
+			
+				DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+DS_endpos[1])); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart+DS_endpos[2]));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+			
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;
+							DS_win"//str(DS_windownumber)//"_X2=DS_newposXfinish;
+							DS_win"//str(DS_windownumber)//"_Y2=DS_newposYfinish;";
+
+			};
+		
+		}
+	
+		if(DS_thisWindowType=="IMAGE" || DS_thisWindowType=="DONALD")
+		{
+
+			/* NEEDS TO BE MADE A LITTLE MORE ELEGANT AND TO TAKE xmin,xmax,ymin,ymax INTO account */
+			if(DS_startpos[1]>950 && DS_startpos[2]<50)
+			{
+				
+				if(DS_endpos[2]>=1000)
+				{
+					
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart-((DS_endpos[2]-1000)*DS_unitY)));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				
+				}
+				else
+				{
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart-DS_relativeY));
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				};
+				if(DS_endpos[2]<0)
+				{
+					
+					DS_moveWindow="%eden\n 	
+					DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+(DS_endpos[1]*DS_unitX))); 
+					DS_win"//str(DS_windownumber)//"_Y1=DS_oldposYstart;
+					DS_win"//str(DS_windownumber)//"_X2=DS_max(DS_oldposXstart,(DS_oldposXfinish+DS_relativeX));
+					DS_win"//str(DS_windownumber)//"_Y2=DS_max(DS_oldposYstart,(DS_oldposYfinish+DS_relativeY));";
+
+				
+				}
+			
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;
+							DS_win"//str(DS_windownumber)//"_X2=DS_newposXfinish;
+							DS_win"//str(DS_windownumber)//"_Y2=DS_newposYfinish;";
+
+			};
+
+
+		}
+		
+		if(DS_thisWindowType=="TEXTBOX")
+		{
+
+			if(DS_startpos[1]>(DS_dimensionX-10) && DS_startpos[2]>(DS_dimensionY-10))
+			{
+					if(DS_endpos[1]>0 && DS_endpos[2]>0)
+					{
+						DS_moveWindow="%eden\n 	
+						DS_win"//str(DS_windownumber)//"_X1=DS_min(DS_oldposXstart,(DS_oldposXstart+DS_endpos[1])); 
+						DS_win"//str(DS_windownumber)//"_Y1=DS_min(DS_oldposYstart,(DS_oldposYstart+DS_endpos[2]));
+						DS_win"//str(DS_windownumber)//"_X2=DS_windowWidth+(DS_relativeX/DS_thisFontWidth);
+						DS_win"//str(DS_windownumber)//"_Y2=DS_windowHeight+(DS_relativeY/DS_thisFontHeight);";
+					}
+
+	
+					-(DS_endpos[1]/DS_thisFontWidth);
+			}
+			else
+			{	
+				DS_moveWindow="%eden\n 	DS_win"//str(DS_windownumber)//"_X1=DS_newposXstart; 
+							DS_win"//str(DS_windownumber)//"_Y1=DS_newposYstart;";
+
+			};
+		
+		}
+		
+		execute(DS_moveWindow);
+		
+	};
+
+}
+
+
+/* The display window for Mode Switching */
+
+%eden
+OpenDisplay("modeSwitcher", 300, 70);
+proc modeSwitcher_display_screen : modeSwitcher { DisplayScreen(&modeSwitcher, "modeSwitcher"); }
+
+
+%scout
+
+string DS_selectedColour="white";
+string DS_defaultColour="grey";
+
+string DS_createColour=DS_defaultColour;
+string DS_manipulateColour=DS_defaultColour;
+string DS_useColour=DS_selectedColour;
+string DS_clearColour=DS_defaultColour;
+
+string DS_TEXT_bgcolour=DS_selectedColour;
+string DS_TEXTBOX_bgcolour=DS_defaultColour;
+string DS_IMAGE_bgcolour=DS_defaultColour;
+string DS_DONALD_bgcolour=DS_defaultColour;
+
+string DS_CREATESLIDE_bgcolour=DS_selectedColour;
+string DS_NEXTSLIDE_bgcolour=DS_selectedColour;
+string DS_PREVSLIDE_bgcolour=DS_selectedColour;
+
+
+window DS_create= {
+    type: TEXT
+    frame: ([{5,5},{11.c,5+1.r}])
+    string: "  Create  "
+    sensitive: ON
+    bgcolour: DS_createColour	
+};
+
+window DS_manipulate= {
+    type: TEXT
+    frame: ([{5,10+1.r},{11.c,10+2.r}])
+    string: "Manipulate "
+    sensitive: ON
+    bgcolour: DS_manipulateColour
+};
+
+window DS_use= {
+    type: TEXT
+    frame: ([{5,15+2.r},{11.c,15+3.r}])
+    string: "    Use    "
+    sensitive: ON
+    bgcolour: DS_useColour
+};
+
+window DS_TEXT= {
+    type: TEXT
+    frame: ([{5+15.c,5},{5+26.c,5+1.r}])
+    string: "TEXT"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_TEXT_bgcolour
+};
+
+window DS_TEXTBOX= {
+    type: TEXT
+    frame: ([{5+15.c,10+1.r},{5+26.c,10+2.r}])
+    string: "TEXTBOX"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_TEXTBOX_bgcolour
+};
+
+window DS_IMAGE= {
+    type: TEXT
+    frame: ([{5+15.c,15+2.r},{5+26.c,15+3.r}])
+    string: "IMAGE"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_IMAGE_bgcolour
+};
+
+window DS_DONALD= {
+    type: TEXT
+    frame: ([{5+15.c,20+3.r},{5+26.c,20+4.r}])
+    string: "DONALD"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_DONALD_bgcolour
+};
+
+window DS_CREATESLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,5},{5+41.c,5+1.r}])
+    string: "New Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_CREATESLIDE_bgcolour
+};
+
+window DS_NEXTSLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,10+1.r},{5+41.c,10+2.r}])
+    string: "Next Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_NEXTSLIDE_bgcolour
+};
+
+window DS_PREVSLIDE= {
+    type: TEXT
+    frame: ([{5+30.c,15+2.r},{5+41.c,15+3.r}])
+    string: "Prev Slide"
+    alignment: CENTRE
+    sensitive: ON
+    bgcolour: DS_PREVSLIDE_bgcolour
+};
+
+display modeSwitcher=<DS_create/DS_manipulate/DS_use/DS_TEXT/DS_TEXTBOX/DS_IMAGE/DS_DONALD/DS_CREATESLIDE/DS_NEXTSLIDE/DS_PREVSLIDE>;
+
+%eden
+
+DS_mode=DS_useMode;
+
+DS_selectCreate is DS_modeSelection(DS_create_mouse_1,DS_createMode);
+DS_selectManipulate is DS_modeSelection(DS_manipulate_mouse_1,DS_manipulateMode);
+DS_selectUse is DS_modeSelection(DS_use_mouse_1,DS_useMode);
+
+
+func DS_modeSelection {
+
+	para mouse,i;
+
+	DS_mode=i;
+
+	DS_clicked=0;
+
+	if(DS_mode==DS_createMode)
+		DS_createColour=DS_selectedColour; else DS_createColour=DS_defaultColour;
+	
+	if(DS_mode==DS_manipulateMode)
+		DS_manipulateColour=DS_selectedColour; else DS_manipulateColour=DS_defaultColour;
+	
+	if(DS_mode==DS_useMode)
+		DS_useColour=DS_selectedColour; else DS_useColour=DS_defaultColour;
+
+
+	return i;
+}
+
+
+DS_type="TEXT";
+
+DS_selectTEXT is DS_windowtypeselection(DS_TEXT_mouse_1,"TEXT");
+DS_selectTEXTBOX is DS_windowtypeselection(DS_TEXTBOX_mouse_1,"TEXTBOX");
+DS_selectIMAGE is DS_windowtypeselection(DS_IMAGE_mouse_1,"IMAGE");
+DS_selectDONALD is DS_windowtypeselection(DS_DONALD_mouse_1,"DONALD");
+
+
+func DS_windowtypeselection {
+
+	para mouse,type;
+
+	DS_windowtype=type;
+
+	if(DS_windowtype=="TEXT")
+		DS_TEXT_bgcolour=DS_selectedColour; 
+	else 
+		DS_TEXT_bgcolour=DS_defaultColour;;
+	
+	if(DS_windowtype=="TEXTBOX")
+		DS_TEXTBOX_bgcolour=DS_selectedColour; 
+	else 
+		DS_TEXTBOX_bgcolour=DS_defaultColour;;
+	
+	if(DS_windowtype=="IMAGE")
+		DS_IMAGE_bgcolour=DS_selectedColour; 
+	else 
+		DS_IMAGE_bgcolour=DS_defaultColour;;	
+		
+	if(DS_windowtype=="DONALD")
+		DS_DONALD_bgcolour=DS_selectedColour; 
+	else 
+		DS_DONALD_bgcolour=DS_defaultColour;;
+
+}
+
+
+proc DS_createNewSlide : DS_CREATESLIDE_mouse_1 {
+	
+	if(DS_CREATESLIDE_mouse_1[2]==5)
+	{
+		DS_numberOfSlides++;
+	
+		execute("DS_slide"//str(DS_numberOfSlides)//"List=[\"DS_drawingboard\"];");
+
+		DS_currentSlideNumber=DS_numberOfSlides;
+	}
+}
+
+
+proc DS_nextSlide : DS_NEXTSLIDE_mouse_1 {
+
+	if(DS_NEXTSLIDE_mouse_1[2]==5)
+	{ 
+		if(DS_currentSlideNumber!=DS_numberOfSlides)
+		{
+			DS_currentSlideNumber++;
+		}
+		else
+		{	DS_numberOfSlides++;
+	
+			execute("DS_slide"//str(DS_numberOfSlides)//"List=[\"DS_drawingboard\"];");
+
+			DS_currentSlideNumber=DS_numberOfSlides;
+		};
+	}
+}
+
+proc DS_prevSlide : DS_PREVSLIDE_mouse_1 {
+
+	if(DS_PREVSLIDE_mouse_1[2]==5 && DS_currentSlideNumber!=1)
+	{
+		DS_currentSlideNumber--;
+	}
+
+}
+
+DS_clicked=0;
+
+
+func DS_circleSimple
+{
+        para  DS_xCentre,DS_yCentre,DS_circle_radius,DS_border_width;
+
+        auto x, y, r2;
+
+        DS_default_border=DS_border_width;
+
+        r2 = DS_circle_radius * DS_circle_radius;
+
+        for (x = -DS_circle_radius; x <= DS_circle_radius; x++)
+        {
+            y = int(nthroot((r2 - x*x), 2)+ 0.5);
+
+            DS_drawingboard_mouse_1=[1,4,0,DS_xCentre+x-1,DS_yCentre+y-1];
+            DS_drawingboard_mouse_1=[1,5,256,DS_xCentre+x,DS_yCentre+y];
+
+            DS_drawingboard_mouse_1=[1,4,0,DS_xCentre+x-1, DS_yCentre-y-1];
+            DS_drawingboard_mouse_1=[1,5,256,DS_xCentre+x, DS_yCentre-y];
+
+        }
+}
+
+
+/*
+proc DS_save_draft {
+
+	auto i,j;
+	fp=fopen("DS_Presentation_draft.txt", "w");
+	fprintf(fp,"autocalc=0;\n");
+	fclose(fp);
+
+	for(i=1;i<symboltable()#+1;i++)
+	{
+		if(substr((symboltable()[i][1]),1,3)=="DS_")
+		{	
+			writeln(symboldefinition(symboltable()[i][1]));
+			fp=fopen("DS_Presentation_draft.txt","a");
+			fprintf(fp,symboldefinition(symboltable()[i][1])//"\n"); 
+			fclose(fp);	
+	
+		}
+	}	
+
+	fp=fopen("DS_Presentation_draft.txt", "a");
+        fprintf(fp,"autocalc=1;\n");
+        fclose(fp);
+}
+
+
+
+
+func DS_textify {
+
+	para windowName;
+
+	DS_stringToBeExecuted="%eden\n "//windowName//"_string="//windowName//"_TEXT_1;";
+
+	execute(DS_stringToBeExecuted);
+
+	DS_stringToBeExecuted="%scout\n window "//
+			    windowName//" = {
+			    type: TEXT\n
+    			    frame: ([{"//windowName//"_X1,"//windowName//"_Y1},{"//windowName//"_X2,"//windowName//"_Y2}])\n
+    		  	    string: "//windowName//"_string\n
+    			    font: "//windowName//"_font\n
+    		  	    bgcolor: "//windowName//"_bgcolour\n
+    			    fgcolor: "//windowName//"_fgcolour\n
+    			    bdcolor: "//windowName//"_bdcolour\n
+    			    border: "//windowName//"_border\n
+    			    relief: "//windowName//"_relief\n
+    			    alignment: LEFT\n
+			    sensitive: ON+MOTION+ENTER\n
+			    };";
+
+	execute(DS_stringToBeExecuted);
+
+}
+
+*/

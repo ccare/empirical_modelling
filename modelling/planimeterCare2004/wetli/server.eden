@@ -1,0 +1,38 @@
+## ********************************************************
+##                      Linkage Server   
+## ********************************************************
+
+## Initialisation -----------------------------------------
+%eden
+EveryOneAllowed = FALSE;
+## --------------------------------------------------------
+
+## LSD for different Agents -------------------------------
+%lsd
+agent planimeter1
+oracle planimeter1_xy
+oracle inputRange_x
+oracle inputRange_y
+
+agent planimeter2
+oracle planimeter2_xy
+oracle inputRange_x
+oracle inputRange_y
+
+agent inputTable
+handle inputTable_xy
+handle inputRange_x
+handle inputRange_y
+%eden
+## --------------------------------------------------------
+
+## Linkages -----------------------------------------------
+%eden
+## procmacro ???
+proc propInputTable: inputTable_xy {
+  ## planimeter1 gets the data from the input table
+  todo("planimeter1_xy = inputTable_xy;");
+  ## planimeter2 gets the data from the input table
+  todo("planimeter2_xy = inputTable_xy;");
+}
+## --------------------------------------------------------

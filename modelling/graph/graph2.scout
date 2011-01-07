@@ -1,0 +1,32 @@
+%scout
+window DoNaLDdefaultWin;
+display donaldscreen;
+integer donaldscreen_height;
+integer donaldscreen_width;
+window graphWindow;
+display screen;
+integer screen_height;
+integer screen_width;
+window DoNaLDdefaultWin = {
+    type: DONALD
+    box: [{0, 0}, {500, 500}]
+    pict: "DoNaLD"
+    border: 1
+};
+integer donaldscreen_height = 500;
+integer donaldscreen_width = 500;
+window graphWindow = {
+    type: DONALD
+    box: [{10, 10}, {screen_width - 10, screen_height - 10}]
+    pict: "viewGraph"
+    xmin: 0
+    ymin: 0
+    xmax: screen_width - 20
+    ymax: screen_height - 20
+    bgcolor: "white"
+    border: 2
+    sensitive: ON
+};
+display screen = <graphWindow>;
+integer screen_height = 500;
+integer screen_width = 500;

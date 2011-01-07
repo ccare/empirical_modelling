@@ -1,0 +1,95 @@
+
+%donald
+int year,start,end,displayWidth
+year = 5
+start = 1900
+end = 2000
+displayWidth = 1000
+year = displayWidth div (end-start)
+
+%eden
+timeLineMacroString = "
+%donald
+openshape timeline?1
+within timeline?1 {
+	line l
+	point l1,l2
+	int range,start,yPos,end
+	l1 = {(start-~/start)*~/year,yPos}
+	l2 = l1 + {~/year*range,0}
+	l = [l1,l2]
+	range = end-start
+	start = ?2
+	end = ?3
+	yPos = ?4
+	label title
+	title = label(\"?5\",l1+{0,20})
+}
+";
+
+%eden
+timePointMacroString = "
+%donald
+openshape timePoint?1 
+within timePoint?1 {
+	point p
+	circle c
+  c = circle(p,2)
+	p = ~/?3/l1+{(?2-~/?3/start)*~/year,0}
+	label l
+	l = label(\"?1\",p+{0,-20})
+}
+";
+
+execute(macro(timeLineMacroString,"1","1920","1980","800","General"));
+execute(macro(timeLineMacroString,"2","1920","1980","700","Lightning Empiricist Volumes"));
+execute(macro(timeLineMacroString,"3","1920","1980","600","Philbrick Patents"));
+
+execute(macro(timePointMacroString,"1920","1920","timeline1"));
+execute(macro(timePointMacroString,"1930","1930","timeline1"));
+execute(macro(timePointMacroString,"1940","1940","timeline1"));
+execute(macro(timePointMacroString,"1950","1950","timeline1"));
+execute(macro(timePointMacroString,"1960","1960","timeline1"));
+execute(macro(timePointMacroString,"1970","1970","timeline1"));
+execute(macro(timePointMacroString,"1980","1980","timeline1"));
+
+
+execute(macro(timePointMacroString,"1","1952","timeline2"));
+execute(macro(timePointMacroString,"11","1963","timeline2"));
+execute(macro(timePointMacroString,"12","1964","timeline2"));
+execute(macro(timePointMacroString,"13","1965","timeline2"));
+execute(macro(timePointMacroString,"17","1969","timeline2"));
+
+execute(macro(timePointMacroString,"P1944","1944","timeline3"));
+execute(macro(timePointMacroString,"P1950","1950","timeline3"));
+execute(macro(timePointMacroString,"P1968","1968","timeline3"));
+
+%scout
+window DoNaLDdefaultWin = {
+    type: DONALD
+    box: [{0, 0}, {donaldscreen_width, donaldscreen_width}]
+    pict: "DoNaLD"
+    border: 1
+};
+
+## %eden
+## points = [["1930","timeline1"]];
+## proc updatePoints : points,timePointMacroString {
+## 	auto i;
+## 	for (i=1;i<=points#;i++) {
+## 		execute(macro(timePointMacroString,str(i),points[i][1],points[i][2]));
+## 	}
+## }
+
+## 	
+## %aop
+## notation %timeline = <TIME_parser1> split on "\n";
+## <TIME_parser1> = <TIME_parser2> "=" <TIME_parser4>
+##                : do {writeln(macro(timePointMacroString,"$p1","$p2));");} later;
+## <TIME_parser2> = "point" <TIME_parser3> : do {$v = $p1;} later;
+## <TIME_parser3> = ([a-zA-Z]+[a-zA-Z0-9]*) : do {$v = $j;} now;
+## <TIME_parser4> = <TIME_parser5> "on" <TIME_parser3>
+## 								: do {$v = $p1//",\""//$p2//"\"";} later;
+## <TIME_parser5> = ([0-9]+) <TIME_parser3> : do {$v = "$t";} now;
+## %timeline
+## point a = 1940 on timeline1

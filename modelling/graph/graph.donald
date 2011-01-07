@@ -1,0 +1,24 @@
+%donald
+viewport viewGraph
+arc zz
+point mid
+line z
+point ab
+circle B
+int w
+circle A
+line AB
+point b, a
+
+zz = [a, b, 80]
+mid = {20, 20}
+z = perpend(ab, AB)
+ab = midpoint(AB)
+B = circle(b, w)
+w = 5
+A = circle(a, w)
+AB = [a, b]
+b = {100, 100}
+a = {10, 10}
+
+

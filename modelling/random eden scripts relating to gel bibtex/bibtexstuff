@@ -1,0 +1,121 @@
+%scout
+string bibitem_bgcolour = "#E3E369";
+string bibitem_selected_bgcolour = "white";
+string bibitem_bdcolour = "black";
+string bibitem_fgcolour = "black";
+integer bibitem_border = 1;
+string bibitem_relief = "flat";
+string bibitem_font = "{courier 10}";
+
+%eden
+bibitem_macro = "
+%scout
+string bibitem_?1_title;
+integer bibitem_?1_selected = 0;
+integer bibitem_?1_minimised;
+integer bibitem_?1_name_X1;
+integer bibitem_?1_name_Y1;
+integer bibitem_?1_name_X2;
+integer bibitem_?1_name_Y2;
+
+window bibitem_?1_name = {
+    type: TEXT
+    frame: ([{bibitem_?1_name_X1, bibitem_?1_name_Y1}, {bibitem_?1_name_X2, bibitem_?1_name_Y2}])
+    string: bibitem_?1_title
+    font: bibitem_font
+    bgcolor: if bibitem_?1_selected then bibitem_selected_bgcolour else bibitem_bgcolour endif
+    fgcolor: bibitem_fgcolour
+    bdcolor: bibitem_bdcolour
+    border: bibitem_border
+    relief: bibitem_relief
+    alignment: LEFT
+    sensitive: ON
+};
+integer bibitem_?1_showHide_X1;
+integer bibitem_?1_showHide_Y1;
+integer bibitem_?1_showHide_X2;
+integer bibitem_?1_showHide_Y2;
+
+window bibitem_?1_showHide = {
+    type: TEXT
+    frame: ([{bibitem_?1_showHide_X1, bibitem_?1_showHide_Y1}, {bibitem_?1_showHide_X2, bibitem_?1_showHide_Y2}])
+    string: \"\"
+    font: bibitem_font
+    bgcolor: if bibitem_?1_minimised then \"green\" else \"red\" endif
+    fgcolor: bibitem_fgcolour
+    bdcolor: bibitem_bdcolour
+    border: bibitem_border
+    relief: bibitem_relief
+    alignment: LEFT
+    sensitive: ON
+};
+integer bibitem_?1_content_X1;
+integer bibitem_?1_content_Y1;
+integer bibitem_?1_content_X2;
+integer bibitem_?1_content_Y2;
+
+window bibitem_?1_content = {
+    type: TEXT
+    frame: ([{bibitem_?1_content_X1, bibitem_?1_content_Y1}, {bibitem_?1_content_X2, bibitem_?1_content_Y2}])
+    string: \"stuff goes here\"
+    font: bibitem_font
+    bgcolor: bibitem_bgcolour
+    fgcolor: bibitem_fgcolour
+    bdcolor: bibitem_bdcolour
+    border: if bibitem_?1_minimised then bibitem_border else 0 endif
+    relief: bibitem_relief
+    alignment: LEFT
+    sensitive: ON
+};
+
+bibitem_?1_title = \"\";
+
+%scout
+bibitem_?1_name_X1 = 20;
+bibitem_?1_name_Y1 = 20;
+bibitem_?1_name_Y2 = bibitem_?1_name_Y1 + 1.r;
+bibitem_?1_name_X2 = bibitem_?1_name_X1 + 20.c;
+
+bibitem_?1_showHide_X1 = bibitem_?1_name_X2 + 0.5.r;
+bibitem_?1_showHide_X2 = bibitem_?1_showHide_X1 + 1.r;
+bibitem_?1_showHide_Y1 = bibitem_?1_name_Y1;
+bibitem_?1_showHide_Y2 = bibitem_?1_name_Y2;
+
+bibitem_?1_minimised = 1;
+bibitem_?1_content_Y1 = if bibitem_?1_minimised then bibitem_?1_name_Y2 + 0.5.r else bibitem_?1_name_Y1 endif;
+bibitem_?1_content_X1 = if bibitem_?1_minimised then bibitem_?1_name_X1 else bibitem_?1_name_Y1 endif;
+bibitem_?1_content_X2 = if bibitem_?1_minimised then bibitem_?1_showHide_X2 else bibitem_?1_name_Y1 endif;
+bibitem_?1_content_Y2 = if bibitem_?1_minimised then bibitem_?1_content_Y1 + 10.r else bibitem_?1_name_Y1 endif;
+
+%eden
+proc bibitem_?1_showhide : ~bibitem_?1_showHide_mouse_1 {
+	if (~bibitem_?1_showHide_mouse_1[2] == 4)
+		if (bibitem_?1_minimised == 1) bibitem_?1_minimised = 0; else bibitem_?1_minimised = 1;
+}
+
+proc bibitem_?1_move : ~bibitem_?1_name_mouse_1 {
+	if (~bibitem_?1_name_mouse_1[2] == 4) {
+		bibitem_?1_selected = true;
+		eager();
+		eager();
+		tmpx = ~bibitem_?1_name_mouse_1[4];
+		tmpy = ~bibitem_?1_name_mouse_1[5];
+	}
+	else {
+		bibitem_?1_name_X1 = bibitem_?1_name_X1 + ~bibitem_?1_name_mouse_1[4] - int(tmpx);
+		bibitem_?1_name_Y1 = bibitem_?1_name_Y1 + ~bibitem_?1_name_mouse_1[5] - int(tmpy);
+		tmpx = 0;
+		tmpy = 0;
+		if (bibitem_?1_name_X1 <0) bibitem_?1_name_X1 = 0;
+		if (bibitem_?1_name_Y1 <0) bibitem_?1_name_Y1 = 0;
+		bibitem_?1_selected = false;
+	}
+}
+%scout
+display oldscreen;
+%eden
+oldscreen = screen // [];
+%scout
+screen = oldscreen & <bibitem_?1_name/bibitem_?1_content/bibitem_?1_showHide>;
+
+";

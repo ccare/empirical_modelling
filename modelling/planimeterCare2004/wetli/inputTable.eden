@@ -1,0 +1,365 @@
+## ********************************************************
+##                      Input Table   
+## ********************************************************
+
+## Dimensions ---------------------------------------------
+%eden
+inputRange_x = [-5,5];
+inputRange_y = [-5,5];
+inputTable_xy=[0,0];
+windowWidth is smallest(screen_height-indent_y,screen_width-indent_x);
+indent_x = 100;
+indent_y = 50;
+indent=10;
+## --------------------------------------------------------
+
+## Register Dimensions in Scout and Donald ----------------
+%scout
+real minX,maxX,minY,maxY;
+%donald
+real minX,maxX,minY,maxY
+
+%eden
+minX is inputRange_x[1];
+maxX is inputRange_x[2];
+minY is inputRange_y[1];
+maxY is inputRange_y[2];
+_minX is inputRange_x[1];
+_maxX is inputRange_x[2];
+_minY is inputRange_y[1];
+_maxY is inputRange_y[2];
+## --------------------------------------------------------
+
+## Input Window -------------------------------------------
+%scout
+
+
+integer indent,indent_x,indent_y,width,windowWidth;
+width= windowWidth-indent;
+
+integer max_x = indent_x+width;
+integer max_y = indent_y+width;
+
+window Title = {
+	type: TEXT,
+	frame: ([{0,10},{windowWidth+indent_x,indent_y}]),
+	string: "Planimeter Input Table",
+	font: "{Helvetica 20 bold}",
+	alignment: CENTRE,
+	border: 0
+}; 
+
+
+window drawPanel = {
+	box:	[{indent_x,indent_y}, {max_x,max_y}],
+	pict:	"input",
+	type:	DONALD,
+	xmin:	minX,
+	xmax:	maxX,
+	ymin:	minY,
+	ymax:	maxY,
+	border:	0,
+	bgcolour: "white",
+	sensitive: MOTION
+};
+
+window Title1 = {
+	type: TEXT,
+	frame: ([{10,indent_y+10},{indent_x-10,indent_y+25}]),
+	string: "Draw",
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 0
+};
+
+integer buttonIndent=(indent_x-50)/2;
+
+window drawSquareButton = {
+	type: TEXT,
+	frame: ([{buttonIndent,indent_y+30},{indent_x-buttonIndent,indent_y+45}]),
+	sensitive: ON,
+	string: "Square",
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 1
+};
+
+window drawTriangleButton = {
+	type: TEXT,
+	frame: ([{buttonIndent,indent_y+55},{indent_x-buttonIndent,indent_y+70}]),
+	sensitive: ON,
+	string: "Triangle",
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 1
+};
+
+window Title2 = {
+	type: TEXT,
+	frame: ([{10,indent_y+90},{indent_x-10,indent_y+105}]),
+	string: "Position",
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 0
+};
+window posZeroButton = {
+	type: TEXT,
+	frame: ([{buttonIndent,indent_y+110},{indent_x-buttonIndent,indent_y+125}]),
+	sensitive: ON,
+	string: "(0,0)",
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 1
+};
+
+string posStr;
+
+window posButton = {
+	type: TEXT,
+	frame: ([{buttonIndent,indent_y+135},{indent_x-buttonIndent,indent_y+150}]),
+	sensitive: ON,
+	string: posStr,
+	font: "{Helvetica 12 bold}",
+	alignment: CENTRE,
+	border: 1
+};
+
+screen= <Title/drawPanel / Title1/Title2/posZeroButton/posButton/drawSquareButton/drawTriangleButton>;
+## --------------------------------------------------------
+
+## Axis ---------------------------------------------------
+%donald
+viewport input
+
+line xAxis,yAxis
+xAxis = [{0,minY},{0,maxY}]
+yAxis = [{minX,0},{maxX,0}]
+
+%eden
+A_xAxis = "linewidth=2";
+A_yAxis = "linewidth=2";
+## --------------------------------------------------------
+
+## Marker -------------------------------------------------
+%donald
+viewport input
+
+openshape marker
+
+within marker {
+  point centre
+  line x,y
+  real size
+  
+  size=0.5
+  centre = {1,1}
+  
+  x = [centre-{0,size},centre+{0,size}]
+  y = [centre-{size,0},centre+{size,0}]
+}
+
+%eden
+A_marker_x = "linewidth=2,color=red";
+A_marker_y = "linewidth=2,color=red";
+_marker_centre is cart(inputTable_xy[1],inputTable_xy[2]);
+_marker_size is 0.02*(inputRange_x[2]-inputRange_x[1]);
+## --------------------------------------------------------
+
+## Dotted Lines -------------------------------------------
+%eden
+proc Ylines: inputRange_x {
+  for(i=minX+1;i<maxX;i++) {
+    d1 = strcat("line xAxis",str(i-minX));
+    d2 = strcat("xAxis",str(i-minX)," = [{",str(i),",minY},{",str(i),",maxY}]");
+    e = strcat("A_xAxis",str(i-minX),"  = \"linestyle=dotted\";");
+    cmd = strcat("%donald\n",d1,"\n",d2,"\n","%eden\n",e,"\n");
+    execute(cmd);
+  }
+}
+
+%eden
+proc Xlines: inputRange_y {
+  for(i=minY+1;i<maxY;i++) {
+    d1 = strcat("line yAxis",str(i-minY));
+    d2 = strcat("yAxis",str(i-minY)," = [{minX,",str(i),"},{maxX,",str(i),"}]");
+    e = strcat("A_yAxis",str(i-minY),"  = \"linestyle=dotted\";");
+    cmd = strcat("%donald\n",d1,"\n",d2,"\n","%eden\n",e,"\n");
+    execute(cmd);
+  }
+}
+## --------------------------------------------------------
+
+## Network Procedures -------------------------------------
+%eden
+proc update:drawPanel_mousePos 
+{
+cmd= strcat("%eden\n","inputTable_xy=[",str(drawPanel_mousePos[1]),",",str(drawPanel_mousePos[2]),"];");
+sendServer("",cmd);
+execute(cmd);
+}
+
+proc sendRange_x:inputRange_x
+{
+cmd= strcat("%eden\n","inputRange_x = ",str(inputRange_x),";");
+sendServer("",cmd);
+}
+
+proc sendRange_y:inputRange_y
+{
+cmd= strcat("%eden\n","inputRange_y = ",str(inputRange_y),";");
+sendServer("",cmd);
+}
+## --------------------------------------------------------
+
+## Function: Smallest -------------------------------------
+%eden
+## return smallest of two arguments
+func smallest {
+ if ($1 < $2) { return $1;}
+ else {return $2;}
+}
+## --------------------------------------------------------
+
+## Button procs -------------------------------------------
+%eden
+
+
+
+proc drawSquare: ~drawSquareButton_mouse_1 {
+  if (~drawSquareButton_mouse_1[2] == 4) {
+    rectangle(1,1);
+  }
+}
+proc KdrawSquare: ~drawSquareButton_key_1 {
+  if (~drawSquareButton_key_1[2] == 2) {
+    rectangle(1,1);
+  }
+}
+
+proc KposZero: ~posZeroButton_key_1 {
+  posZero();
+}
+
+proc posZero: ~posZeroButton_mouse_1 {
+   sendServer("","inputTable_xy=[0,0];");
+   inputTable_xy=[0,0];
+}
+
+proc KdrawTri: ~drawTriangleButton_key_1 {
+  if (~drawTriangleButton_key_1[2]==2) {
+     triangle(1);
+  }
+}
+proc drawTri: ~drawTriangleButton_mouse_1{
+  if (~drawTriangleButton_mouse_1[2] == 4) {
+     triangle(1);
+  }
+}
+
+## Positioning --------------------------------------------
+%eden
+posStr is strcat("(",str(intX),",",str(intY),")");
+intX=0;
+intY=0;
+
+func round {
+  if ($1>0) {return int($1+0.5);}
+  return int($1-0.5);
+}
+
+proc posSave: ~posButton_key_1 {
+  if (~posButton_key_1[2]==2) {
+    intX = round(inputTable_xy[1]);
+    intY = round(inputTable_xy[2]);
+   }
+}
+proc posRestore: ~posButton_mouse_1 {
+  if (~posButton_mouse_1[2] == 4) {
+    cmd=strcat("inputTable_xy[1]=",str(intX),";inputTable_xy[2]=",str(intY),";");
+    sendServer("",cmd);
+    execute(cmd);
+   }
+}
+
+## Remote Reset--------------------------------------------
+
+## --------------------------------------------------------
+
+
+## --------------------------------------------------------
+proc rectangle {
+  startX=inputTable_xy[1];
+  startY=inputTable_xy[2];
+  endX=startX+$1;
+  endY=startY+$2;
+  for(i=startY;i<=endY;i=i+0.1) {
+    cmd = strcat("inputTable_xy=[",str(startX),",",str(i),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+  for(i=startX;i<=endX;i=i+0.1) {
+    cmd = strcat("inputTable_xy=[",str(i),",",str(endY),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+    for(i=endY;i>=startY;i=i-0.1) {
+    cmd = strcat("inputTable_xy=[",str(endX),",",str(i),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+
+  for(i=endX;i>=startX;i=i-0.1) {
+    cmd = strcat("inputTable_xy=[",str(i),",",str(startY),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+  cmd = strcat("inputTable_xy=[",str(startX),",",str(startY),"];");
+  sendServer("",cmd);
+  execute(cmd);
+  eager();
+}
+
+## --------------------------------------------------------
+
+## Draw triangle -------------------------------------
+%eden
+proc triangle {
+  height=$1;
+  startX=inputTable_xy[1];
+  startY=inputTable_xy[2];
+  endX=startX+height;
+  endY=startY+height;
+  for(i=0;i<=height;i=i+0.1) {
+    cmd = strcat("inputTable_xy=[",str(startX+i),",",str(startY+i),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+}
+for(i=endY;i>=startY;i=i-0.1) {
+    cmd = strcat("inputTable_xy=[",str(endX),",",str(i),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+  for(i=endX;i>=startX;i=i-0.1) {
+    cmd = strcat("inputTable_xy=[",str(i),",",str(startY),"];");
+    sendServer("",cmd);
+    execute(cmd);
+    eager();
+    system("sleep 1");
+  }
+  writeln("finished");
+}
+
+
+## --------------------------------------------------------

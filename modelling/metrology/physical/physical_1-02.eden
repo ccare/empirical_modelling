@@ -1,0 +1,734 @@
+##==============================================================================
+##                                  %physical                                 ##
+##                                                                            ##
+##      A definitive notation that supports dimensionality of observables     ##
+##                                                                            ##
+## Charles Care                       v1.02                      January 2005 ##
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Install Agent-oriented parser
+##------------------------------------------------------------------------------
+%eden
+cd("aop_v204");
+include("Run.e");
+cd("..");
+
+##------------------------------------------------------------------------------
+## Constants
+##------------------------------------------------------------------------------
+PH_notationName="%physical";
+PH_FUNCTION = "FUNCTION";
+PH_PROTECT = "protect against undefined dimension";
+
+##------------------------------------------------------------------------------
+## Blocks
+##------------------------------------------------------------------------------
+bras = [ ["(", ")"], ["bras"] ];
+cbras = [ ["{", "}"], ["bras"] ];
+addblocks("cbras");
+comment = [ ["/*", "*/"], [] ];
+addblocks("comment");
+
+##------------------------------------------------------------------------------
+## Top-Level Rules
+##------------------------------------------------------------------------------
+
+## Initial Rule
+PHparse_init = [";", "PHparse_stm", ["cbras","comment"]];
+
+## Split statements by ";" 
+PHparse_stm = ["suffix", ";", "PHparse_stm2",
+			[ "ignore", ["bras","cbras","comment"] ],
+			["fail", "PHparse_error"] ];
+
+PHparse_stm2 = ["pivot",";",["PHparse_comment","PHparse_comment"],
+			[ "ignore", ["bras","cbras","comment"] ],
+			["fail","PHparse_comment"]];
+
+## General Error Case
+PHparse_error = [ "read_all", [], 
+		["action",
+			["now", "error(\"Not a valid " // PH_notationName 
+				// " definition or command.\n\n\");"]]];
+
+##------------------------------------------------------------------------------
+## Comments: use double ## for one-line comments
+##------------------------------------------------------------------------------
+
+PHparse_comment = [ "prefix", "##", "PHparse_comment2", 
+			[ "fail", "PHparse_query"]];
+
+PHparse_comment2 = [ "read_all",[],[]];
+
+##------------------------------------------------------------------------------
+## Query
+##
+## This allows the ? operator to be used to query values (as in eden)
+##------------------------------------------------------------------------------
+
+PHparse_query = [ "prefix", "?", "PHparse_name", [ "fail", "PHparse_newUnit"], 
+			[ "action",["later","PH_query($p1[1],$p1[2]);"]]];
+
+proc PH_query {
+	para val,dim;
+	auto name,formula;
+	name=regreplace("PH_val_", "", val);
+	if (`val` == @) {execute(val // " is @;");}
+	formula=regreplace("PH_val_", "", symboltext(val));	
+	formula=regreplace("PH_dim_", "", formula);	
+	formula=regreplace("\[[0-9]+\]", "", formula);
+	formula=regreplace(" ", "", formula);
+	## Different display if querying a function
+	if (substr(formula,1,6) != "PH_fun") {
+		writeln(name // " is " // formula);
+		writeln("current value of " // name // " is " // str(`val`)
+				 // " " // PH_dimensionString(`dim`) //
+				 " (dimension vector: " // str(`dim`) // ")");
+	} else {
+		writeln(name // " is a " // PH_notationName // " function");
+		writeln(name // " is " // 
+			symboltext(regreplace(";", "", formula)));
+	}
+}
+			 	
+##------------------------------------------------------------------------------
+## Add unit
+##
+## User defined unit
+##------------------------------------------------------------------------------
+
+PHparse_newUnit =[ "prefix", "new unit", "PHparse_newUnit2", 
+					[ "fail", "PHparse_edenDefn"],  
+					[ "action",["later","PH_addNewUnit($p1);"]]];
+
+PHparse_newUnit2 = [ "pivot", "=", ["PHparse_newUnitName", "PHparse_newUnitDefn"],
+					[ "ignore", ["bras","cbras"] ], 
+					[ "fail", "PHparse_error"], 
+					[ "action", 
+			 		["later",
+			 		"$v = $p1 // [str($p2)];"]]];
+			 		
+PHparse_newUnitDefn = [ "pivot", " ", ["PHparse_value", "PHparse_unit"],
+					[ "ignore", ["bras","cbras"] ], 
+					[ "fail", "PHparse_unit"], 
+					[ "action", 
+			 		["later",
+			 		"$v = [\"scale_\",$p1] // $p2;"]]];
+			 		
+PHparse_newUnitName = [ "literal_re", "[a-z,A-Z]+", 
+			["fail","PHparse_error"],
+			["action",
+				["now","$v=[\"$t\"];"]]];
+				
+proc PH_addNewUnit {
+	para unit; ## a list of the form [unit,defn]
+	PH_userUnits=[[unit[1],regreplace("\"","\\\"",unit[2])]];
+}
+
+##------------------------------------------------------------------------------
+## Link to external eden observable
+##
+## eden{NAME} = NEW FUNCTION | FUNCTION | EXPRESSION
+##------------------------------------------------------------------------------
+
+PHparse_edenDefn = [ "prefix", "eden{", "PHparse_edenDefn2",
+				[ "fail", "PHparse_defn"],
+                       		["action",
+				  ["later","PH_addEdenDefn($p1[1],$p1[2][1]);"]]];	
+
+PHparse_edenDefn2 = [ "pivot", "=", 
+				["PHparse_edenDefn3","PHparse_func"],
+				[ "fail", "PHparse_error"],
+                        	["action", ["later","$v=[$p1,$p2];"]]];	
+				  
+PHparse_edenDefn3 = [ "suffix", "}", "PHparse_edenDefn4",
+				[ "fail", "PHparse_error"],
+                        	["action", ["later","$v=$p1;"]]];	
+
+PHparse_edenDefn4 = [ "read_all", [],
+				["action",
+				["now","$v=\"$t\";"]]];
+
+				
+proc PH_addEdenDefn {
+	para a,b;	
+	execute(a // " is " // b // ";");
+}			 
+##------------------------------------------------------------------------------
+## Definiton
+##
+## NAME = NEW FUNCTION | FUNCTION | EXPRESSION
+##------------------------------------------------------------------------------
+
+PHparse_defn = [ "pivot", "=", ["PHparse_name", "PHparse_funcDef"],
+			[ "ignore", ["bras","cbras"] ], 
+			[ "fail", "PHparse_error"], 
+			[ "action", 
+			 ["later",
+			 "PH_makeRedefiniton($p1,$p2);"]]];
+
+proc PH_makeRedefiniton {
+	para lhs,rhs;
+	auto lhsVal,lhsDim,rhsVal,rhsDim;
+	auto dimensionPred;
+	
+	lhsVal = lhs[1];
+	lhsDim = lhs[2];
+	rhsVal = rhs[1];
+	rhsDim = rhs[2];
+	
+	## formula for dimension
+	execute(lhsDim// " is " //rhsDim// ";");
+
+	## predicate to check that a dimension is not defined
+	##  -- protects against providing a meaningless value
+	##     this is only needed for certain operators
+	##     if there is a third term in the list representing
+	##     the rhs then we need it.
+	
+	if (rhs# > 2) {
+		dimensionPred = "(" // lhsDim // " != @)";
+	
+		## formula for value
+		execute(lhsVal// " is " // dimensionPred // " ? "
+						// rhsVal // " : @;");
+		## set value of top-level eden string
+	} else {
+		## formula for value
+		execute(lhsVal// " is " //rhsVal// ";");
+	}
+
+}
+
+##------------------------------------------------------------------------------
+## Function Definition (new function)
+##------------------------------------------------------------------------------
+
+PHparse_funcDef = [ "prefix", "function", "PHparse_funcDef2",
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_func"],
+                        ["action",
+                          ["later","$v=[$p1,\"PH_FUNCTION\"];"]]];	 
+
+PHparse_funcDef2 = [ "pivot", "{", 
+			["PHparse_funcDefVars", "PHparse_funcDef3"],
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=\"PH_fun_$v\";
+			  PH_addFunction(\"PH_fun_$v\",$p1[1],$p1[2],$p2);"]]];
+			  
+PHparse_funcDef3 = [ "suffix", "}", "PHparse_funcDefBody",
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=$p1;"]]];	
+			  
+proc PH_addFunction {
+	para name,paraList,result,defns;
+	auto i,paraString,autoString,autoDefnString,executeStr;
+	
+	executeStr="func " // name // " {\n";	
+	autoString = result // "," // result // "_dim,"// result // "_val,";
+	autoDefnString = "";
+
+	if (paraList# > 0) { 
+		paraString="";	
+		
+		for(i=1;i<=paraList#;i++) {
+			paraString = paraString // paraList[i] // ",";
+			autoString = autoString // paraList[i] // "_val,"
+						// paraList[i] // "_dim,";
+			autoDefnString = autoDefnString 
+				// paraList[i] // "_val = " 
+					// paraList[i] // "[1];\n\t"
+				// paraList[i] // "_dim = " 
+					// paraList[i] // "[2];\n\t";
+		}
+		
+		## this leaves a trailing comma
+		paraString = PH_chop(paraString);
+		autoString = PH_chop(autoString);
+	}	
+
+	executeStr=executeStr//"\tpara " // paraString // ";\n";
+	executeStr=executeStr//"\tauto " // autoString // ";\n";
+	executeStr=executeStr//"\tauto multDim, divDim;\n";
+	executeStr=executeStr//"\tmultDim = PH_vectorAdd;\n";
+	executeStr=executeStr//"\tdivDim = PH_vectorMinus;\n";
+	executeStr=executeStr//"\t" // autoDefnString;
+	executeStr=executeStr//defns// "\n";
+	executeStr=executeStr//"\t\treturn [" // result // "_val," 
+							// result // "_dim];\n";
+	executeStr=executeStr//"}";
+	
+	execute(executeStr);
+}
+
+func PH_chop {
+	para str;
+	return substr(str,1,str#-1);
+}
+
+			  			
+PHparse_funcDefVars = [ "pivot", "->", 
+			["PHparse_funcDefParam", "PHparse_funcDefArg"],
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=[$p1] // $p2;"]]];
+			  
+PHparse_funcDefParam = [ "prefix", "(", "PHparse_funcDefParam2",
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=$p1;"]]];
+			  
+PHparse_funcDefParam2 = [ "suffix", ")", "PHparse_funcDefParam3",
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=$p1;"]]];	
+			  			
+PHparse_funcDefParam3 = [ "pivot", "," ,
+			["PHparse_funcDefArg","PHparse_funcDefParam3"],
+			["fail","PHparse_funcDefArg"],
+			["action",
+				["later","$v= $p1 // $p2;"]]];
+			  
+PHparse_funcDefArg = [ "literal_re","[a-z,A-Z]+[a-z,A-Z,0-9,_]*", 
+			["fail","PHparse_error"],
+			["action",
+				["now","$v=[\"$t\"];"]]];
+
+PHparse_funcDefBody = [ "pivot", "\"" , 
+			["PHparse_funcDefBody","PHparse_funcDefBody"],
+			["fail","PHparse_funcDefBody2"],
+			["action",
+				["later","$v= $p1 // \"\\\"\" // $p2;"]]];
+
+PHparse_funcDefBody2 = [ "read_all", [], 
+		["action",
+			["now", "$v=\"$t\";"]]];
+
+##------------------------------------------------------------------------------
+## Function Call (can be function or macro)
+##------------------------------------------------------------------------------
+
+PHparse_func = [ "prefix_re", "([a-zA-Z])+\\\(", "PHparse_func2",
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_expr"],
+                        ["action",
+                          ["later","$v=[\"PH_val_$t[\" // $p1[1] // \",\" // 
+			  		$p1[2] // \"])[1]\", 
+					\"PH_val_$t[\" // $p1[1] // \",\" //
+					$p1[2] // \"])[2]\"];"]]];
+
+			  
+PHparse_func2 = [ "suffix", ")", "PHparse_expr",
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_error"],
+                        ["action",
+                          ["later","$v = [$p1[1],$p1[2]];"]]];
+			
+##------------------------------------------------------------------------------
+## Expressions
+##------------------------------------------------------------------------------
+			  		  
+## Subtract: match "-" as operator and/or sign
+
+PHparse_expr = [ "pivot", "-", ["PHparse_null", "PHparse_expr"],
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_exprAdd"],
+                        ["action",
+                          ["later","if ($p1 != @) {$v=[$p1[1] // \" - \" // 
+				$p2[1], \"PH_dimensionComp(\" // $p1[2] // 
+				\",\" // $p2[2] // 
+				\")\",PH_PROTECT];} else {$v=[\"-\" 
+				// $p2[1],$p2[2]];};"]]];
+
+PHparse_null = [ "literal", "", ["fail", "PHparse_expr"], 
+			["action",["now",""]]];
+
+## Addition: match "+"
+
+PHparse_exprAdd = [ "pivot", "+", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_exprMult"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" + \" // $p2[1],
+			  \"PH_dimensionComp(\" // $p1[2] // \",\" // $p2[2] // 
+			  \")\",PH_PROTECT];"]]];
+
+## Mulitplication: match "*"
+			  
+PHparse_exprMult = [ "pivot", "*", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_exprDiv"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" * \" // $p2[1],
+			  \"PH_vectorAdd(\"// $p1[2] // \",\"// $p2[2] 
+			  // \")\"];"]]];
+
+## Division: match "/"
+
+PHparse_exprDiv = [ "pivot", "/", ["PHparse_expr", "PHparse_expr"],
+			[ "ignore", ["bras","cbras"] ],
+                        ["fail", "PHparse_paren"],
+                        ["action",
+                          ["later","$v=[$p1[1] // \" / \" // $p2[1],
+			  \"PH_vectorMinus(\"// $p1[2] // \",\"// $p2[2] 
+			  // \")\"];"]]];
+			  
+## Parentheses can contain sub-expressions
+			  
+PHparse_paren = [ "prefix","(","PHparse_paren2", ["fail","PHparse_literal"],
+			[ "ignore", ["cbras"] ],
+			["action",["later","$v = [\"(\" // $p1[1] // \")\",
+						\"(\" // $p1[2] // \")\"];"]]];
+			  
+PHparse_paren2 = [ "suffix",")","PHparse_expr", ["fail","PHparse_error"],
+			[ "ignore", ["cbras"] ], 
+			["action",["later","$v = $p1;"]]];
+			
+##------------------------------------------------------------------------------
+## Names and Literals
+##------------------------------------------------------------------------------
+
+## Match variable names - return their translated eden representations
+##			(one variable name for VALUE and one for DIMENSION)
+
+PHparse_name = [ "literal_re", "[a-z,A-Z]+[a-z,A-Z,0-9,_]*", 
+			["fail","PHparse_error"],
+			["action",
+				["now","$v=[\"PH_val_$t\",\"PH_dim_$t\"];"]]];
+
+## Literal - consists of a value and a dimension
+			
+
+PHparse_literal is PHparse_edenObservable;
+
+PHparse_literal2 = [ "pivot", " ", ["PHparse_value", "PHparse_unit"],
+			["fail", "PHparse_dimensionless"],
+			["action", 
+			  ["later","$v=[str($p1*PH_determineDimension($p2)[1]),
+			  		str(PH_determineDimension($p2)[2])];"
+			  	]]];
+
+## Allow an eden observable to be attached to  %physcial observable
+##	the eden observable is dimensionless so to add dimension (e.g mass)
+##	use the following:
+##		%physical
+##		aa = eden{an_eden_observable}; 
+##		a = aa * 1 kg
+
+PHparse_edenObservable = [ "prefix", "eden{", "PHparse_edenObservable2",
+				[ "fail", "PHparse_literal2"],
+                       		["action",
+				  ["later","$v=$p1;"]]];	
+
+PHparse_edenObservable2 = [ "suffix", "}", "PHparse_edenObservable3",
+				[ "fail", "PHparse_error"],
+                        	["action", ["later","$v=$p1;"]]];	
+
+PHparse_edenObservable3 = [ "read_all", [],
+				["action",
+				["now","$v=[\"$t\",\"[0,0,0,0,0,0,0]\"];"]]];
+
+
+## Dimensionless literal
+
+PHparse_dimensionless = [ "literal_re", "[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_name"],
+			["action", ["now","
+				$v=[\"$t\",\"[0,0,0,0,0,0,0]\"];"
+				]]];
+				
+
+## Match real numbers		
+				
+PHparse_value = [ "literal_re", "[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=$t;"]] ];
+
+##------------------------------------------------------------------------------
+## USER DEFINED UNITS
+##------------------------------------------------------------------------------
+
+PHparse_unit is (PH_userUnits# > 0) ? PHparse_userUnit : PHparse_unit1;
+PHparse_userUnit is PHparse_userUnit1;
+
+## Macro string
+##   ?1 is rule name e.g. PHparse_userUnit1
+##   ?2 is next rule name e.g.PHparse_userUnitN
+##   ?3 is the current unit e.g. ft
+##   ?4 is the current unit's dimension (as a base unit) e.g. m
+
+PH_newUnitRule = "
+?1 =  [ \"prefix\",\"?3{\",\"PHparse_exponent\", 
+			[\"fail\",\"?1a\"], 		
+			[\"action\",
+			[\"later\",
+			\"$v=PH_userUnitPower(?4,$p1[1]) // tail($p1);\"]]];
+			
+?1a =  [ \"prefix\",\"?3\",\"PHparse_unit\", 
+			[\"fail\",\"?2\"], 
+			[\"action\",
+			[\"later\",
+			\"$v=?4 // $p1;\"]]];\n";
+
+proc PH_updateUserUnits : PH_newUnitRule,PH_userUnits {
+	auto i,rule,n;
+	n=1;
+        if (PH_userUnits# > 0) {
+		for (i=1;i<=PH_userUnits#;i++) {
+		rule = "PHparse_userUnit" // str(n);
+			execute(macro(PH_newUnitRule,rule,
+			"PHparse_userUnit" // str(n+1),PH_userUnits[i][1],
+			PH_userUnits[i][2]));
+			n++;
+        	}
+	}
+        execute("PHparse_userUnit" // str(n) // " is " //
+	"PHparse_unit1;");
+}
+
+PH_userUnits=[];
+func PH_userUnitPower {
+	## Used to raise a derived unit to a certain power
+	## Assume that unitlist has the structure
+	##   [unit,power,unit,power,...] e.g. ["m_",1,"s_",-1]
+	para unitList,power;
+	auto i;
+		for (i=2;i<=unitList#;i=i+2) {
+		unitList[i] = unitList[i]*power;
+	}
+	return unitList;
+}
+##------------------------------------------------------------------------------
+## UNITS
+##------------------------------------------------------------------------------
+
+## UNITS: the parsing of the unit string creates a list of tags that
+##          are interpreted by a function (PH_determineDimension) later on.
+
+PHparse_unit1 = [ "prefix","mol{","PHparse_exponent", ["fail","PHparse_unit2"], 
+			["action",["later","$v=[\"mol_\"]//$p1;"]]];
+
+PHparse_unit2 = [ "prefix","kg{","PHparse_exponent", ["fail","PHparse_unit3"], 
+			["action",["later","$v=[\"kg_\"]//$p1;"]]];
+
+PHparse_unit3 = [ "prefix","s{","PHparse_exponent", ["fail","PHparse_unit4"], 
+			["action",["later","$v=[\"s_\"]//$p1;"]]];
+
+PHparse_unit4 = [ "prefix","A{","PHparse_exponent", ["fail","PHparse_unit5"], 
+			["action",["later","$v=[\"A_\"]//$p1;"]]];
+
+PHparse_unit5 = [ "prefix","K{","PHparse_exponent", ["fail","PHparse_unit6"], 
+			["action",["later","$v=[\"K_\"]//$p1;"]]];
+
+PHparse_unit6 = [ "prefix","m{","PHparse_exponent", ["fail","PHparse_unit7"], 
+			["action",["later","$v=[\"m_\"]//$p1;"]]];
+
+PHparse_unit7 = [ "prefix","cd{","PHparse_exponent", ["fail","PHparse_unit8"], 
+			["action",["later","$v=[\"cd_\"]//$p1;"]]]; 
+
+PHparse_unit8 = [ "prefix","mol","PHparse_unit", ["fail","PHparse_unit9"], 
+			["action",["later","$v=[\"mol_\",1]//$p1;"]]];
+
+PHparse_unit9 = [ "prefix","kg","PHparse_unit", ["fail","PHparse_unit10"], 
+			["action",["later","$v=[\"kg_\",1]//$p1;"]]];
+
+PHparse_unit10 = [ "prefix","s","PHparse_unit", ["fail","PHparse_unit11"], 
+			["action",["later","$v=[\"s_\",1]//$p1;"]]];
+
+PHparse_unit11 = [ "prefix","A","PHparse_unit", ["fail","PHparse_unit12"], 
+			["action",["later","$v=[\"A_\",1]//$p1;"]]];
+
+PHparse_unit12 = [ "prefix","K","PHparse_unit", ["fail","PHparse_unit13"], 
+			["action",["later","$v=[\"K_\",1]//$p1;"]]];
+
+PHparse_unit13 = [ "prefix","m","PHparse_unit", ["fail","PHparse_unit14"], 
+			["action",["later","$v=[\"m_\",1]//$p1;"]]];
+
+PHparse_unit14 = [ "prefix","cd","PHparse_unit", ["fail","PHparse_unit15"], 
+			["action",["later","$v=[\"cd_\",1]//$p1;"]]];
+
+PHparse_unit15 = [ "literal", "", ["fail", "PHparse_error"], 
+			["action",["now","$v=[];"]]];
+
+## Match exponents of units
+
+PHparse_exponent = [ "pivot", "}", ["PHparse_exponent2", "PHparse_unit"],
+			["fail", "PHparse_error"],
+			["action", 
+			  ["later","$v=[$p1]//$p2;"]]];
+			  
+PHparse_exponent2 = [ "literal_re", "(-)?[0-9]+(.[0-9]+)?" , 
+			["fail", "PHparse_error"],
+			["action", ["now","$v=$t;"]] ];
+
+##------------------------------------------------------------------------------
+## Add the notation to eden
+##------------------------------------------------------------------------------
+
+installAOP(PH_notationName, "PHparse_init");
+
+##------------------------------------------------------------------------------
+## Function to determine the dimension from the
+##   token list produced by the parser.
+##------------------------------------------------------------------------------
+
+func PH_determineDimension {
+	para unitList;
+	auto length,mass,time,current,temperature,ammount,luminous,i,scale;
+
+	length=0;
+	mass=0;
+	time=0;
+	current=0;
+	temperature=0;
+	ammount=0;
+	luminous=0;
+	## not a dimension but a scale factor
+	scale=1.0;
+	
+	for(i=1;i<=unitList#;i++) {
+		if (unitList[i] == "m") {length++;}
+		else if (unitList[i] == "m_") {i++;length += unitList[i];}
+		else if (unitList[i] == "kg") {mass++;}
+		else if (unitList[i] == "kg_") {i++;mass += unitList[i];}
+		else if (unitList[i] == "s") {time++;}
+		else if (unitList[i] == "s_") {i++;time += unitList[i];}
+		else if (unitList[i] == "A") {current++;}
+		else if (unitList[i] == "A_") {i++;current += unitList[i];}
+		else if (unitList[i] == "K") {temperature++;}
+		else if (unitList[i] == "K_") {i++;temperature += unitList[i];}
+		else if (unitList[i] == "mol") {ammount++;}
+		else if (unitList[i] == "mol_") {i++;ammount += unitList[i];}
+		else if (unitList[i] == "cd") {luminous++;}
+		else if (unitList[i] == "cd_") {i++;luminous += unitList[i];}
+		else if (unitList[i] == "scale_") {i++;scale = scale*unitList[i];}
+	}
+	return [scale,[length,mass,time,current,temperature,ammount,luminous]];
+}
+
+##------------------------------------------------------------------------------
+## Function to translate a dimension vector into a string
+##------------------------------------------------------------------------------
+
+## e.g
+##	[1,0,-1,0,0,0,0] -> "ms{-1}" (metres per second)
+
+
+func PH_dimensionString {
+	para vector;
+	auto m,kg,s,A,K,mol,cd;
+	
+	## Protect against the vector being undefined
+	if (vector == @) {
+		return "@";
+	}
+	
+	m="";
+	kg="";
+	s="";
+	A="";
+	K="";
+	mol="";
+	cd="";	
+	
+	## Go through each exponent in the vector
+	if (vector[1] !=0) {
+			m = (vector[1] == 1) ? "m" : "m{" // 
+							str(vector[1]) // "}";
+	}
+	if (vector[2] !=0) {	
+			kg = (vector[2] == 1) ? "kg" : "kg{" // 
+							str(vector[2]) // "}";
+	}
+	if (vector[3] !=0) {
+			s = (vector[3] == 1) ? "s" : "s{" // 
+							str(vector[3]) // "}";
+	}
+	if (vector[4] !=0) {
+			A = (vector[4] == 1) ? "A" : "A{" // 
+							str(vector[4]) // "}";
+	}
+	if (vector[5] !=0) {			
+			K = (vector[5] == 1) ? "K" : "K{" // 
+							str(vector[5]) // "}";
+	}
+	if (vector[6] !=0) {
+			mol = (vector[6] == 1) ? "mol" : "mol{" // 
+							str(vector[6]) // "}";
+	}
+	if (vector[7] !=0) {		
+			cd = (vector[7] == 1) ? "cd" : "cd{" // 
+							str(vector[7]) // "}";
+	}
+	
+	return (m // kg // s // A // K // mol // cd);
+}
+
+##------------------------------------------------------------------------------
+## Vector Arithmetic
+##   Dimensions are represented by dimension vectors. Multiplying and dividing
+##   dimensions correspond to adding and subtracting the dimension vectors.
+##   The vectors are represented by 7-element lists
+##------------------------------------------------------------------------------
+
+func PH_vectorAdd { ## used in mulitpilication of quantities
+	para v1,v2;
+	auto i;
+	
+	if (v1# != v2#) {return @;}
+	
+	for(i=1;i<=v1#;i++) {
+		v1[i] += v2[i];
+	}
+	return v1;
+}
+
+func PH_vectorMinus { ## used in division of quantities
+	para v1,v2;
+	auto i;
+	
+	if (v1# != v2#) {return @;}
+	
+	for(i=1;i<=v1#;i++) {
+		v1[i] += -1*v2[i];
+	}
+	return v1;
+}
+
+func PH_dimensionComp { ## used in addition/subtraction of quantities
+	para v1,v2;
+	if (v1 == v2) {return v1;}
+	else {return @;}
+}
+
+##------------------------------------------------------------------------------
+## Interface to eden
+##------------------------------------------------------------------------------
+
+## can reference eden observables with the NAME = eden{NAME}; construct.
+
+## eden models can reference %PHYSICAL observables.
+
+## as (quantity,dimension) tuple (dimension is given here as a string)
+proc PHYSICAL_VAL {
+	para edenObs,physicalObs; ## strings
+	execute(edenObs // " is " // "[PH_val_" // physicalObs //
+			",PH_dimensionString(PH_dim_" // physicalObs // ")];");
+}
+
+## There is a special 'execute' procedure to add %physical definitions from eden
+proc PHYSICAL {
+	para str;
+	execute(PH_notationName // "\n" // str);
+}
+
+
+##------------------------------------------------------------------------------
+## Add unit
+##
+## User defined unit
+##------------------------------------------------------------------------------
+

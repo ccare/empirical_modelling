@@ -1,0 +1,44 @@
+<README>
+<TITLE>Planimeter Models</TITLE>
+<AUTHOR>Charles Care</AUTHOR>
+<SHORTDESCRIPTION>Models of Oppikofer and Wetli Planimeters</SHORTDESCRIPTION>
+<LONGDESCRIPTION>
+Model of an Oppikofer planimeter in tkeden.
+This was constructed to illustrate a talk given to the British Society of the History of Mathematics (BSHM).
+Tracing a figure on the 2D input table causes the 3D model to calculate the area of the that
+figure.
+
+Also, a model of a Wetli planimeter (see sub directory 'wetli').
+This model is an adapted version of the cone one presented in the root directory that was made for 
+Steve Russ's visit to Germany.
+
+See the file HOWTORUN.txt
+
+The model requires the EDEN software available on this site. For users without 
+this software, a video screen shot is provided as a 'tour'. 
+</LONGDESCRIPTION>
+<DATE>
+<YEAR>2005</YEAR>
+<MONTH>2</MONTH>
+</DATE>
+<CODE>planimeterCare2005</CODE>
+<TOUR>demo.avi</TOUR>
+<TYPE>model</TYPE>
+<FUNDING>PhD</FUNDING>
+<TECH>tkeden</TECH>
+<TECH>%eden</TECH>
+<TECH>%scout</TECH>
+<TECH>%donald</TECH>
+<TECH>%sasami</TECH>
+<SCREENSHOT>screenshot.gif</SCREENSHOT>
+<EMPUBLICREF>planimeterCare2004</EMPUBLICREF>
+<KEYWORD>education</KEYWORD>
+<KEYWORD>history of computing</KEYWORD>
+<KEYWORD>history of mathematics</KEYWORD>
+<KEYWORD>planimeter</KEYWORD>
+<KEYWORD>analogue computing</KEYWORD>
+<KEYWORD>mathematical instruments</KEYWORD>
+<URLREF>http://www.noe-kaleidoscope.org:8000/pub/video/symposium/radical.html</URLREF>
+<URLREF>http://www.dcs.warwick.ac.uk/~ccare/</URLREF>
+<PUBLISHING>YES</PUBLISHING>
+</README>

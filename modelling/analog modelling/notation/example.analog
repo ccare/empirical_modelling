@@ -1,0 +1,67 @@
+%analog
+a=scale(0.9,b);
+c=scale(0.8,b);
+d=summer(a,c);
+
+%eden
+b=0.5;
+ic=0;
+
+%analog
+x=integrator(x,ic);
+
+x=integrator(ac,ic);ANdisp_makeWindows
+ac=summer(x,ic);
+
+%eden
+AN_setInitialConditions();
+AN_clock();
+
+
+%eden
+ref=1.0;
+
+
+PAGE 7
+%analog
+in=scale(0.5,+);
+a=scale(0.15,in);
+b=amplify(a);
+c=summer(b,z);
+d=integrator(c,ic);
+e=summer(d,0);
+f=scale(0.125,e);
+z=amplify(f);
+ic=0;
+
+a=scale(0.1,+);
+b=integrator(z,a);
+z=integrator(b,0);
+
+m=scale(0.1,+);
+
+a=integrator(c,m);
+b=integrator(a,0);
+c=summer(b,0);
+
+
+
+%eden
+DS_win1_string is str(a);
+DS_win2_string is str(b);
+DS_win3_string is str(c);
+DS_win4_string is str(d);
+DS_win5_string is str(e);
+DS_win6_string is str(f);
+DS_win7_string is str(z);
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,71 @@
+##==============================================================================
+##           A Notation for Electronic Analog Computing (%analog)
+##
+## integrators.e                                    Charlie Care - November 2004
+##==============================================================================
+
+##------------------------------------------------------------------------------
+## Observables dependent on the eddi tables
+##------------------------------------------------------------------------------
+
+AN_initialConditions is tail(AN_tables_InitialConditions);
+AN_integrators is tail(AN_tables_Integrators);
+
+##------------------------------------------------------------------------------
+## Procedures to control the integrators
+##------------------------------------------------------------------------------
+
+## Set up the integrators in their initial conditions. This data is read from an
+##  eddi table and definitons are made to reflect the desired state.
+
+proc AN_setInitialConditions {
+   for (AN_i=1; AN_i <= AN_initialConditions# ; AN_i++)
+   {
+   todo(AN_initialConditions[AN_i][1] // " is " // AN_initialConditions[AN_i][2] // ";");
+   }
+}
+
+## Procedure to perform integration (from info stored in eddi tables).
+##  This is triggered off AN_time. The guard (AN_time > 0) stops the 
+##   definitions AN_time = 0 starting the integrator.
+
+proc AN_integrate : AN_time {
+   if (AN_time > 0) {
+      for (AN_i=1; AN_i <= AN_integrators# ; AN_i++)
+      {
+      execute(AN_integrators[AN_i][1] // " = " 
+           // AN_integrators[AN_i][1] // " + " // AN_integrators[AN_i][2] // ";");
+      }
+   }
+}
+
+##------------------------------------------------------------------------------
+## Overload
+##------------------------------------------------------------------------------
+
+## Filter function to protect against overload
+func AN_filter {
+    if ($1 > 1.0) {AN_overloaded($1);return 1;}
+    else if ($1 < -1.0) {AN_overloaded($1);return -1;}
+    else {return $1;}
+}
+
+## OVERLOAD WARNING MESSAGE
+proc AN_overloaded {
+      writeln("WARNING: Analogue Computer in OVERLOAD with value " // str($1) //
+      " MU");
+}
+
+##------------------------------------------------------------------------------
+## Reference Values
+##------------------------------------------------------------------------------
+
+## Running this proc. causes all the dependencies to be
+##  touched and for overloads to be noticed.
+proc AN_setReference {
+	AN_REFERENCE_ZERO=0;
+	AN_REFERENCE_POSITIVE=1.0;
+	AN_REFERENCE_NEGATIVE=-1.0;
+}
+## Run once to initialise
+AN_setReference();

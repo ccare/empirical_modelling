@@ -1,0 +1,30 @@
+%sasami
+
+object pen
+
+vertex pen_d 0 0 0
+vertex pen_c shaftWidth 0 0
+vertex pen_b shaftWidth 0 shaftWidth
+vertex pen_a 0 0 shaftWidth
+vertex pen_x shaftWidth/2 10 shaftWidth/2
+
+polygon pen_f1
+polygon pen_f2
+polygon pen_f3
+polygon pen_f4
+
+poly_material pen_f1 m_disc
+poly_material pen_f2 m_disc
+poly_material pen_f3 m_disc
+poly_material pen_f4 m_disc
+
+poly_geom_vertex pen_f1 pen_a pen_b pen_x
+poly_geom_vertex pen_f2 pen_b pen_c pen_x
+poly_geom_vertex pen_f3 pen_c pen_d pen_x
+poly_geom_vertex pen_f4 pen_d pen_a pen_x
+
+object_poly pen pen_f1 pen_f2 pen_f3 pen_f4
+object_pos pen penShaftX+shaftWidth penShaftY penShaftZ
+
+object_rot pen 180 180 0
+object_scale pen 1 0.1*(penShaftY) 1

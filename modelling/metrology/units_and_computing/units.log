@@ -1,0 +1,71 @@
+This is pdfeTeX, Version 3.141592-1.20a-rc7.2-2.2 (MiKTeX 2.4) (preloaded format=latex 2004.9.17)  24 JAN 2005 08:41
+entering extended mode
+**units.tex
+(units.tex
+LaTeX2e <2003/12/01>
+Babel <v3.8a> and hyphenation patterns for english, french, german, ngerman, du
+mylang, nohyphenation, loaded.
+(C:\texmf\tex\latex\base\article.cls
+Document Class: article 2004/02/16 v1.4f Standard LaTeX document class
+(C:\texmf\tex\latex\base\size10.clo
+File: size10.clo 2004/02/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (units.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+
+
+LaTeX Warning: Citation `ME_cheatham' on page 1 undefined on input line 12.
+
+
+LaTeX Warning: Citation `grosu' on page 1 undefined on input line 17.
+
+
+LaTeX Warning: Citation `?' on page 1 undefined on input line 17.
+
+
+LaTeX Warning: Citation `?' on page 1 undefined on input line 20.
+
+(units.bbl) [1
+
+{sfonts.map}] (units.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 233 strings out of 95519
+ 2141 string characters out of 1189651
+ 47472 words of memory out of 1049712
+ 3397 multiletter control sequences out of 35000
+ 4899 words of font info for 18 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 607
+ 23i,4n,21p,141b,129s stack positions out of 1500i,500n,5000p,200000b,32768s
+ 16 PDF objects out of 300000
+ 0 named destinations out of 300000
+ 1 words of extra memory for PDF output out of 65536
+<C:\texmf\fonts\type1\bluesky\cm\cmti10.pfb><C:\texmf\fonts\type1\bluesky\cm\
+cmbx10.pfb><C:\texmf\fonts\type1\bluesky\cm\cmr10.pfb><C:\texmf\fonts\type1\blu
+esky\cm\cmbx12.pfb>
+Output written on units.pdf (1 page, 30818 bytes).
